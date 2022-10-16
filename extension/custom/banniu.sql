@@ -6,3 +6,6 @@ ALTER TABLE zentao.zt_story ADD uatDate DATE NULL COMMENT 'UAT日期';
 
 ALTER TABLE zentao.zt_story ADD purchaser varchar(64) NULL COMMENT '客户名称';
 
+
+-- 2022-10-16 22:11:41
+ALTER TABLE zentao.zt_bug ADD purchaser varchar(256) NULL COMMENT '客户名称'; 
