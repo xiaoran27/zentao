@@ -30,3 +30,30 @@ $lang->story->prCategoryList0['new'] = '新产品需求';
 
 $lang->story->uatDate = 'UAT日期';
 $lang->story->purchaser = '客户名称';
+
+
+/* 统计报表。*/
+$lang->story->report->charts['purchaser']         = "按{$lang->story->purchaser}来进行统计";
+$lang->story->report->purchaser       = new stdclass();
+$lang->story->report->purchaser->item       = $lang->story->purchaser;
+$lang->story->report->purchaser->graph       = new stdclass();
+$lang->story->report->purchaser->graph->xAxisName      = $lang->story->purchaser;
+
+$lang->story->report->charts['prCategory']         = "按{$lang->story->prCategory}来进行统计";
+$lang->story->report->prCategory       = new stdclass();
+$lang->story->report->prCategory->item       = $lang->story->prCategory;
+$lang->story->report->prCategory->graph       = new stdclass();
+$lang->story->report->prCategory->graph->xAxisName      = $lang->story->prCategory;
+
+$lang->story->report->charts['bzCategory']         = "按{$lang->story->bzCategory}来进行统计";
+$lang->story->report->bzCategory       = new stdclass();
+$lang->story->report->bzCategory->item       = $lang->story->bzCategory;
+$lang->story->report->bzCategory->graph       = new stdclass();
+$lang->story->report->bzCategory->graph->xAxisName      = $lang->story->bzCategory;
+
+$lang->story->report->charts['uatDate']         = "按{$lang->story->uatDate}来进行统计";
+$lang->story->report->uatDate       = new stdclass();
+$lang->story->report->uatDate->item       = $lang->story->uatDate;
+$lang->story->report->uatDate->graph       = new stdclass();
+$lang->story->report->uatDate->graph->xAxisName      = $lang->story->uatDate;
+
