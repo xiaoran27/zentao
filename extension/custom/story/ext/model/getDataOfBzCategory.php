@@ -1,12 +1,19 @@
 <?php
 
+
+public function getDataOfBzCategory()
+{
+    return $this->loadExtension('bytenew')->getDataOfBzCategory();
+}
+
     /**
      * Get report data of bzCategory
      *
      * @access public
      * @return array
      */
-    public function getDataOfBzCategory()
+    // Deprecated @see class/bytenew.class.php
+    public function getDataOfBzCategory0()
     {
         $datas = $this->dao->select('bzCategory as name, count(bzCategory) as value')->from(TABLE_STORY)
             ->where($this->reportCondition())

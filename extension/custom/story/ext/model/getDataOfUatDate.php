@@ -1,12 +1,18 @@
 <?php
 
+    public function getDataOfUatDate()
+    {
+        return $this->loadExtension('bytenew')->getDataOfUatDate();
+    }
+
     /**
      * Get report data of uatDate
      *
      * @access public
      * @return array
      */
-    public function getDataOfUatDate()
+    // Deprecated @see class/bytenew.class.php
+    public function getDataOfUatDate0()
     {
         $datas = $this->dao->select('uatDate as name, count(uatDate) as value')->from(TABLE_STORY)
             ->where($this->reportCondition())
