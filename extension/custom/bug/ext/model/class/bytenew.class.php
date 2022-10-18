@@ -1,18 +1,15 @@
 <?php
 
-    public function getDataOfPurchaser()
-    {
-        return $this->loadExtension('bytenew')->getDataOfPurchaser();
-    }
+class bytenewBug extends BugModel
+{
 
-    /**
+        /**
      * Get report data of purchaser
      *
      * @access public
      * @return array
      */
-    // Deprecated @see class/bytenew.class.php
-    public function getDataOfPurchaser0()
+    public function getDataOfPurchaser()
     {
         $datas = $this->dao->select('purchaser as name, count(purchaser) as value')->from(TABLE_BUG)
             ->where($this->reportCondition())
@@ -22,3 +19,5 @@
         return $datas;
     }
 
+
+}
