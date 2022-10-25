@@ -54,7 +54,6 @@ foreach(explode(',', $config->bug->create->requiredFields) as $field)
         <thead>
           <tr>
             <th class='c-id'><?php echo $lang->idAB;?></th>
-            <th class='c-purchaser<?php echo zget($visibleFields, 'purchaser', ' hidden') . zget($requiredFields, 'purchaser', '', ' required');?> purchaserBox'><?php echo $lang->bug->purchaser;?></th>
             <th class='c-branch<?php echo zget($visibleFields, $product->type, ' hidden')?> branchBox'> <?php echo $lang->product->branch;?></th>
             <th class='c-module<?php echo zget($requiredFields, 'module', '', ' required');?>'> <?php echo $lang->bug->module;?></th>
             <?php if($config->systemMode == 'new'):?>
@@ -67,6 +66,8 @@ foreach(explode(',', $config->bug->create->requiredFields) as $field)
             <th class='c-execution'><?php echo $lang->kanbancard->region;?></th>
             <th class='c-execution'><?php echo $lang->kanbancard->lane;?></th>
             <?php endif;?>
+            <th class='c-purchaser<?php echo zget($visibleFields, 'purchaser', ' hidden') . zget($requiredFields, 'purchaser', '', ' required');?> purchaserBox'><?php echo $lang->bug->purchaser;?></th>
+            <th class='c-occursEnv<?php echo zget($visibleFields, 'occursEnv', ' hidden') . zget($requiredFields, 'occursEnv', '', ' required');?> occursEnvBox'><?php echo $lang->bug->occursEnv;?></th>
             <th class='c-date<?php echo zget($visibleFields, 'deadline', ' hidden') . zget($requiredFields, 'deadline', '', ' required');?> deadlineBox'><?php echo $lang->bug->deadline;?></th>
             <th class='c-steps<?php echo zget($visibleFields, 'steps', ' hidden') . zget($requiredFields, 'steps', '', ' required');?> stepsBox'><?php echo $lang->bug->steps;?></th>
             <th class='c-type<?php echo zget($visibleFields, 'type', ' hidden') . zget($requiredFields, 'type', '', ' required');?> typeBox'><?php echo $lang->typeAB;?></th>
@@ -106,7 +107,6 @@ foreach(explode(',', $config->bug->create->requiredFields) as $field)
           ?>
           <tr>
             <td class='text-left'><?php echo $i;?></td>
-            <td class='<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::input("purchaser[$i]", '', "class='form-control ' ");?></td>
             <td class='<?php echo zget($visibleFields, $product->type, ' hidden')?> branchBox' style='overflow:visible'><?php echo html::select("branches[$i]", $branches, $branch, "class='form-control chosen' onchange='setBranchRelated(this.value, $productID, $i)'");?></td>
             <td><?php echo html::select("modules[$i]", $moduleOptionMenu, $moduleID, "class='form-control chosen'");?></td>
             <?php if($config->systemMode == 'new'):?>
@@ -132,6 +132,8 @@ foreach(explode(',', $config->bug->create->requiredFields) as $field)
             <td><?php echo html::select("regions[$i]", $regionPairs, $regionID, "class='form-control chosen'");?></td>
             <td><?php echo html::select("lanes[$i]", $lanePairs, $laneID, "class='form-control chosen'");?></td>
             <?php endif;?>
+            <td class='<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::input("purchaser[$i]", '', "class='form-control ' ");?></td>
+            <td class='<?php echo zget($visibleFields, 'occursEnv', 'hidden')?> occursEnvBox' style='overflow:visible'>      <?php echo html::select("occursEnvs[$i][]", $lang->bug->occursEnvList, '', "class='form-control chosen' multiple");?></td>
             <td class='<?php echo zget($visibleFields, 'deadline', 'hidden')?> deadlineBox'><?php echo html::input("deadlines[$i]", '', "class='form-control form-date'");?></td>
             <td class='<?php echo zget($visibleFields, 'steps', 'hidden')?> stepsBox'><?php echo html::textarea("stepses[$i]", '', "rows='1' class='form-control autosize'");?></td>
             <td class='<?php echo zget($visibleFields, 'type', 'hidden')?> typeBox' style='overflow:visible'>    <?php echo html::select("types[$i]", $lang->bug->typeList, $type, "class='form-control chosen'");?></td>
@@ -165,7 +167,6 @@ foreach(explode(',', $config->bug->create->requiredFields) as $field)
           ?>
           <tr>
             <td><?php echo $i;?></td>
-            <td class='<?php echo zget($visibleFields, 'purchaser', '')?> purchaserBox'><?php echo html::input("purchaser[$i]", '', "class='form-control ' id='purchaser_$i'");?></td>
             <td class='<?php echo zget($visibleFields, $product->type, ' hidden')?> branchBox' style='overflow:visible'><?php echo html::select("branches[$i]", $branches, $branch, "class='form-control chosen' onchange='setBranchRelated(this.value, $productID, $i)'");?></td>
             <td><?php echo html::select("modules[$i]", $moduleOptionMenu, $moduleID, "class='form-control chosen'");?></td>
             <?php if($config->systemMode == 'new'):?>
@@ -191,6 +192,9 @@ foreach(explode(',', $config->bug->create->requiredFields) as $field)
             <td><?php echo html::select("regions[$i]", $regionPairs, $regionID, "class='form-control chosen' onchange='setLane(this.value, $i)'");?></td>
             <td><?php echo html::select("lanes[$i]", $lanePairs, $laneID, "class='form-control chosen'");?></td>
             <?php endif;?>
+            <td class='<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::input("purchaser[$i]", '', "class='form-control ' ");?></td>
+            <td class='<?php echo zget($visibleFields, 'occursEnv', 'hidden')?> occursEnvBox' style='overflow:visible'>      <?php echo html::select("occursEnvs[$i][]", $lang->bug->occursEnvList, '', "class='form-control chosen' multiple");?></td>
+            
             <td class='<?php echo zget($visibleFields, 'deadline', 'hidden')?> deadlineBox'><?php echo html::input("deadlines[$i]", '', "class='form-control form-date'");?></td>
             <td class='<?php echo zget($visibleFields, 'steps', 'hidden')?> stepsBox'><?php echo html::textarea("stepses[$i]", '', "rows='1' class='form-control autosize'");?></td>
             <td class='<?php echo zget($visibleFields, 'type', 'hidden')?> typeBox' style='overflow:visible'>    <?php echo html::select("types[$i]", $lang->bug->typeList, $type, "class='form-control chosen'");?></td>

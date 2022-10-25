@@ -164,12 +164,24 @@ if($this->app->tab == 'project')   js::set('objectID', $bug->project);
                   </td>
                 </tr>
                 <tr>
-                  <th><?php echo $lang->bug->deadline;?></th>
-                  <td><?php echo html::input('deadline', helper::isZeroDate($bug->deadline) ? '' : $bug->deadline, "class='form-control form-date'");?></td>
-                </tr>
-                <tr>
                   <th><?php echo $lang->bug->purchaser;?></th>
                   <td><?php echo html::input('purchaser', $bug->purchaser, "class='form-control'");?></td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->bug->occursEnv;?></th>
+                  <td><?php echo html::select('occursEnv[]', $lang->bug->occursEnvList, $bug->occursEnv, "class='form-control chosen' multiple");?></td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->bug->feedbackTime;?></th>
+                  <td><?php echo html::input('feedbackTime', helper::isZeroDate($bug->feedbackTime) ? '' : $bug->feedbackTime, "class='form-control form-datetime'");?></td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->bug->collectTime;?></th>
+                  <td><?php echo html::input('collectTime', helper::isZeroDate($bug->collectTime) ? '' : $bug->collectTime, "class='form-control form-datetime'");?></td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->bug->deadline;?></th>
+                  <td><?php echo html::input('deadline', helper::isZeroDate($bug->deadline) ? '' : $bug->deadline, "class='form-control form-date'");?></td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->feedbackBy;?></th>

@@ -198,6 +198,8 @@ class myBug extends bug
         $title       = $from == 'sonarqube' ? $_COOKIE['sonarqubeIssue'] : '';
         $feedbackBy          = '';
         $purchaser          = '';
+        $feedbackTime          = '';
+        $collectTime          = '';
         $steps       = $this->lang->bug->tplStep . $this->lang->bug->tplResult . $this->lang->bug->tplExpect;
         $os          = '';
         $browser     = '';
@@ -238,6 +240,8 @@ class myBug extends bug
             if($pri == 0) $pri = '3';
             $feedbackBy   = $bug->feedbackBy;
             $purchaser   = $bug->purchaser;
+            $feedbackTime          = $bug->feedbackTime;
+            $collectTime          = $bug->collectTime;
         }
 
         if($testtask)
@@ -380,6 +384,9 @@ class myBug extends bug
         $this->view->bugTitle         = $title;
         $this->view->feedbackBy        = $feedbackBy;
         $this->view->purchaser        = $purchaser;
+        $this->view->occursEnv        = $occursEnv;
+        $this->view->feedbackTime        = $feedbackTime;
+        $this->view->collectTime        = $collectTime;
         $this->view->pri              = $pri;
         $this->view->steps            = htmlSpecialString($steps);
         $this->view->os               = $os;

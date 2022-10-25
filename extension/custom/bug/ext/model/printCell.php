@@ -176,6 +176,21 @@
             case 'purchaser':
                 echo $bug->purchaser;
                 break;
+            case 'occursEnv':
+                $occursEnvs = explode(',', $bug->occursEnv);
+                foreach($occursEnvs as $occursEnv)
+                {
+                    $occursEnv = trim($occursEnv);
+                    if(empty($occursEnv)) continue;
+                    echo zget($this->lang->bug->occursEnvList, $occursEnv) . " &nbsp;";
+                }
+                break;
+            case 'feedbackTime':
+                echo $bug->feedbackTime;
+                break;
+            case 'collectTime':
+                echo $bug->collectTime;
+                break;
             case 'branch':
                 echo zget($branches, $bug->branch, '');
                 break;

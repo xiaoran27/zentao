@@ -211,11 +211,27 @@ if($this->app->tab == 'project')   js::set('objectID', $projectID);
             <td >
               <div class="input-group <?php echo zget($config->bug->create->requiredFields, 'purchaser', '', ' required');?>"> 
                 <span class='input-group-addon'><?php echo $lang->bug->purchaser?></span>
-                <span><?php echo html::input('purchaser', '', "class='form-control'");?></span>
+                <span><?php echo html::input('purchaser', $purchaser, "class='form-control'");?></span>
               </div>
             </td>
           </tr>
           <?php endif;?>
+          <tr>
+            <th><nobr><?php echo $lang->bug->feedbackTime;?></nobr></th>
+            <td>
+              <div class='input-group'>
+                <span class=" <?php echo zget($config->bug->create->requiredFields, 'feedbackTime', '', ' required');?>"><?php echo html::input('feedbackTime', $feedbackTime, "class='form-control form-datetime'");?></span>
+                <span class='input-group-addon'><?php echo $lang->bug->collectTime?></span>
+                <span class=" <?php echo zget($config->bug->create->requiredFields, 'collectTime', '', ' required');?>"><?php echo html::input('collectTime', $collectTime, "class='form-control form-datetime'");?></span>
+              </div>
+            </td>
+            <td >
+              <div class="input-group <?php echo zget($config->bug->create->requiredFields, 'occursEnv', '', ' required');?>"> 
+                <span class='input-group-addon'><?php echo $lang->bug->occursEnv?></span>
+                <?php echo html::select('occursEnv[]', $lang->bug->occursEnvList, $occursEnv, "class='form-control chosen' multiple");?>
+              </div>
+            </td>
+          </tr>
           <?php if(isset($executionType) and $executionType == 'kanban'):?>
           <tr>
             <th><?php echo $lang->kanbancard->region;?></th>

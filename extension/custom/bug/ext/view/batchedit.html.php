@@ -28,6 +28,7 @@
   <div class='alert alert-info'><?php echo $suhosinInfo;?></div>
   <?php else:?>
   <?php
+  var_dump($showFields);
   $visibleFields  = array();
   $requiredFields = array();
   foreach(explode(',', $showFields) as $field)
@@ -50,12 +51,15 @@
         <thead>
           <tr>
             <th class='c-id'><?php echo $lang->idAB;?></th>
-            <th class='c-purchaser<?php echo zget($visibleFields, 'purchaser', ' hidden') . zget($requiredFields, 'purchaser', '', ' required');?>'><?php echo $lang->bug->purchaser;?></th>
             <th class='c-feedbackBy<?php echo zget($visibleFields, 'feedbackBy', ' hidden') . zget($requiredFields, 'feedbackBy', '', ' required');?>'><?php echo $lang->bug->feedbackBy;?></th>
             <th class='c-type<?php echo zget($visibleFields, 'type', ' hidden') . zget($requiredFields, 'type', '', ' required');?>'><?php echo $lang->bug->type;?></th>
             <th class='c-severity<?php echo zget($visibleFields, 'severity', ' hidden') . zget($requiredFields, 'severity', '', ' required');?>'><?php echo $lang->bug->severity;?></th>
             <th class='c-pri<?php echo zget($visibleFields, 'pri', ' hidden') . zget($requiredFields, 'pri', '', ' required');?>'><?php echo $lang->bug->pri;?></th>
             <th class="required <?php if(count($visibleFields) >= 8) echo ' c-title';?>"><?php echo $lang->bug->title;?></th>
+            <th class='c-purchaser<?php echo zget($visibleFields, 'purchaser', ' hidden') . zget($requiredFields, 'purchaser', '', ' required');?>'><?php echo $lang->bug->purchaser;?></th>
+            <th class='c-occursEnv<?php echo zget($visibleFields, 'occursEnv', ' hidden') . zget($requiredFields, 'occursEnv', '', ' required');?>'><?php echo $lang->bug->occursEnv;?></th>
+            <th class='c-feedbackTime<?php echo zget($visibleFields, 'feedbackTime', ' hidden') . zget($requiredFields, 'feedbackTime', '', ' required');?>'><?php echo $lang->bug->feedbackTime;?></th>
+            <th class='c-collectTime<?php echo zget($visibleFields, 'collectTime', ' hidden') . zget($requiredFields, 'collectTime', '', ' required');?>'><?php echo $lang->bug->collectTime;?></th>
             <?php if($branchProduct):?>
             <th class='c-branch'><?php echo $lang->bug->branch;?></th>
             <?php endif;?>
@@ -81,7 +85,6 @@
           ?>
           <tr>
             <td><?php echo $bugID . html::hidden("bugIDList[$bugID]", $bugID);?></td>
-            <td <?php echo zget($visibleFields, 'purchaser', "class='hidden'")?>><?php echo html::input("purchaser[$bugID]", $bug->purchaser, 'class=form-control');?></td>
             <td <?php echo zget($visibleFields, 'feedbackBy', "class='hidden'")?>><?php echo html::input("feedbackBy[$bugID]", $bug->feedbackBy, 'class=form-control');?></td>
             <td <?php echo zget($visibleFields, 'type', "class='hidden'")?>><?php echo html::select("types[$bugID]", $typeList, $bug->type, 'class=form-control');?></td>
             <td <?php echo zget($visibleFields, 'severity', "class='hidden'")?>><?php echo html::select("severities[$bugID]", $severityList, $bug->severity, 'class=form-control');?></td>
@@ -100,6 +103,11 @@
                 </div>
               <div>
             </td>
+            <td class='<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::input("purchaser[$bugID]", $bug->purchaser, "class='form-control ' ");?></td>
+            <td class='<?php echo zget($visibleFields, 'occursEnv', ' hidden')?> occursEnvBox' style='overflow:visible'>      <?php echo html::select("occursEnvs[$bugID][]", $lang->bug->occursEnvList, $bug->occursEnv, "class='form-control chosen' multiple");?></td>
+            <td class='<?php echo zget($visibleFields, 'feedbackTime', ' hidden')?> feedbackTimeBox'><?php echo html::input("feedbackTime[$bugID]", helper::isZeroDate($bug->feedbackTime) ? '' : $bug->feedbackTime, "class='form-control form-datetime'");?></td>
+            <td class='<?php echo zget($visibleFields, 'collectTime', ' hidden')?> collectTimeBox'><?php echo html::input("collectTime[$bugID]", helper::isZeroDate($bug->collectTime) ? '' : $bug->collectTime, "class='form-control form-datetime'");?></td>
+
             <?php if($branchProduct):?>
             <td style='overflow:visible'>
               <?php $disabled = (isset($productList) and $productList[$bug->product]->type == 'normal') ? "disabled='disabled'" : '';?>

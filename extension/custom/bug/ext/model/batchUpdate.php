@@ -30,6 +30,7 @@
                 if($data->resolvedBys[$bugID] == 'ditto') $data->resolvedBys[$bugID] = isset($prev['resolvedBy']) ? $prev['resolvedBy'] : '';
                 if($data->resolutions[$bugID] == 'ditto') $data->resolutions[$bugID] = isset($prev['resolution']) ? $prev['resolution'] : '';
                 if(isset($data->branches[$bugID]) and $data->branches[$bugID] == 'ditto') $data->branches[$bugID] = isset($prev['branch']) ? $prev['branch'] : 0;
+                if($data->occursEnvs[$bugID] == 'ditto') $data->occursEnvs[$bugID] = isset($prev['occursEnv']) ? $prev['occursEnv'] : '';
 
                 $prev['type']       = $data->types[$bugID];
                 $prev['severity']   = $data->severities[$bugID];
@@ -39,6 +40,7 @@
                 $prev['assignedTo'] = $data->assignedTos[$bugID];
                 $prev['resolvedBy'] = $data->resolvedBys[$bugID];
                 $prev['resolution'] = $data->resolutions[$bugID];
+                $prev['occursEnv'] = $data->occursEnvs[$bugID];
             }
 
             /* Initialize bugs from the post data.*/
@@ -50,6 +52,7 @@
 
                 $os       = array_filter($data->os[$bugID]);
                 $browsers = array_filter($data->browsers[$bugID]);
+                $occursEnv       = array_filter($data->occursEnvs[$bugID]);
 
                 $bug = new stdclass();
                 $bug->id             = $bugID;
@@ -62,6 +65,9 @@
                 $bug->title          = $data->titles[$bugID];
                 $bug->feedbackBy     = $data->feedbackBy[$bugID];
                 $bug->purchaser      = $data->purchaser[$bugID];
+                $bug->occursEnv             = implode(',', $occursEnv);
+                $bug->feedbackTime      = $data->feedbackTime[$bugID];
+                $bug->collectTime      = $data->collectTime[$bugID];
                 $bug->plan           = empty($data->plans[$bugID]) ? 0 : $data->plans[$bugID];
                 $bug->branch         = empty($data->branches[$bugID]) ? 0 : $data->branches[$bugID];
                 $bug->module         = $data->modules[$bugID];
@@ -102,6 +108,7 @@
                     if($bug->plan != $oldBug->plan and !empty($bug->plan))    $link2Plans[$bug->plan]  = empty($link2Plans[$bug->plan]) ? $bugID : "{$link2Plans[$bug->plan]},$bugID";
                 }
 
+                $this->loadModel('common')->log(print_r($bug, true), __FILE__, __LINE__);
                 $bugs[$bugID] = $bug;
                 unset($bug);
             }

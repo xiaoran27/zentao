@@ -227,9 +227,31 @@
                   <td><?php echo $bug->purchaser;?></td>
                 </tr>
                 <tr>
+                  <th><?php echo $lang->bug->occursEnv;?></th>
+                  <td>
+                  <?php $occursEnvList = explode(',', $bug->occursEnvList);?>
+                  <?php if($occursEnvList):?>
+                  <p class='occursEnvListContent'>
+                    <?php foreach($occursEnvList as $occursEnv):?>
+                    <?php if($occursEnv) echo "<span class='label label-outline'>" .  zget($lang->bug->occursEnvList, $occursEnv) . "</span>";?>
+                    <?php endforeach;?>
+                  </p>
+                  <?php endif;?>
+                  </td>
+                </tr>
+                <tr>
                   <th><?php echo $lang->bug->feedbackBy;?></th>
                   <td><?php echo $bug->feedbackBy;?></td>
+                </tr>                
+                <tr>
+                  <th><?php echo $lang->bug->feedbackTime;?></th>
+                  <td><?php echo $bug->feedbackTime;?></td>
                 </tr>
+                <tr>
+                  <th><?php echo $lang->bug->collectTime;?></th>
+                  <td><?php echo $bug->collectTime;?></td>
+                </tr>
+
                 <tr>
                   <th><?php echo $lang->bug->notifyEmail;?></th>
                   <td><?php echo $bug->notifyEmail;?></td>

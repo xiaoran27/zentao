@@ -39,16 +39,21 @@
         $pri       = 0;
         $feedbackBy      = '';
         $purchaser      = '';
+        $occursEnv      = '';
+        $feedbackTime      = '';
+        $collectTime      = '';
         foreach($data->title as $i => $title)
         {
             $oses     = array_filter($data->oses[$i]);
             $browsers = array_filter($data->browsers[$i]);
+            $occursEnvs     = array_filter($data->occursEnvs[$i]);
 
             if($data->modules[$i]    != 'ditto') $module    = (int)$data->modules[$i];
             if($data->projects[$i]   != 'ditto') $project   = (int)$data->projects[$i];
             if($data->executions[$i] != 'ditto') $execution = (int)$data->executions[$i];
             if($data->types[$i]      != 'ditto') $type      = $data->types[$i];
             if($data->pris[$i]       != 'ditto') $pri       = $data->pris[$i];
+            if($data->occursEnvs[$i]       != 'ditto') $occursEnvs       = $data->occursEnvs[$i];
 
             $data->modules[$i]    = (int)$module;
             $data->projects[$i]   = (int)$project;
@@ -57,6 +62,7 @@
             $data->pris[$i]       = $pri;
             $data->oses[$i]       = implode(',', $oses);
             $data->browsers[$i]   = implode(',', $browsers);
+            $data->occursEnvs[$i]   = implode(',', $occursEnvs);
         }
 
         /* Get bug data. */
@@ -81,6 +87,9 @@
             $bug->title       = $title;
             $bug->feedbackBy       = $data->feedbackBy[$i];
             $bug->purchaser       = $data->purchaser[$i];
+            $bug->occursEnv       = $data->occursEnvs[$i];
+            $bug->feedbackTime       = $data->feedbackTime[$i];
+            $bug->collectTime       = $data->collectTime[$i];
             $bug->deadline    = $data->deadlines[$i];
             $bug->steps       = nl2br($data->stepses[$i]);
             $bug->type        = $data->types[$i];
@@ -88,6 +97,7 @@
             $bug->severity    = $data->severities[$i];
             $bug->os          = $data->oses[$i];
             $bug->browser     = $data->browsers[$i];
+            $bug->occursEnv     = $data->occursEnvs[$i];
             $bug->keywords    = $data->keywords[$i];
 
             if(isset($data->lanes[$i])) $bug->laneID = $data->lanes[$i];
@@ -120,7 +130,9 @@
                 }
             }
 
+            $this->loadModel('common')->log(print_r($bug, true), __FILE__, __LINE__);
             $bugs[$i] = $bug;
+
         }
 
         /* When the bug is created by uploading an image, add the image to the step of the bug. */

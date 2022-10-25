@@ -19,5 +19,21 @@ class bytenewBug extends BugModel
         return $datas;
     }
 
+            /**
+     * Get report data of occursEnv
+     *
+     * @access public
+     * @return array
+     */
+    public function getDataOfOccursEnv()
+    {
+        $datas = $this->dao->select('occursEnv as name, count(occursEnv) as value')->from(TABLE_BUG)
+            ->where($this->reportCondition())
+            ->groupBy('occursEnv')->orderBy('value DESC')->fetchAll('name');
+        if(!$datas) return array();
+        foreach($datas as $occursEnv => $data) $data->name = $this->lang->story->occursEnvList[$occursEnv] != '' ? $this->lang->story->occursEnvList[$occursEnv] : $occursEnv;
+        return $datas;
+    }
+
 
 }
