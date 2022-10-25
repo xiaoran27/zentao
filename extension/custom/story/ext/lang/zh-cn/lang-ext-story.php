@@ -25,7 +25,7 @@ $lang->story->prCategoryList0['']  = '';
 $lang->story->prCategoryList0['project']  = '共创需求';
 $lang->story->prCategoryList0['product'] = '标品需求';
 $lang->story->prCategoryList0['myself']  = '个性化需求';
-$lang->story->prCategoryList0['new'] = '新产品需求';
+// $lang->story->prCategoryList0['new'] = '新产品需求';
 
 
 $lang->story->uatDate = 'UAT日期';

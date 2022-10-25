@@ -38,25 +38,25 @@ else
 
 
 $config->story->datatable->fieldList['bzCategory']['title']    = 'bzCategory';
-$config->story->datatable->fieldList['bzCategory']['fixed']    = 'no';
+$config->story->datatable->fieldList['bzCategory']['fixed']    = 'left';
 $config->story->datatable->fieldList['bzCategory']['width']    = '90';
-$config->story->datatable->fieldList['bzCategory']['required'] = 'no';
+$config->story->datatable->fieldList['bzCategory']['required'] = 'yes';
 $config->story->datatable->fieldList['bzCategory']['control']    = 'select';
 $config->story->datatable->fieldList['bzCategory']['dataSource'] = $config->story->bzCategories;
 
 $config->story->datatable->fieldList['prCategory']['title']    = 'prCategory';
-$config->story->datatable->fieldList['prCategory']['fixed']    = 'no';
+$config->story->datatable->fieldList['prCategory']['fixed']    = 'left';
 $config->story->datatable->fieldList['prCategory']['width']    = '90';
-$config->story->datatable->fieldList['prCategory']['required'] = 'no';
+$config->story->datatable->fieldList['prCategory']['required'] = 'yes';
 $config->story->datatable->fieldList['prCategory']['control']    = 'select';
 $config->story->datatable->fieldList['prCategory']['dataSource'] = $config->story->prCategories;
 
 $config->story->datatable->fieldList['uatDate']['title']    = 'uatDate';
-$config->story->datatable->fieldList['uatDate']['fixed']    = 'no';
+$config->story->datatable->fieldList['uatDate']['fixed']    = 'left';
 $config->story->datatable->fieldList['uatDate']['width']    = '90';
 $config->story->datatable->fieldList['uatDate']['required'] = 'no';
 
 $config->story->datatable->fieldList['purchaser']['title']    = 'purchaser';
-$config->story->datatable->fieldList['purchaser']['fixed']    = 'no';
+$config->story->datatable->fieldList['purchaser']['fixed']    = 'left';
 $config->story->datatable->fieldList['purchaser']['width']    = '90';
-$config->story->datatable->fieldList['purchaser']['required'] = 'no';
+$config->story->datatable->fieldList['purchaser']['required'] = 'yes';
