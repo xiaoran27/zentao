@@ -2,6 +2,7 @@
 
     /**
      * Save a log.
+     * $this->loadModel('common')->log($where, __FILE__, __LINE__);
      *
      * @param  string $message
      * @param  string $file
