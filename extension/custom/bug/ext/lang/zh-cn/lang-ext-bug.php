@@ -23,7 +23,7 @@ $lang->bug->report->purchaser->graph       = new stdclass();
 $lang->bug->report->purchaser->graph->xAxisName      = $lang->bug->purchaser;
 
 
-$lang->bug->report->charts['occursEnv']         = "按{$lang->bug->occursEnv}来进行统计";
+$lang->bug->report->charts['occursEnv']         = "按{$lang->bug->occursEnv}(拆分)来进行统计";
 $lang->bug->report->occursEnv       = new stdclass();
 $lang->bug->report->occursEnv->item       = $lang->bug->occursEnv;
 $lang->bug->report->occursEnv->graph       = new stdclass();
