@@ -58,7 +58,7 @@ $config->bug->search['fields']['collectTime']  = $lang->bug->collectTime;
 
 $config->bug->search['params']['feedbackBy']  = array('operator' => '=',       'control' => 'input',  'values' => '');
 $config->bug->search['params']['purchaser']  = array('operator' => '=',       'control' => 'input',  'values' => '');
-$config->bug->search['params']['occursEnv']        = array('operator' => '=',       'control' => 'select', 'values' => $lang->bug->occursEnvList);
+$config->bug->search['params']['occursEnv']        = array('operator' => 'include',       'control' => 'select', 'values' => $lang->bug->occursEnvList);
 $config->bug->search['params']['feedbackTime']  = array('operator' => '=',       'control' => 'input',  'values' => '');
 $config->bug->search['params']['collectTime']  = array('operator' => '=',       'control' => 'input',  'values' => '');
 
