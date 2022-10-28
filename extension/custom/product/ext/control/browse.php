@@ -182,6 +182,8 @@ class myProduct extends product
             $this->config->product->search['fields']['title'] = $this->lang->story->title ;
             unset($this->config->product->search['fields']['plan']);
             unset($this->config->product->search['fields']['stage']);
+
+            $this->config->product->search['params']['prCategory']         = array('operator' => '=',       'control' => 'select', 'values' => $this->lang->story->prCategoryList0);
         }else{
             unset($this->config->product->search['fields']['responseResult']);
             unset($this->config->product->search['params']['responseResult']);
