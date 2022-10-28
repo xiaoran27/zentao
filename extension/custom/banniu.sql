@@ -15,3 +15,6 @@ ALTER TABLE zentao.zt_bug ADD purchaser varchar(256) NULL COMMENT '客户名称'
 ALTER TABLE zentao.zt_bug ADD occursEnv varchar(128)  DEFAULT 'online' NULL COMMENT '发生环境'; 
 ALTER TABLE zentao.zt_bug ADD feedbackTime datetime   NULL COMMENT '反馈时间'; 
 ALTER TABLE zentao.zt_bug ADD collectTime datetime   NULL COMMENT '收集时间'; 
+
+-- 2022-10-27 21:09:50
+ALTER TABLE zentao.zt_story ADD responseResult smallint  DEFAULT 0 NULL COMMENT '响应结果'; 

@@ -93,7 +93,7 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
             <td colspan='2' >
               <div class='input-group' id='prCategoryIdBox'>
                 <div class="input-group-addon prCategory"><?php echo $lang->story->prCategory;?></div>
-                <?php echo html::select('prCategory', $lang->story->prCategoryList, $prCategory, "class='form-control chosen'");?>
+                <?php echo html::select('prCategory', $type == 'story'?$lang->story->prCategoryList:$lang->story->prCategoryList0, $prCategory, "class='form-control chosen'");?>
               </div>
             </td>
           </tr>
@@ -175,6 +175,14 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
                 </div>
               </div>
             </td>
+            <?php if($type == 'requirement'):?>
+            <td colspan='2' >
+              <div class='input-group' id='responseResultIdBox'>
+                <div class="input-group-addon responseResult"><?php echo $lang->story->responseResult;?></div>
+                <?php echo html::select('responseResult', $lang->story->responseResultList, $responseResult, "class='form-control chosen'");?>
+              </div>
+            </td>
+            <?php endif;?>
           </tr>
           <?php if($type == 'story'):?>
           <?php if($this->config->URAndSR):?>

@@ -283,8 +283,14 @@
                 </tr>
                 <tr>
                   <th><?php echo $lang->story->prCategory;?></th>
-                  <td id='prCategory'><?php echo $lang->story->prCategoryList[$story->prCategory];?></td>
+                  <td id='prCategory'><?php echo ($story->type == 'requirement'?$lang->story->prCategoryList0[$story->prCategory]:$lang->story->prCategoryList[$story->prCategory]);?></td>
                 </tr>
+                <?php if($story->type == 'requirement'):?>
+                <tr>
+                  <th><?php echo $lang->story->responseResult;?></th>
+                  <td id='responseResult'><?php echo $lang->story->responseResultList[$story->responseResult];?></td>
+                </tr>
+                <?php endif;?>
                 <tr>
                   <th><?php echo $lang->story->source;?></th>
                   <td id='source'><?php echo $lang->story->sourceList[$story->source];?></td>

@@ -4,6 +4,8 @@
 // $config->story->prCategories   = array('project', 'product', 'myself', 'tech');
 $config->story->bzCategories   = array('B100', 'B101-500', 'LKA');
 $config->story->prCategories   = array('project', 'product', 'new', 'myself', 'platform', 'tech', 'other');
+$config->story->responseResultes   = array(0,1,2,3);
+
 
 $config->story->create->requiredFields = 'title,bzCategory,prCategory';
 $config->story->edit->requiredFields = 'title,bzCategory,prCategory';
@@ -11,7 +13,7 @@ $config->story->change->requiredFields = 'title,bzCategory,prCategory';
 
 
 $config->story->exportFields = '
-    id, product, branch, module, purchaser, bzCategory, prCategory, uatDate, plan, source, sourceNote, title, spec, verify, keywords,
+    id, product, branch, module, purchaser, bzCategory, prCategory, uatDate, responseResult, plan, source, sourceNote, title, spec, verify, keywords,responseResult,
     pri, estimate, status, stage, category, taskCountAB, bugCountAB, caseCountAB,
     openedBy, openedDate, assignedTo, assignedDate, mailto,
     reviewedBy, reviewedDate,
@@ -60,3 +62,10 @@ $config->story->datatable->fieldList['purchaser']['title']    = 'purchaser';
 $config->story->datatable->fieldList['purchaser']['fixed']    = 'left';
 $config->story->datatable->fieldList['purchaser']['width']    = '90';
 $config->story->datatable->fieldList['purchaser']['required'] = 'yes';
+
+$config->story->datatable->fieldList['responseResult']['title']    = 'responseResult';
+$config->story->datatable->fieldList['responseResult']['fixed']    = 'left';
+$config->story->datatable->fieldList['responseResult']['width']    = '90';
+$config->story->datatable->fieldList['responseResult']['required'] = 'no';
+$config->story->datatable->fieldList['responseResult']['control']    = 'select';
+$config->story->datatable->fieldList['responseResult']['dataSource'] = $config->story->responseResultes;

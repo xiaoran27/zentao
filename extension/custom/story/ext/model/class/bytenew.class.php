@@ -69,4 +69,20 @@ class bytenewStory extends StoryModel
         return $datas;
     }
 
+    /**
+     * Get report data of responseResult
+     *
+     * @access public
+     * @return array
+     */
+    public function getDataOfResponseResult()
+    {
+        $datas = $this->dao->select('responseResult as name, count(1) as value')->from(TABLE_STORY)
+            ->where($this->reportCondition())
+            ->groupBy('name')->orderBy('value DESC')->fetchAll('name');
+        if(!$datas) return array();
+        foreach($datas as $name => $data) $data->name = $this->lang->story->responseResultList[$name] != '' ? $this->lang->story->responseResultList[$name] : $name;
+        return $datas;
+    }
+
 }

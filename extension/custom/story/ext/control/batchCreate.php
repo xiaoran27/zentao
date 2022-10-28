@@ -210,8 +210,13 @@ class myStory extends story
         $bzCategoryList          = (array)$this->lang->story->bzCategoryList;
         $bzCategoryList['ditto'] = $this->lang->story->ditto;
 
-        $prCategoryList          = (array)$this->lang->story->prCategoryList;
+        $prCategoryList          = $storyType == 'requirement'?$this->lang->story->prCategoryList0:$this->lang->story->prCategoryList;
         $prCategoryList['ditto'] = $this->lang->story->ditto;
+
+        $responseResultList          = (array)$this->lang->story->responseResultList;
+        $responseResultList['ditto'] = $this->lang->story->ditto;
+
+        
 
         $sourceList          = (array)$this->lang->story->sourceList;
         $sourceList['ditto'] = $this->lang->story->ditto;
@@ -265,6 +270,8 @@ class myStory extends story
         $this->view->priList          = $priList;
         $this->view->bzCategoryList       = $bzCategoryList;
         $this->view->prCategoryList       = $prCategoryList;
+        $this->view->responseResultList       = $responseResultList;
+        
         $this->view->uatDate       = $uatDate;
 	    $this->view->purchaser           = $purchaser;
         $this->view->sourceList       = $sourceList;

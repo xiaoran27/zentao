@@ -206,6 +206,9 @@
             case 'prCategory':
                 echo zget($this->lang->story->prCategoryList, $story->prCategory, $story->prCategory);
                 break;
+            case 'responseResult':
+                echo zget($this->lang->story->responseResultList, $story->responseResult, $story->responseResult);
+                break;
             case 'uatDate':
                 echo helper::isZeroDate($story->uatDate) ? '' : $story->uatDate;
                 break;

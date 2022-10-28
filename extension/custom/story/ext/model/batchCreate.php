@@ -46,6 +46,7 @@
         $source = '';
         $bzCategory = '';
         $prCategory = '';
+        $responseResult = '0';
 
         foreach($stories->title as $i => $title)
         {
@@ -61,8 +62,10 @@
 
             $bzCategory = $stories->bzCategory[$i] == 'ditto' ? $bzCategory : $stories->bzCategory[$i];
             $prCategory = $stories->prCategory[$i] == 'ditto' ? $prCategory : $stories->prCategory[$i];
+            $responseResult = $stories->responseResult[$i] == 'ditto' ? $responseResult : $stories->responseResult[$i];
             $stories->bzCategory[$i] = $bzCategory;
             $stories->prCategory[$i] = $prCategory;
+            $stories->responseResult[$i] = $responseResult;
         }
 
         if(isset($stories->uploadImage)) $this->loadModel('file');
@@ -84,6 +87,7 @@
             $story->title      = $stories->title[$i];
             $story->bzCategory     = $stories->bzCategory[$i];
             $story->prCategory     = $stories->prCategory[$i];
+            $story->responseResult     = $stories->responseResult[$i];
             $story->uatDate     = $stories->uatDate[$i];
 	        $story->purchaser     = $stories->purchaser[$i];
             $story->source     = $stories->source[$i];

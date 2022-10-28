@@ -2,7 +2,7 @@
 
     /**
      * Save a log.
-     * $this->loadModel('common')->log($where, __FILE__, __LINE__);
+     * $this->loadModel('common')->log(json_encode($val,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
      *
      * @param  string $message
      * @param  string $file

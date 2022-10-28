@@ -58,10 +58,14 @@
             <th class='c-branch'><?php echo $lang->kanbancard->lane;?></th>
             <?php endif;?>
             <th class='c-name required has-btn'><?php echo $lang->story->title;?></th>
-            <th class='c-purchaser <?php echo zget($visibleFields, 'purchaser', ' ') . zget($requiredFields, 'purchaser', '', ' ');?> purchaserBox'><?php echo $lang->story->purchaser;?></th>
-            <th class='c-uatDate <?php echo zget($visibleFields, 'uatDate', ' ') . zget($requiredFields, 'uatDate', '', ' ');?> uatDateBox'><?php echo $lang->story->uatDate;?></th>
-            <th class='c-bzCategory <?php echo zget($visibleFields, 'bzCategory', ' ') . zget($requiredFields, 'bzCategory', '', ' required');?> bzCategoryBox'><?php echo $lang->story->bzCategory;?></th>
-            <th class='c-prCategory <?php echo zget($visibleFields, 'prCategory', ' ') . zget($requiredFields, 'prCategory', '', ' required');?> prCategoryBox'><?php echo $lang->story->prCategory;?></th>
+            <th class='c-purchaser <?php echo zget($visibleFields, 'purchaser', ' hidden') . zget($requiredFields, 'purchaser', '', ' required');?> purchaserBox'><?php echo $lang->story->purchaser;?></th>
+            <th class='c-uatDate <?php echo zget($visibleFields, 'uatDate', ' hidden') . zget($requiredFields, 'uatDate', '', ' required');?> uatDateBox'><?php echo $lang->story->uatDate;?></th>
+            <th class='c-bzCategory <?php echo zget($visibleFields, 'bzCategory', ' hidden') . zget($requiredFields, 'bzCategory', '', ' required');?> bzCategoryBox'><?php echo $lang->story->bzCategory;?></th>
+            <th class='c-prCategory <?php echo zget($visibleFields, 'prCategory', ' hidden') . zget($requiredFields, 'prCategory', '', ' required');?> prCategoryBox'><?php echo $lang->story->prCategory;?></th>
+            <?php if($type == 'requirement'):?>
+              <th class='c-responseResult <?php echo zget($visibleFields, 'responseResult', ' hidden') . zget($requiredFields, 'responseResult', '', ' required');?> responseResultBox'><?php echo $lang->story->responseResult;?></th>
+            <?php endif;?>
+            
             <th class='c-spec<?php echo zget($visibleFields, 'spec', ' hidden') . zget($requiredFields, 'spec', '', ' required');?> specBox'><?php echo $lang->story->spec;?></th>
             <th class='c-source<?php echo zget($visibleFields, 'source', ' hidden') . zget($requiredFields, 'source', '', ' required');?> sourceBox'><?php echo $lang->story->source;?></th>
             <th class='c-note<?php echo zget($visibleFields, 'source', ' hidden') . zget($requiredFields, 'sourceNote', '', ' required');?> sourceBox'><?php echo $lang->story->sourceNote;?></th>
@@ -112,7 +116,10 @@
             <td class='<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input('uatDate[$id]', '', "class='form-control form-date' ");?></td>
             <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select('bzCategory[$id]', $bzCategoryList, '', "class='form-control chosen' id='bzCategory_\$id'");?></td>
             <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select('prCategory[$id]', $prCategoryList, '', "class='form-control chosen' id='prCategory_\$id'");?></td>
-            
+            <?php if($type == 'requirement'):?>
+              <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select('responseResult[$id]', $responseResultList, '', "class='form-control chosen' id='responseResult_\$id'");?></td>
+            <?php endif;?>
+
             <td class='<?php echo zget($visibleFields, 'spec', 'hidden')?> specBox'><textarea name="spec[$id]" id="spec$id" rows="1" class="form-control autosize"></textarea></td>
             <td class='text-left<?php echo zget($visibleFields, 'source', ' hidden')?> sourceBox'><?php echo html::select('source[$id]', $sourceList, '', "class='form-control chosen' id='source_\$id'");?></td>
             <td class='<?php echo zget($visibleFields, 'source', 'hidden')?> sourceBox'><?php echo html::input('sourceNote[$id]', '', "class='form-control' id='sourceNote_\$id'");?></td>
@@ -178,10 +185,13 @@
           </span>
         </div>
       </td>
-      <td class='<?php echo zget($visibleFields, 'purchaser', '')?> purchaserBox'><?php echo html::input("purchaser[$i]", '', "class='form-control ' id='purchaser_$i'");?></td>
-      <td class='<?php echo zget($visibleFields, 'uatDate', '')?> uatDateBox'><?php echo html::input("uatDate[$i]", '', "class='form-control form-date' id='uatDate_$i'");?></td>      
-      <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' ')?> bzCategoryBox'><?php echo html::select("bzCategory[$i]", $bzCategoryList, 'ditto', "class='form-control chosen' id='bzCategory_$i'");?></td>
-      <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' ')?> prCategoryBox'><?php echo html::select("prCategory[$i]", $prCategoryList, 'ditto', "class='form-control chosen' id='prCategory_$i'");?></td>
+      <td class='<?php echo zget($visibleFields, 'purchaser', 'hidden')?> purchaserBox'><?php echo html::input("purchaser[$i]", '', "class='form-control ' id='purchaser_$i'");?></td>
+      <td class='<?php echo zget($visibleFields, 'uatDate', 'hidden')?> uatDateBox'><?php echo html::input("uatDate[$i]", '', "class='form-control form-date' id='uatDate_$i'");?></td>      
+      <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select("bzCategory[$i]", $bzCategoryList, 'ditto', "class='form-control chosen' id='bzCategory_$i'");?></td>
+      <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select("prCategory[$i]", $prCategoryList, 'ditto', "class='form-control chosen' id='prCategory_$i'");?></td>
+      <?php if($type == 'requirement'):?>
+        <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select("responseResult[$i]", $responseResultList, 'ditto', "class='form-control chosen' id='responseResult_$i'");?></td>
+      <?php endif;?>
 
       <td class='<?php echo zget($visibleFields, 'spec', 'hidden')?> specBox'><textarea name="spec[<?php echo $i?>]" id="spec<?php echo $i;?>" rows="1" class="form-control autosize"></textarea></td>
       <td class='text-left<?php echo zget($visibleFields, 'source', ' hidden')?> sourceBox'><?php echo html::select("source[$i]", $sourceList, 'ditto', "class='form-control chosen' id='source_$i'");?></td>

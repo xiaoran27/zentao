@@ -25,6 +25,7 @@
 <?php js::set('storyStatus', $story->status);?>
 <?php js::set('bzCategory', $lang->story->bzCategory);?>
 <?php js::set('prCategory', $lang->story->prCategory);?>
+<?php js::set('responseResult', $lang->story->responseResult);?>
 <?php js::set('uatDate', $lang->story->uatDate);?>
 <?php js::set('purchaser', $lang->story->purchaser);?>
 <div class='main-content' id='mainContent'>
@@ -194,8 +195,14 @@
               </tr>
               <tr>
                 <th><?php echo $lang->story->prCategory;?></th>
-                <td><?php echo html::select('prCategory', $lang->story->prCategoryList, $story->prCategory, "class='form-control chosen' ");?></td>
-              </tr>         
+                <td><?php echo html::select('prCategory', ( $story->type == 'requirement'?$lang->story->prCategoryList0:$lang->story->prCategoryList ), $story->prCategory, "class='form-control chosen' ");?></td>
+              </tr>
+              <?php if($story->type == 'requirement'):?>
+                <tr>
+                  <th><?php echo $lang->story->responseResult;?></th>
+                  <td><?php echo html::select('responseResult', $lang->story->responseResultList, $story->responseResult, "class='form-control chosen' ");?></td>
+                </tr>
+                <?php endif;?>         
               <tr>
                 <th><?php echo $lang->story->source;?></th>
                 <td><?php echo html::select('source', $lang->story->sourceList, $story->source, "class='form-control chosen'");?></td>

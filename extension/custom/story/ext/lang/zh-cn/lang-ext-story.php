@@ -31,6 +31,13 @@ $lang->story->prCategoryList0['myself']  = '个性化需求';
 $lang->story->uatDate = 'UAT日期';
 $lang->story->purchaser = '客户名称';
 
+$lang->story->responseResult = '响应结果';
+$lang->story->responseResultList = array();
+$lang->story->responseResultList[0]  = '未处理';
+$lang->story->responseResultList[1]  = '拒绝';
+$lang->story->responseResultList[2]  = '调研';
+$lang->story->responseResultList[3]  = '接受';
+
 
 /* 统计报表。*/
 $lang->story->report->charts['purchaser']         = "按{$lang->story->purchaser}来进行统计";
@@ -56,4 +63,10 @@ $lang->story->report->uatDate       = new stdclass();
 $lang->story->report->uatDate->item       = $lang->story->uatDate;
 $lang->story->report->uatDate->graph       = new stdclass();
 $lang->story->report->uatDate->graph->xAxisName      = $lang->story->uatDate;
+
+$lang->story->report->charts['responseResult']         = "按{$lang->story->responseResult}来进行统计";
+$lang->story->report->responseResult       = new stdclass();
+$lang->story->report->uatDresponseResultate->item       = $lang->story->responseResult;
+$lang->story->report->responseResult->graph       = new stdclass();
+$lang->story->report->responseResult->graph->xAxisName      = $lang->story->responseResult;
 

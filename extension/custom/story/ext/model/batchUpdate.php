@@ -34,6 +34,7 @@
                 if($data->sources[$storyID]  == 'ditto') $data->sources[$storyID]  = isset($prev['source']) ? $prev['source'] : '';
                 if($data->bzCategories[$storyID]  == 'ditto') $data->bzCategories[$storyID]  = isset($prev['bzCategory']) ? $prev['bzCategory'] : '';
                 if($data->prCategories[$storyID]  == 'ditto') $data->prCategories[$storyID]  = isset($prev['prCategory']) ? $prev['prCategory'] : '';
+                if($data->responseResultes[$storyID]  == 'ditto') $data->responseResultes[$storyID]  = isset($prev['responseResult']) ? $prev['responseResult'] : '';
                 if(isset($data->stages[$storyID])        and ($data->stages[$storyID]        == 'ditto')) $data->stages[$storyID]        = isset($prev['stage'])        ? $prev['stage']        : '';
                 if(isset($data->closedBys[$storyID])     and ($data->closedBys[$storyID]     == 'ditto')) $data->closedBys[$storyID]     = isset($prev['closedBy'])     ? $prev['closedBy']     : '';
                 if(isset($data->closedReasons[$storyID]) and ($data->closedReasons[$storyID] == 'ditto')) $data->closedReasons[$storyID] = isset($prev['closedReason']) ? $prev['closedReason'] : '';
@@ -45,6 +46,7 @@
                 $prev['source'] = $data->sources[$storyID];
                 $prev['bzCategory'] = $data->bzCategories[$storyID];
                 $prev['prCategory'] = $data->prCategories[$storyID];
+                $prev['responseResult'] = $data->responseResultes[$storyID];
                 if(isset($data->stages[$storyID]))        $prev['stage']        = $data->stages[$storyID];
                 if(isset($data->closedBys[$storyID]))     $prev['closedBy']     = $data->closedBys[$storyID];
                 if(isset($data->closedReasons[$storyID])) $prev['closedReason'] = $data->closedReasons[$storyID];
@@ -72,6 +74,7 @@
                 $story->plan           = $oldStories[$storyID]->parent < 0 ? '' : $data->plans[$storyID];
                 $story->bzCategory         = $data->bzCategories[$storyID];
                 $story->prCategory         = $data->prCategories[$storyID];
+                $story->responseResult         = $data->responseResultes[$storyID];
                 $story->uatDate         = $data->uatDate[$storyID];
 		        $story->purchaser         = $data->purchaser[$storyID];
                 $story->source         = $data->sources[$storyID];

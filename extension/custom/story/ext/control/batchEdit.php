@@ -182,7 +182,8 @@ class myStory extends story
         $this->view->position[]        = $this->lang->story->batchEdit;
         $this->view->title             = $this->lang->story->batchEdit;
         $this->view->bzCategoryList    = array('' => '',  'ditto' => $this->lang->story->ditto) + $this->lang->story->bzCategoryList;
-        $this->view->prCategoryList    = array('' => '',  'ditto' => $this->lang->story->ditto) + $this->lang->story->prCategoryList;
+        $this->view->prCategoryList    = array('' => '',  'ditto' => $this->lang->story->ditto) + ($storyType == 'requirement'?$this->lang->story->prCategoryList0:$this->lang->story->prCategoryList);
+        $this->view->responseResultList    = array('ditto' => $this->lang->story->ditto) + $this->lang->story->responseResultList;
         $this->view->users             = $users;
         $this->view->priList           = array('0' => '', 'ditto' => $this->lang->story->ditto) + $this->lang->story->priList;
         $this->view->sourceList        = array('' => '',  'ditto' => $this->lang->story->ditto) + $this->lang->story->sourceList;

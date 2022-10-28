@@ -277,6 +277,7 @@ class myStory extends story
         /* Init vars. */
         $bzCategory     = '';
         $prCategory     = '';
+        $responseResult     = 0;
         $uatDate     = '';
 	    $purchaser   = '';
         $source     = '';
@@ -296,6 +297,8 @@ class myStory extends story
             $planID     = $story->plan;
             $bzCategory     = $story->bzCategory;
             $prCategory     = $story->prCategory;
+            $responseResult     = $story->responseResult;
+            
             $uatDate     = $story->uatDate;
 	        $purchaser     = $story->purchaser;
             $source     = $story->source;
@@ -396,6 +399,8 @@ class myStory extends story
         $this->view->planID           = $planID;
         $this->view->bzCategory           = $bzCategory;
         $this->view->prCategory           = $prCategory;
+        $this->view->responseResult           = $responseResult;
+        
         $this->view->uatDate           = $uatDate;
 	    $this->view->purchaser           = $purchaser;
         $this->view->source           = $source;
