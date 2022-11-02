@@ -44,11 +44,13 @@ class bytenewStory extends StoryModel
      */
     public function getDataOfPurchaser()
     {
+        $purchaserList = $this->loadModel('common')->getPurchaserList();
+
         $datas = $this->dao->select('purchaser as name, count(purchaser) as value')->from(TABLE_STORY)
             ->where($this->reportCondition())
-            ->groupBy('purchaser')->orderBy('value DESC')->fetchAll('name');
+            ->groupBy('name')->orderBy('value DESC')->fetchAll('name');
         if(!$datas) return array();
-        // foreach($datas as $purchaser => $data) $data->name = $this->lang->story->purchaserList[$purchaser] != '' ? $this->lang->story->purchaserList[$purchaser] : $purchaser;
+        foreach($datas as $key => $data) $data->name = $purchaserList[$key] != '' ? $purchaserList[$key] : $key;
         return $datas;
     }
 

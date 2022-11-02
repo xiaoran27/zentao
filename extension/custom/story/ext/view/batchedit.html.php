@@ -118,7 +118,7 @@ foreach(explode(',', $config->story->edit->requiredFields) as $field)
               </div>
             </div>
           </td>
-          <td><?php echo html::input("purchaser[$storyID]", $story->purchaser, "class='form-control ' id='purchaser_$storyID'");?></td>
+          <td><?php echo html::select("purchaser[$storyID]",  $purchaserList, $story->purchaser, "class='form-control picker-select' data-drop-width='auto' id='purchaser_$storyID'");?></td>
           <td><?php echo html::input("uatDate[$storyID]", helper::isZeroDate($story->uatDate) ? '' : $story->uatDate, "class='form-control form-date' id='uatDate_$storyID'");?></td>
           <td><?php echo html::select("bzCategories[$storyID]",  $bzCategoryList, $story->bzCategory, "class='form-control picker-select' data-drop-width='auto' id='bzCategory_$storyID'");?></td>
           <td><?php echo html::select("prCategories[$storyID]",  $prCategoryList, $story->prCategory, "class='form-control picker-select' data-drop-width='auto' id='prCategory_$storyID'");?></td>

@@ -78,7 +78,7 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
           </tr>	  
           <tr>
             <th><?php echo $lang->story->purchaser;?></th>
-            <td colspan="2"><?php echo html::input('purchaser', $purchaser, "class='form-control '");?></td>
+            <td colspan="2"><?php echo html::select('purchaser', $purchaserList, $purchaser, "class='form-control chosen'");?></td>
             
             <td colspan='2' id='uatDate'>
               <div class='input-group'>

@@ -112,7 +112,7 @@
                 </span>
               </div>
             </td>
-            <td class='<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::input('purchaser[$id]', '', "class='form-control ' ");?></td>
+            <td class='<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select('purchaser[$id]', $purchaserList, '', "class='form-control chosen' id='purchaser_\$id'");?></td>
             <td class='<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input('uatDate[$id]', '', "class='form-control form-date' ");?></td>
             <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select('bzCategory[$id]', $bzCategoryList, '', "class='form-control chosen' id='bzCategory_\$id'");?></td>
             <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select('prCategory[$id]', $prCategoryList, '', "class='form-control chosen' id='prCategory_\$id'");?></td>
@@ -185,7 +185,7 @@
           </span>
         </div>
       </td>
-      <td class='<?php echo zget($visibleFields, 'purchaser', 'hidden')?> purchaserBox'><?php echo html::input("purchaser[$i]", '', "class='form-control ' id='purchaser_$i'");?></td>
+      <td class='<?php echo zget($visibleFields, 'purchaser', 'hidden')?> purchaserBox'><?php echo html::select("purchaser[$i]", $purchaserList, 'ditto', "class='form-control chosen' id='purchaser_$i'");?></td>
       <td class='<?php echo zget($visibleFields, 'uatDate', 'hidden')?> uatDateBox'><?php echo html::input("uatDate[$i]", '', "class='form-control form-date' id='uatDate_$i'");?></td>      
       <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select("bzCategory[$i]", $bzCategoryList, 'ditto', "class='form-control chosen' id='bzCategory_$i'");?></td>
       <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select("prCategory[$i]", $prCategoryList, 'ditto', "class='form-control chosen' id='prCategory_$i'");?></td>

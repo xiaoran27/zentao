@@ -32,6 +32,7 @@ js::set('showFields', $showFields);
 if($this->app->tab == 'execution') js::set('objectID', $executionID);
 if($this->app->tab == 'project')   js::set('objectID', $projectID);
 ?>
+<?php $purchaserList    = $this->loadModel('common')->getPurchaserList();?>
 <div id="mainContent" class="main-content fade">
   <div class="center-block">
     <div class="main-header">
@@ -160,11 +161,11 @@ if($this->app->tab == 'project')   js::set('objectID', $projectID);
           <?php if($showNoticefeedbackBy):?>
           <tr>
             <th><nobr><?php echo $lang->bug->feedbackBy;?></nobr></th>
-            <td><?php echo html::input('feedbackBy', '', "class='form-control'");?></td>
+            <td><?php echo html::input('feedbackBy', isset($feedbackBy) ? $feedbackBy : '', "class='form-control'");?></td>
             <td id='notifyEmailTd'>
               <div class='input-group'>
                 <span class='input-group-addon'><?php echo $lang->bug->notifyEmail?></span>
-                <span><?php echo html::input('notifyEmail', '', "class='form-control'");?></span>
+                <span><?php echo html::input('notifyEmail', isset($notifyEmail) ? $notifyEmail : '', "class='form-control'");?></span>
               </div>
             </td>
           </tr>
@@ -173,9 +174,9 @@ if($this->app->tab == 'project')   js::set('objectID', $projectID);
             <td>
               <div class='input-group' id='feedback'>
               <span class="input-group-addon"><?php echo $lang->bug->feedbackBy?></span>
-              <?php echo html::input('feedbackBy', '', "class='form-control'");?>
+              <?php echo html::input('feedbackBy', $feedbackBy, "class='form-control'");?>
               <span class="input-group-addon"><?php echo $lang->bug->notifyEmail?></span>
-              <?php echo html::input('notifyEmail', '', "class='form-control'");?>
+              <?php echo html::input('notifyEmail', $notifyEmail, "class='form-control'");?>
               </div>
             </td>
           </tr>
@@ -211,7 +212,7 @@ if($this->app->tab == 'project')   js::set('objectID', $projectID);
             <td >
               <div class="input-group <?php echo zget($config->bug->create->requiredFields, 'purchaser', '', ' required');?>"> 
                 <span class='input-group-addon'><?php echo $lang->bug->purchaser?></span>
-                <span><?php echo html::input('purchaser', $purchaser, "class='form-control'");?></span>
+                <?php echo html::select('purchaser', $purchaserList, $purchaser, "class='form-control chosen' ");?>
               </div>
             </td>
           </tr>

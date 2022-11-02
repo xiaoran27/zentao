@@ -19,7 +19,8 @@
             ->where($this->reportCondition())
             ->groupBy('purchaser')->orderBy('value DESC')->fetchAll('name');
         if(!$datas) return array();
-        // foreach($datas as $purchaser => $data) $data->name = $this->lang->story->purchaserList[$purchaser] != '' ? $this->lang->story->purchaserList[$purchaser] : $purchaser;
+        $purchaserList    = $this->loadModel('common')->getPurchaserList();
+        foreach($datas as $purchaser => $data) $data->name = $purchaserList[$purchaser] != '' ? $purchaserList[$purchaser] : $purchaser;
         return $datas;
     }
 

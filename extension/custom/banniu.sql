@@ -18,3 +18,20 @@ ALTER TABLE zentao.zt_bug ADD collectTime datetime   NULL COMMENT '收集时间'
 
 -- 2022-10-27 21:09:50
 ALTER TABLE zentao.zt_story ADD responseResult smallint  DEFAULT 0 NULL COMMENT '响应结果'; 
+
+
+-- 2022-10-31 10:19:14
+CREATE TABLE `zt_purchaser` (
+  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(32) NOT NULL COMMENT '客户编码',
+  `name` varchar(128) NOT NULL COMMENT '客户名称',
+  `parentID` bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT '父ID',
+  `category` varchar(32) NOT NULL COMMENT '客户分层',
+  `ctime` datetime NOT NULL DEFAULT current_timestamp(),
+  `creator` varchar(32) NOT NULL DEFAULT 'sys',
+  `mtime` datetime NOT NULL DEFAULT current_timestamp(),
+  `modifier` varchar(32) DEFAULT 'sys',
+  `status` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `zt_purchaser_code_IDX` (`code`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='客户信息';

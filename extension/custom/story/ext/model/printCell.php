@@ -213,7 +213,9 @@
                 echo helper::isZeroDate($story->uatDate) ? '' : $story->uatDate;
                 break;
             case 'purchaser':
-                echo $story->purchaser;
+                // echo $story->purchaser;
+                $purchaserList = $this->loadModel('common')->getPurchaserList();
+                echo zget($purchaserList, $story->purchaser, $story->purchaser);
                 break;
             case 'source':
                 echo zget($this->lang->story->sourceList, $story->source, $story->source);

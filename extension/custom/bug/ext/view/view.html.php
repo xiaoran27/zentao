@@ -20,6 +20,7 @@
 <?php js::set('branchID', $bug->branch);?>
 <?php js::set('errorNoExecution', $lang->bug->noExecution);?>
 <?php js::set('errorNoProject', $lang->bug->noProject);?>
+<?php $purchaserList    = $this->loadModel('common')->getPurchaserList();?>
 <?php $browseLink = $app->session->bugList ? $app->session->bugList : inlink('browse', "productID=$bug->product");?>
 <?php if(strpos($_SERVER["QUERY_STRING"], 'isNotice=1') === false):?>
 <div id="mainMenu" class="clearfix">
@@ -73,7 +74,7 @@
           ?>
         </div>
       </div>
-      <?php echo $this->fetch('file', 'printFiles', array('files' => $bug->files, 'fieldset' => 'true', 'object' => $bug));?>
+      <?php echo $this->fetch('file', 'printFiles', array('files' => $bug->files, 'fieldset' => 'true', 'object' => $bug, 'method' => 'view', 'showDelete' => false));?>
       <?php
       $canBeChanged = common::canBeChanged('bug', $bug);
       if($canBeChanged) $actionFormLink = $this->createLink('action', 'comment', "objectType=bug&objectID=$bug->id");
@@ -224,7 +225,7 @@
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->purchaser;?></th>
-                  <td><?php echo $bug->purchaser;?></td>
+                  <td><?php echo zget($purchaserList, $bug->purchaser,$bug->purchaser);?></td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->occursEnv;?></th>
@@ -419,7 +420,7 @@
                 <?php if($bug->case):?>
                 <tr>
                   <th><?php echo $lang->bug->fromCase;?></th>
-                  <td><?php echo html::a($this->createLink('testcase', 'view', "caseID=$bug->case&caseVersion=" . ($bug->testtask ? "&from=testtask&taskID={$bug->testtask}" : ''), '', true), "#$bug->case $bug->caseTitle", '', "class='iframe' data-width='80%'");?></td>
+                  <td><?php echo html::a($this->createLink('testcase', 'view', "caseID=$bug->case&caseVersion=$bug->caseVersion", '', true), "#$bug->case $bug->caseTitle", '', "class='iframe' data-width='80%'");?></td>
                 </tr>
                 <?php endif;?>
                 <?php if($bug->toCases):?>

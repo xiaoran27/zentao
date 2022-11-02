@@ -384,6 +384,7 @@ class myBug extends bug
         $this->view->bugTitle         = $title;
         $this->view->feedbackBy        = $feedbackBy;
         $this->view->purchaser        = $purchaser;
+        $this->view->purchaserList    = $this->loadModel('common')->getPurchaserList();
         $this->view->occursEnv        = $occursEnv;
         $this->view->feedbackTime        = $feedbackTime;
         $this->view->collectTime        = $collectTime;

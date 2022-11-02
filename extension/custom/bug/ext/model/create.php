@@ -49,7 +49,7 @@
         /* Use classic mode to replace required project. */
         if($this->config->systemMode == 'classic' and strpos($this->config->bug->create->requiredFields, 'project') !== false) $this->config->bug->create->requiredFields = str_replace('project', 'execution', $this->config->bug->create->requiredFields);
 
-        $this->loadModel('common')->log(print_r($bug, true), __FILE__, __LINE__);
+        // $this->loadModel('common')->log(json_encode($bug,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         $this->dao->insert(TABLE_BUG)->data($bug)
             ->autoCheck()

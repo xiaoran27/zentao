@@ -397,12 +397,13 @@ class myStory extends story
         $this->view->moduleOptionMenu = $moduleOptionMenu;
         $this->view->plans            = str_replace('2030-01-01', $this->lang->story->undetermined, $this->loadModel('productplan')->getPairsForStory($productID, $branch, 'skipParent|unexpired|noclosed'));
         $this->view->planID           = $planID;
-        $this->view->bzCategory           = $bzCategory;
-        $this->view->prCategory           = $prCategory;
-        $this->view->responseResult           = $responseResult;
+        $this->view->bzCategory       = $bzCategory;
+        $this->view->prCategory       = $prCategory;
+        $this->view->responseResult   = $responseResult;
+        $this->view->uatDate          = $uatDate;
+	    $this->view->purchaser        = $purchaser;
+        $this->view->purchaserList    = $this->loadModel('common')->getPurchaserList();
         
-        $this->view->uatDate           = $uatDate;
-	    $this->view->purchaser           = $purchaser;
         $this->view->source           = $source;
         $this->view->sourceNote       = $sourceNote;
         $this->view->color            = $color;

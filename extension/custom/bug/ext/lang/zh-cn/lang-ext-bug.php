@@ -14,6 +14,9 @@ $lang->bug->occursEnvList['online'] = '正式环境';
 $lang->bug->occursEnvList['loreal'] = '欧莱雅环境';
 $lang->bug->occursEnvList['elc'] = '雅思兰黛环境';
 
+$lang->bug->purchaserList = array();
+$lang->bug->purchaserList['']  = '';
+
 
 /* 统计报表。*/
 $lang->bug->report->charts['purchaser']         = "按{$lang->bug->purchaser}来进行统计";

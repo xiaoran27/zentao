@@ -54,6 +54,7 @@
             if($data->types[$i]      != 'ditto') $type      = $data->types[$i];
             if($data->pris[$i]       != 'ditto') $pri       = $data->pris[$i];
             if($data->occursEnvs[$i]       != 'ditto') $occursEnvs       = $data->occursEnvs[$i];
+            if($data->purchaser[$i]       != 'ditto') $purchaser       = $data->purchaser[$i];
 
             $data->modules[$i]    = (int)$module;
             $data->projects[$i]   = (int)$project;
@@ -63,6 +64,7 @@
             $data->oses[$i]       = implode(',', $oses);
             $data->browsers[$i]   = implode(',', $browsers);
             $data->occursEnvs[$i]   = implode(',', $occursEnvs);
+            $data->purchaser[$i]       = $purchaser;
         }
 
         /* Get bug data. */
@@ -130,7 +132,7 @@
                 }
             }
 
-            $this->loadModel('common')->log(print_r($bug, true), __FILE__, __LINE__);
+            $this->loadModel('common')->log(json_encode($bug,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             $bugs[$i] = $bug;
 
         }

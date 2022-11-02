@@ -1,6 +1,8 @@
 <?php
 
-$config->bug->occursEnvs   = array('dev', 'test', 'pre', 'online', 'loreal', 'elc');
+// $config->bug->occursEnvs   = array('dev', 'test', 'pre', 'online', 'loreal', 'elc');
+$config->bug->occursEnvs   = array_keys($lang->bug->occursEnvList);
+$config->bug->purchasers   = array_keys($lang->bug->purchaserList);
 
 $config->bug->create->requiredFields  = 'title,openedBuild,purchaser,occursEnv';
 $config->bug->edit->requiredFields    = $config->bug->create->requiredFields . ',feedbackTime,collectTime';
@@ -57,7 +59,8 @@ $config->bug->search['fields']['collectTime']  = $lang->bug->collectTime;
 
 
 $config->bug->search['params']['feedbackBy']  = array('operator' => '=',       'control' => 'input',  'values' => '');
-$config->bug->search['params']['purchaser']  = array('operator' => '=',       'control' => 'input',  'values' => '');
+$config->bug->search['params']['purchaser']  = array('operator' => '=',       'control' => 'select',  'values' => $lang->bug->purchaserList);
+// $config->bug->search['params']['purchaser']  = array('operator' => '=',       'control' => 'select',  'values' => 'purchasers');
 $config->bug->search['params']['occursEnv']        = array('operator' => 'include',       'control' => 'select', 'values' => $lang->bug->occursEnvList);
 $config->bug->search['params']['feedbackTime']  = array('operator' => '=',       'control' => 'input',  'values' => '');
 $config->bug->search['params']['collectTime']  = array('operator' => '=',       'control' => 'input',  'values' => '');
@@ -69,6 +72,8 @@ $config->bug->datatable->fieldList['purchaser']['title']    = 'purchaser';
 $config->bug->datatable->fieldList['purchaser']['fixed']    = 'left';
 $config->bug->datatable->fieldList['purchaser']['width']    = 'auto';
 $config->bug->datatable->fieldList['purchaser']['required'] = 'yes';
+$config->bug->datatable->fieldList['purchaser']['control']    = 'select';
+$config->bug->datatable->fieldList['purchaser']['dataSource'] = $config->bug->purchasers;
 
 $config->bug->datatable->fieldList['occursEnv']['title']    = 'occursEnv';
 $config->bug->datatable->fieldList['occursEnv']['fixed']    = 'left';

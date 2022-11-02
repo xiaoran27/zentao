@@ -9,5 +9,6 @@ $config->product->search['fields']['responseResult']     = $lang->story->respons
 $config->product->search['params']['bzCategory']         = array('operator' => '=',       'control' => 'select', 'values' => $lang->story->bzCategoryList);
 $config->product->search['params']['prCategory']         = array('operator' => '=',       'control' => 'select', 'values' => $lang->story->prCategoryList);
 $config->product->search['params']['uatDate']     = array('operator' => '=', 'control' => 'input', 'values' => '', 'class' => 'date');
-$config->product->search['params']['purchaser']     = array('operator' => '=', 'control' => 'input', 'values' => '');
+$config->product->search['params']['purchaser']     = array('operator' => '=', 'control' => 'select', 'values' => $lang->story->purchaserList);
+// $config->product->search['params']['purchaser']     = array('operator' => '=', 'control' => 'input', 'values' => 'purchasers');
 $config->product->search['params']['responseResult']         = array('operator' => '=',       'control' => 'select', 'values' => $lang->story->responseResultList);

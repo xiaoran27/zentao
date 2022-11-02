@@ -274,6 +274,7 @@ class myStory extends story
         
         $this->view->uatDate       = $uatDate;
 	    $this->view->purchaser           = $purchaser;
+        $this->view->purchaserList       = array('' => '',  'ditto' => $this->lang->story->ditto) + $this->loadModel('common')->getPurchaserList();
         $this->view->sourceList       = $sourceList;
         $this->view->planID           = $planID;
         $this->view->pri              = $pri;

@@ -31,6 +31,7 @@
                 if($data->resolutions[$bugID] == 'ditto') $data->resolutions[$bugID] = isset($prev['resolution']) ? $prev['resolution'] : '';
                 if(isset($data->branches[$bugID]) and $data->branches[$bugID] == 'ditto') $data->branches[$bugID] = isset($prev['branch']) ? $prev['branch'] : 0;
                 if($data->occursEnvs[$bugID] == 'ditto') $data->occursEnvs[$bugID] = isset($prev['occursEnv']) ? $prev['occursEnv'] : '';
+                if($data->purchaser[$bugID] == 'ditto') $data->purchaser[$bugID] = isset($prev['purchaser']) ? $prev['purchaser'] : '';
 
                 $prev['type']       = $data->types[$bugID];
                 $prev['severity']   = $data->severities[$bugID];
@@ -41,6 +42,7 @@
                 $prev['resolvedBy'] = $data->resolvedBys[$bugID];
                 $prev['resolution'] = $data->resolutions[$bugID];
                 $prev['occursEnv'] = $data->occursEnvs[$bugID];
+                $prev['purchaser'] = $data->purchaser[$bugID];
             }
 
             /* Initialize bugs from the post data.*/
@@ -108,7 +110,7 @@
                     if($bug->plan != $oldBug->plan and !empty($bug->plan))    $link2Plans[$bug->plan]  = empty($link2Plans[$bug->plan]) ? $bugID : "{$link2Plans[$bug->plan]},$bugID";
                 }
 
-                $this->loadModel('common')->log(print_r($bug, true), __FILE__, __LINE__);
+                // $this->loadModel('common')->log(print_r($bug, true), __FILE__, __LINE__);
                 $bugs[$bugID] = $bug;
                 unset($bug);
             }

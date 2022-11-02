@@ -27,11 +27,13 @@ js::set('oldResolvedBuild'       , $bug->resolvedBuild);
 js::set('systemMode'             , $config->systemMode);
 js::set('confirmUnlinkBuild'     , sprintf($lang->bug->confirmUnlinkBuild, zget($resolvedBuilds, $bug->resolvedBuild)));
 js::set('tab'                    , $this->app->tab);
+js::set('bugID'                  , $bug->id);
 js::set('bugBranch'              , $bug->branch);
 js::set('isClosedBug'            , $bug->status == 'closed');
 if($this->app->tab == 'execution') js::set('objectID', $bug->execution);
 if($this->app->tab == 'project')   js::set('objectID', $bug->project);
 ?>
+<?php $purchaserList    = $this->loadModel('common')->getPurchaserList();?>
 
 <div class='main-content' id='mainContent'>
   <form method='post' target='hiddenwin' enctype='multipart/form-data' id='dataform'>
@@ -72,7 +74,10 @@ if($this->app->tab == 'project')   js::set('objectID', $bug->project);
           <?php $this->printExtendFields($bug, 'div', 'position=left');?>
           <div class="detail">
             <div class="detail-title"><?php echo $lang->files;?></div>
-            <div class='detail-content'><?php echo $this->fetch('file', 'buildform');?></div>
+            <div class='detail-content'>
+              <?php echo $this->fetch('file', 'printFiles', array('files' => $bug->files, 'fieldset' => 'false', 'object' => $bug, 'method' => 'edit'));?>
+              <?php echo $this->fetch('file', 'buildform');?>
+            </div>
           </div>
 
           <div class='actions form-actions text-center'>
@@ -165,7 +170,7 @@ if($this->app->tab == 'project')   js::set('objectID', $bug->project);
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->purchaser;?></th>
-                  <td><?php echo html::input('purchaser', $bug->purchaser, "class='form-control'");?></td>
+                  <td><?php echo html::select('purchaser', $purchaserList, $bug->purchaser, "class='form-control chosen' ");?></td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->occursEnv;?></th>
@@ -300,7 +305,7 @@ if($this->app->tab == 'project')   js::set('objectID', $bug->project);
               <tbody>
                 <tr class='text-top'>
                   <th class='thWidth'><?php echo $lang->bug->linkBug;?></th>
-                  <td><?php if(common::hasPriv('bug', 'linkBugs')) echo html::a($this->createLink('bug', 'linkBugs', "bugID=$bug->id", '', true), $lang->bug->linkBugs, '', "class='text-primary' data-toggle='modal' data-type='iframe' data-width='95%'");?></td>
+                  <td><?php if(common::hasPriv('bug', 'linkBugs')) echo html::a('#', $lang->bug->linkBugs, '', "class='text-primary' id='linkBugsLink'");?></td>
                 </tr>
                 <tr <?php if(!isset($bug->linkBugTitles)) echo 'class="hidden"';?>>
                   <th></th>

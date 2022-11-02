@@ -15,6 +15,7 @@
 <?php js::set('dittoNotice', $this->lang->bug->dittoNotice);?>
 <?php js::set('showFields', $showFields);?>
 <?php js::set('requiredFields', $config->bug->edit->requiredFields);?>
+<?php $purchaserList    = $this->loadModel('common')->getPurchaserList();?>
 <div id='mainContent' class='main-content fade'>
   <div class='main-header'>
     <h2><?php echo $lang->bug->common . $lang->colon . $lang->bug->batchEdit;?></h2>
@@ -103,7 +104,7 @@
                 </div>
               <div>
             </td>
-            <td class='<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::input("purchaser[$bugID]", $bug->purchaser, "class='form-control ' ");?></td>
+            <td class='<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select("purchaser[$bugID]", $purchaserList, $bug->purchaser, "class='form-control chosen' ");?></td>
             <td class='<?php echo zget($visibleFields, 'occursEnv', ' hidden')?> occursEnvBox' style='overflow:visible'>      <?php echo html::select("occursEnvs[$bugID][]", $lang->bug->occursEnvList, $bug->occursEnv, "class='form-control chosen' multiple");?></td>
             <td class='<?php echo zget($visibleFields, 'feedbackTime', ' hidden')?> feedbackTimeBox'><?php echo html::input("feedbackTime[$bugID]", helper::isZeroDate($bug->feedbackTime) ? '' : $bug->feedbackTime, "class='form-control form-datetime'");?></td>
             <td class='<?php echo zget($visibleFields, 'collectTime', ' hidden')?> collectTimeBox'><?php echo html::input("collectTime[$bugID]", helper::isZeroDate($bug->collectTime) ? '' : $bug->collectTime, "class='form-control form-datetime'");?></td>
@@ -155,7 +156,11 @@
                 <tr>
                   <td class='pd-0'><?php echo html::select("resolutions[$bugID]", $resolutionList, $bug->resolution, "class='form-control' onchange=setDuplicate(this.value,$bugID)");?></td>
                   <td class='pd-0 w-p50' id='<?php echo 'duplicateBugBox' . $bugID;?>' <?php if($bug->resolution != 'duplicate') echo "style='display:none'";?>>
-                    <?php echo html::select("duplicateBugs[$bugID]", $productBugList[$bug->product][$bug->branch], $bug->duplicateBug, "class='form-control' placeholder='{$lang->bug->duplicateTip}'");?>
+                    <?php
+                    $productBugs = $productBugList[$bug->product][$bug->branch];
+                    if(isset($productBugs[$bug->id])) unset($productBugs[$bug->id]);
+                    ?>
+                    <?php echo html::select("duplicateBugs[$bugID]", $productBugs, $bug->duplicateBug, "class='form-control' placeholder='{$lang->bug->duplicateTip}'");?>
                   </td>
                 </tr>
               </table>

@@ -174,7 +174,9 @@
                 echo $bug->feedbackBy;
                 break;
             case 'purchaser':
-                echo $bug->purchaser;
+                // echo $bug->purchaser;
+                $purchaserList    = $this->loadModel('common')->getPurchaserList();
+                echo zget($purchaserList, $bug->purchaser, $bug->purchaser);
                 break;
             case 'occursEnv':
                 $occursEnvs = explode(',', $bug->occursEnv);

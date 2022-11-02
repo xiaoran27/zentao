@@ -130,7 +130,7 @@
         <?php endif;?>
       <?php endif;?>
       -->
-      <?php echo $this->fetch('file', 'printFiles', array('files' => $story->files, 'fieldset' => 'true', 'object' => $story));?>
+      <?php echo $this->fetch('file', 'printFiles', array('files' => $story->files, 'fieldset' => 'true', 'object' => $story, 'method' => 'view', 'showDelete' => false));?>
       <?php
       $canBeChanged = common::canBeChanged('story', $story);
       if($canBeChanged) $actionFormLink = $this->createLink('action', 'comment', "objectType=story&objectID=$story->id");
@@ -174,7 +174,7 @@
                   common::printIcon('story', 'close',      "storyID=$child->id&from=&storyType=$child->type", $child, 'list', '', '', 'iframe showinonlybody', true);
                   common::printIcon('story', 'activate',   "storyID=$child->id&storyType=$child->type", $child, 'list', '', '', 'iframe showinonlybody', true);
                   common::printIcon('story', 'edit',       "storyID=$child->id&kanbanGroup=default&storyType=$child->type", $child, 'list');
-                  common::printIcon('story', 'createCase', "productID=$child->product&branch=$child->branch&module=0&from=&param=0&story={$child->id}", $child, 'list', 'sitemap');
+                  common::printIcon('testcase', 'create', "productID=$child->product&branch=$child->branch&module=0&from=&param=0&story={$child->id}", $child, 'list', 'sitemap');
                   ?>
                 </td>
               </tr>
@@ -271,7 +271,10 @@
                 <?php endif;?>
                 <tr>
                   <th><?php echo $lang->story->purchaser;?></th>
-                  <td><?php echo $story->purchaser;?></td>
+                  <td><?php 
+                  $purchaserList = $this->loadModel('common')->getPurchaserList();
+                  echo zget($purchaserList, $story->purchaser, $story->purchaser);
+                  ?></td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->story->uatDate;?></th>
@@ -288,7 +291,7 @@
                 <?php if($story->type == 'requirement'):?>
                 <tr>
                   <th><?php echo $lang->story->responseResult;?></th>
-                  <td id='responseResult'><?php echo $lang->story->responseResultList[$story->responseResult];?></td>
+                  <td><?php echo zget($lang->story->responseResultList, $story->responseResult, $story->responseResult)?></td>
                 </tr>
                 <?php endif;?>
                 <tr>
@@ -442,7 +445,7 @@
               foreach($relation as $id => $title)
               {
                   echo "<li title='$title'>" . ($canViewLinkStory ? html::a($this->createLink('story', 'view', "id=$id&version=0&param=0&storyType=$relationType", '', true), "#$id $title", '', "class='iframe' data-width='80%'") : "#$id $title");
-                  echo html::a($this->createLink('story', 'linkStory', "storyID=$story->id&type=remove&linkedID=$id&browseType=&queryID=0&storyType=$story->type"), '<i class="icon icon-close"></i>', 'hiddenwin', "class='deleter hide removeButton'");
+                  echo html::a($this->createLink('story', 'linkStory', "storyID=$story->id&type=remove&linkedID=$id&browseType=&queryID=0&storyType=$story->type"), '<i class="icon icon-close"></i>', 'hiddenwin', "class='hide removeButton'");
               }
               ?>
               <?php $linkLang = ($story->type == 'story') ? $lang->story->requirement : $lang->story->story;?>
@@ -499,7 +502,8 @@
                     <?php
                     foreach($bugs as $bug)
                     {
-                        echo "<li title='$bug->title'>" . html::a($this->createLink('bug', 'view', "bugID=$bug->id", '', true), "#$bug->id $bug->title", '', "class='iframe' data-width='80%'") . '</li>';
+                        $bugInfo = "#$bug->id" . '&nbsp<span class="status-bug status-' . $bug->status .'">' . $this->lang->bug->statusList[$bug->status]  . '</span>&nbsp' . $bug->title;
+                        echo "<li title='$bug->title'>" . html::a($this->createLink('bug', 'view', "bugID=$bug->id", '', true), $bugInfo, '', "class='iframe' data-width='80%'") . '</li>';
                     }
                     ?>
                     </ul>

@@ -152,8 +152,9 @@ class myBug extends bug
         $this->view->customFields = $customFields;
         $this->view->showFields   = $showFields;
 
-        $this->view->feedbackBy          = '';
-        $this->view->purchaser          = '';
+        $this->view->feedbackBy       = '';
+        $this->view->purchaser        = '';
+        $this->view->purchaserList    = $this->loadModel('common')->getPurchaserList();
         $this->view->title      = $this->products[$productID] . $this->lang->colon . $this->lang->bug->batchCreate;
         $this->view->position[] = html::a($this->createLink('bug', 'browse', "productID=$productID&branch=$branch"), $this->products[$productID]);
         $this->view->position[] = $this->lang->bug->batchCreate;

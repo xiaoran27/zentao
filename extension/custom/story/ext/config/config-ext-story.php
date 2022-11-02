@@ -2,10 +2,15 @@
 
 // $config->story->bzCategories   = array('T10', 'B100', 'KA', 'SMB');
 // $config->story->prCategories   = array('project', 'product', 'myself', 'tech');
-$config->story->bzCategories   = array('B100', 'B101-500', 'LKA');
-$config->story->prCategories   = array('project', 'product', 'new', 'myself', 'platform', 'tech', 'other');
-$config->story->responseResultes   = array(0,1,2,3);
+// $config->story->bzCategories   = array('B100', 'B101-500', 'LKA');
+// $config->story->prCategories   = array('project', 'product', 'new', 'myself', 'platform', 'tech', 'other');
+// $config->story->responseResultes   = array(0,1,2,3);
+// $config->story->purchasers = array();
 
+$config->story->bzCategories   = array_keys($lang->story->bzCategoryList);
+$config->story->prCategories   = array_keys($lang->story->bzCategoryList);
+$config->story->responseResultes   = array_keys($lang->story->responseResultList);
+$config->story->purchasers = array_keys($lang->story->purchaserList);
 
 $config->story->create->requiredFields = 'title,bzCategory,prCategory';
 $config->story->edit->requiredFields = 'title,bzCategory,prCategory';
@@ -62,6 +67,9 @@ $config->story->datatable->fieldList['purchaser']['title']    = 'purchaser';
 $config->story->datatable->fieldList['purchaser']['fixed']    = 'left';
 $config->story->datatable->fieldList['purchaser']['width']    = '90';
 $config->story->datatable->fieldList['purchaser']['required'] = 'yes';
+$config->story->datatable->fieldList['purchaser']['control']    = 'select';
+$config->story->datatable->fieldList['purchaser']['dataSource'] = $config->story->purchasers;
+
 
 $config->story->datatable->fieldList['responseResult']['title']    = 'responseResult';
 $config->story->datatable->fieldList['responseResult']['fixed']    = 'left';
