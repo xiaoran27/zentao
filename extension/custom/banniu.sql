@@ -1,6 +1,12 @@
-
+-- mysql -u root -p zentao
 -- use zentao;
 
+-- 每次需要更新SQL段
+-- sql.start.banniu_rel{yymmdd}
+--  SQL语句
+-- sql.end.banniu_rel{yymmdd}
+
+-- sql.start.banniu_rel221102
 -- 2022-10-16 22:00:45
 ALTER TABLE zt_story ADD bzCategory varchar(16)  DEFAULT 'LKA' NULL COMMENT '客户类型';
 ALTER TABLE zt_story ADD prCategory varchar(16)  DEFAULT 'product' NULL COMMENT '需求分类';
@@ -39,3 +45,5 @@ CREATE TABLE `zt_purchaser` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='客户信息';
 INSERT INTO zt_purchaser( code, name, category)
 VALUES('hzzmrjkjyxgs', '杭州正马软件科技有限公司', 'LKA'),( 'shzmrjkjyxgs', '上海正马软件科技有限公司', 'LKA');
+
+-- sql.end.banniu_rel221102
