@@ -1,4 +1,6 @@
--- mysql -u root -p zentao
+-- mysqldump -u root -p123456  --default-character-set=utf8 --single-transaction --triggers --routines --events  zentao >zentao_bk.sql
+-- mysql -u root -p123456 zentao < x.sql
+
 -- use zentao;
 
 -- 每次需要更新SQL段

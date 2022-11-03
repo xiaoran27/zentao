@@ -41,8 +41,15 @@ PS:  执行前一定要确定数据库名的正确性(如:  zentao)
 0. 备份
 
 - 备份数据库
+```
+mysqldump -u root -p123456  --default-character-set=utf8 --single-transaction --triggers --routines --events  zentao >/tmp/zentao_bk`date "+%Y%m%d%H%M"`.sql
+-- mysql -u root -p123456 zentao < x.sql
+```
 
 - 备份扩展根目录
+```
+ tar czf /tmp/zentao_custom_bk`date "+%Y%m%d%H%M"`.tgz  /opt/zbox/app/zentao/extension/custom
+```
 
 1. 解压升级包
 
@@ -55,8 +62,11 @@ PS:  执行前一定要确定数据库名的正确性(如:  zentao)
         连接mysql并切换到数据库名,执行需要的sql文件<banniu_rel{yymmdd}.sql>.
 
         ```
-        mysql -uroot -p zentao
+        mysql -uroot -p123456 zentao
         source  {全路径的sql文件<banniu_rel{yymmdd}.sql>}
+        ```
+        ```
+        mysql -u root -p123456 zentao < x.sql
         ```
     2. 扩展文件更新
     
