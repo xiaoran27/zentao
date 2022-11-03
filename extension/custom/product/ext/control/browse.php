@@ -1,5 +1,7 @@
 <?php
 
+include '../../../../../module/product/control.php';
+
 class myProduct extends product
 {
 

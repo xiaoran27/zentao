@@ -1,5 +1,7 @@
 <?php
 
+include '../../../../../module/datatable/control.php';
+
 class myDatatable extends datatable
 {
    

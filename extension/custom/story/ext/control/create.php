@@ -1,4 +1,6 @@
 <?php
+include '../../../../../module/story/control.php';
+
 /**
  * The control file of story module of ZenTaoPMS.
  *
