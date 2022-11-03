@@ -43,6 +43,7 @@ else
     $config->story->datatable->defaultField = array('id', 'pri', 'title', 'purchaser', 'bzCategory','prCategory', 'uatDate', 'plan', 'openedBy', 'assignedTo', 'estimate', 'status', 'stage', 'taskCount', 'actions');
 }
 
+$config->story->datatable->fieldList['title']['width']    = '90';
 
 $config->story->datatable->fieldList['bzCategory']['title']    = 'bzCategory';
 $config->story->datatable->fieldList['bzCategory']['fixed']    = 'left';
