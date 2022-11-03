@@ -3,7 +3,21 @@
 class bytenewBug extends BugModel
 {
 
-    
+    /**
+     * Get report data of feedbackBy
+     *
+     * @access public
+     * @return array
+     */
+    public function getDataOfFeedbackBy()
+    {
+        $datas = $this->dao->select('feedbackBy as name, count(1) as value')->from(TABLE_BUG)
+            ->where($this->reportCondition())
+            ->groupBy('feedbackBy')->orderBy('value DESC')->fetchAll('name');
+        if(!$datas) return array();
+        return $datas;
+    }
+
     /**
      * Build search form.
      *

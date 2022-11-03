@@ -10,7 +10,7 @@ $config->bug->list->defaultFields = 'id,severity,pri,title,purchaser,occursEnv,o
 
 $config->bug->list->allFields = 'id, module, execution, story, task,
     title, keywords, severity, pri, type, os, browser, hardware,
-    purchaser, occursEnv, feedbackTime, collectTime,
+    purchaser, occursEnv, feedbackTime, collectTime, feedbackBy,
     found, steps, status, deadline, activatedCount, confirmed, mailto,
     openedBy, openedDate, openedBuild,
     assignedTo, assignedDate,
@@ -81,6 +81,11 @@ $config->bug->datatable->fieldList['occursEnv']['width']    = 'auto';
 $config->bug->datatable->fieldList['occursEnv']['required'] = 'no';
 $config->bug->datatable->fieldList['occursEnv']['control']    = 'select';
 $config->bug->datatable->fieldList['occursEnv']['dataSource'] = $config->bug->occursEnvs;
+
+$config->bug->datatable->fieldList['feedbackBy']['title']    = 'feedbackBy';
+$config->bug->datatable->fieldList['feedbackBy']['fixed']    = 'left';
+$config->bug->datatable->fieldList['feedbackBy']['width']    = 'auto';
+$config->bug->datatable->fieldList['feedbackBy']['required'] = 'no';
 
 $config->bug->datatable->fieldList['feedbackTime']['title']    = 'feedbackTime';
 $config->bug->datatable->fieldList['feedbackTime']['fixed']    = 'left';

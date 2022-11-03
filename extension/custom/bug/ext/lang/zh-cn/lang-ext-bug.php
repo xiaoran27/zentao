@@ -31,3 +31,10 @@ $lang->bug->report->occursEnv       = new stdclass();
 $lang->bug->report->occursEnv->item       = $lang->bug->occursEnv;
 $lang->bug->report->occursEnv->graph       = new stdclass();
 $lang->bug->report->occursEnv->graph->xAxisName      = $lang->bug->occursEnv;
+
+
+$lang->bug->report->charts['feedbackBy']         = "按{$lang->bug->feedbackBy}来进行统计";
+$lang->bug->report->feedbackBy       = new stdclass();
+$lang->bug->report->feedbackBy->item       = $lang->bug->feedbackBy;
+$lang->bug->report->feedbackBy->graph       = new stdclass();
+$lang->bug->report->feedbackBy->graph->xAxisName      = $lang->bug->feedbackBy;
