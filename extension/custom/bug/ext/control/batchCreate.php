@@ -1,4 +1,5 @@
 <?php
+include '../../../../../module/bug/control.php';
 
 class myBug extends bug
 {

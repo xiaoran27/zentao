@@ -1,4 +1,5 @@
 <?php
+include '../../../../../module/story/control.php';
 
 class myStory extends story
 {
