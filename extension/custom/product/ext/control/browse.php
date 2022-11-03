@@ -194,7 +194,7 @@ class myProduct extends product
         }
 
         $purchaserList    = $this->loadModel('common')->getPurchaserList();
-        $this->config->product->search['params']['purchaser']     = array('operator' => 'include', 'control' => 'select', 'values' => $purchaserList);
+        $this->config->product->search['params']['purchaser']     = array('operator' => '=', 'control' => 'select', 'values' => $purchaserList);
         $this->view->purchaserList     = $purchaserList;
         $this->view->purchasers     = array_keys($purchaserList);
 
