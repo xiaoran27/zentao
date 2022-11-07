@@ -7,6 +7,7 @@ $lang->story->bzCategoryList['']  = '';
 $lang->story->bzCategoryList['B100'] = '头部客户';
 $lang->story->bzCategoryList['B101-500'] = '次头部客户';
 $lang->story->bzCategoryList['LKA'] = '区域客户';
+$lang->story->bzCategoryList['SMB'] = '普通客户';
 //$lang->story->bzCategoryList['KA']  = '重要客户';
 //$lang->story->bzCategoryList['SMB'] = '腰部客户';
 $lang->story->prCategory = '需求分类';
