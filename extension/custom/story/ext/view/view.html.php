@@ -666,4 +666,4 @@ js::set('rawModule', $this->app->rawModule);
 <script>
 </script>
 <?php include '../../../../../module/common/view/syntaxhighlighter.html.php';?>
-<?php include '.../../../../../module/common/view/footer.html.php';?>
+<?php include '../../../../../module/common/view/footer.html.php';?>
