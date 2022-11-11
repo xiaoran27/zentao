@@ -1,6 +1,11 @@
 <?php
 
 
+    public function create($from = '', $extras = '')
+    {
+        return $this->loadExtension('bytenew')->create($from , $extras);
+    }
+
     /**
      * Create a bug.
      *
@@ -9,7 +14,7 @@
      * @access public
      * @return array|bool
      */
-    public function create($from = '', $extras = '')
+    public function create0($from = '', $extras = '')
     {
         $extras = str_replace(array(',', ' '), array('&', ''), $extras);
         parse_str($extras, $output);
@@ -35,7 +40,7 @@
             ->join('os', ',')
             ->join('browser', ',')
             ->join('occursEnv', ',')
-            ->remove('files,labels,uid,oldTaskID,contactListMenu,region,lane')
+            ->remove('files,labels,uid,oldTaskID,contactListMenu,region,lane,ticket')
             ->get();
 
         if($bug->execution != 0) $bug->project = $this->dao->select('project')->from(TABLE_EXECUTION)->where('id')->eq($bug->execution)->fetch('project');

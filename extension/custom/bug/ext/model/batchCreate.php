@@ -1,6 +1,11 @@
 <?php
 
 
+    public function batchCreate($productID, $branch = 0, $extra = '')   
+    {
+        return $this->loadExtension('bytenew')->batchCreate($productID, $branch, $extra);
+    }
+
     /**
      * Batch create
      *
@@ -10,7 +15,7 @@
      * @access public
      * @return void
      */
-    public function batchCreate($productID, $branch = 0, $extra = '')
+    public function batchCreate0($productID, $branch = 0, $extra = '')
     {
         $extra = str_replace(array(',', ' '), array('&', ''), $extra);
         parse_str($extra, $output);
@@ -44,6 +49,12 @@
         $collectTime      = '';
         foreach($data->title as $i => $title)
         {
+            if(empty($title) and $this->common->checkValidRow('bug', $data, $i))
+            {
+                dao::$errors['message'][] = sprintf($this->lang->error->notempty, $this->lang->bug->title);
+                return false;
+            }
+
             $oses     = array_filter($data->oses[$i]);
             $browsers = array_filter($data->browsers[$i]);
             $occursEnvs     = array_filter($data->occursEnvs[$i]);
@@ -84,7 +95,7 @@
             $bug->module      = (int)$data->modules[$i];
             $bug->project     = (int)$data->projects[$i];
             $bug->execution   = (int)$data->executions[$i];
-            $bug->openedBuild = implode(',', $data->openedBuilds[$i]);
+            $bug->openedBuild = isset($data->openedBuilds) ? implode(',', $data->openedBuilds[$i]) : '';
             $bug->color       = $data->color[$i];
             $bug->title       = $title;
             $bug->feedbackBy       = $data->feedbackBy[$i];
@@ -132,9 +143,8 @@
                 }
             }
 
-            $this->loadModel('common')->log(json_encode($bug,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            //$this->loadModel('common')->log(json_encode($bug,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             $bugs[$i] = $bug;
-
         }
 
         /* When the bug is created by uploading an image, add the image to the step of the bug. */

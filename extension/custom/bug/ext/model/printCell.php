@@ -1,6 +1,11 @@
 <?php
 
 
+    public function printCell($col, $bug, $users, $builds, $branches, $modulePairs, $executions = array(), $plans = array(), $stories = array(), $tasks = array(), $mode = 'datatable', $projectPairs = array())
+    {
+        return $this->loadExtension('bytenew')->printCell($col, $bug, $users, $builds, $branches, $modulePairs, $executions, $plans, $stories , $tasks, $mode, $projectPairs);
+    }
+
     /**
      * Print cell data.
      *
@@ -20,7 +25,7 @@
      * @access public
      * @return void
      */
-    public function printCell($col, $bug, $users, $builds, $branches, $modulePairs, $executions = array(), $plans = array(), $stories = array(), $tasks = array(), $mode = 'datatable', $projectPairs = array())
+    public function printCell0($col, $bug, $users, $builds, $branches, $modulePairs, $executions = array(), $plans = array(), $stories = array(), $tasks = array(), $mode = 'datatable', $projectPairs = array())
     {
         /* Check the product is closed. */
         $canBeChanged = common::canBeChanged('bug', $bug);
@@ -106,7 +111,7 @@
                     $title = "title='" . zget($projectPairs, $bug->project, '') . "'";
                     break;
                 case 'plan':
-                    $title = "title='" . zget($plans, $bug->plan) . "'";
+                    $title = "title='" . zget($plans, $bug->plan, '') . "'";
                     break;
                 case 'execution':
                     $title = "title='" . zget($executions, $bug->execution) . "'";
@@ -122,6 +127,9 @@
                 case 'browser':
                     $class .= ' text-ellipsis';
                     $title  = "title='" . $browser . "'";
+                    break;
+                case 'deadline':
+                    $class .= ' text-center';
                     break;
             }
 
@@ -289,7 +297,7 @@
                 echo helper::isZeroDate($bug->assignedDate) ? '' : substr($bug->assignedDate, 5, 11);
                 break;
             case 'deadline':
-                echo helper::isZeroDate($bug->deadline) ? '' : substr($bug->deadline, 5, 11);
+                echo helper::isZeroDate($bug->deadline) ? '' : '<span>' . substr($bug->deadline, 5, 11) . '</span>';
                 break;
             case 'resolvedBy':
                 echo zget($users, $bug->resolvedBy, $bug->resolvedBy);

@@ -1,5 +1,9 @@
 <?php
 
+    public function batchUpdate()   
+    {
+        return $this->loadExtension('bytenew')->batchUpdate();
+    }
 
     /**
      * Batch update bugs.
@@ -7,7 +11,7 @@
      * @access public
      * @return array
      */
-    public function batchUpdate()
+    public function batchUpdate0()
     {
         $bugs        = array();
         $allChanges  = array();

@@ -1,5 +1,9 @@
 <?php
 
+    public function update($bugID)
+    {
+        return $this->loadExtension('bytenew')->update($bugID);
+    }
 
     /**
      * Update a bug.
@@ -8,9 +12,9 @@
      * @access public
      * @return void
      */
-    public function update($bugID)
+    public function update0($bugID)
     {
-        $oldBug = $this->dao->select('*')->from(TABLE_BUG)->where('id')->eq((int)$bugID)->fetch();
+        $oldBug = $this->getById($bugID);
         if(!empty($_POST['lastEditedDate']) and $oldBug->lastEditedDate != $this->post->lastEditedDate)
         {
             dao::$errors[] = $this->lang->error->editedByOther;
@@ -27,9 +31,10 @@
             ->setDefault('browser', '')
             ->setDefault('plan', 0)
             ->setDefault('deadline', '0000-00-00')
-            ->setDefault('resolvedDate', '0000-00-00 00:00:00')
+            ->setDefault('resolvedDate', '')
             ->setDefault('lastEditedBy',   $this->app->user->account)
             ->setDefault('mailto', '')
+            ->setDefault('deleteFiles', array())
             ->add('lastEditedDate', $now)
             ->setIF(strpos($this->config->bug->edit->requiredFields, 'deadline') !== false, 'deadline', $this->post->deadline)
             ->join('openedBuild', ',')
@@ -60,7 +65,7 @@
             ->get();
 
         $bug = $this->loadModel('file')->processImgURL($bug, $this->config->bug->editor->edit['id'], $this->post->uid);
-        $this->dao->update(TABLE_BUG)->data($bug)
+        $this->dao->update(TABLE_BUG)->data($bug, 'deleteFiles')
             ->autoCheck()
             ->batchCheck($this->config->bug->edit->requiredFields, 'notempty')
             ->checkIF($bug->resolvedBy, 'resolution',  'notempty')
@@ -77,7 +82,7 @@
             /* Link bug to build and release. */
             if($bug->resolution == 'fixed' and !empty($bug->resolvedBuild) and $oldBug->resolvedBuild != $bug->resolvedBuild)
             {
-                if(!empty($oldBug->resolvedBuild)) $this->loadModel('build')->unlinkBug((int)$oldBug->resolvedBuild, (int)$bugID);
+                if(!empty($oldBug->resolvedBuild)) $this->loadModel('build')->unlinkBug($oldBug->resolvedBuild, (int)$bugID);
                 $this->linkBugToBuild($bugID, $bug->resolvedBuild);
             }
 
@@ -107,12 +112,12 @@
             }
 
             if(!empty($bug->resolvedBy)) $this->loadModel('score')->create('bug', 'resolve', $bugID);
-            $this->file->updateObjectID($this->post->uid, $bugID, 'bug');
 
             if($bug->execution and $bug->status != $oldBug->status) $this->loadModel('kanban')->updateLane($bug->execution, 'bug');
 
             if(($this->config->edition == 'biz' || $this->config->edition == 'max') && $oldBug->feedback) $this->loadModel('feedback')->updateStatus('bug', $oldBug->feedback, $bug->status, $oldBug->status);
 
+            $this->file->processFile4Object('bug', $oldBug, $bug);
             return common::createChanges($oldBug, $bug);
         }
     }
