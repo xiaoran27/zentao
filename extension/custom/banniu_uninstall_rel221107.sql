@@ -9,6 +9,9 @@
 
 -- sql.start.banniu_rel221107
 
+--2022-11-8 16:34:01
+delete from zt_purchaser where mtime = '2022-11-08';
+
 --2022-11-7 20:06:38
 delete from zt_purchaser where mtime = '2022-11-07';
 
