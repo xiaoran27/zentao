@@ -231,7 +231,7 @@
                   <?php echo html::hidden('status', $story->status);?>
                 </td>
               </tr>
-              <?php if(strpos('draft,changing', $story->status) !== false and $story->type == 'story'):?>
+              <?php if($story->type == 'story'):?>
               <tr>
                 <th><?php echo $lang->story->stage;?></th>
                 <td>
