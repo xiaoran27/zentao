@@ -78,7 +78,7 @@ class myStory extends story
             }
         }
 
-       foreach($output as $paramKey => $paramValue)
+        foreach($output as $paramKey => $paramValue)
         {
             if(isset($this->config->story->fromObjects[$paramKey]))
             {
@@ -383,6 +383,11 @@ class myStory extends story
         $reviewers = $product->reviewer;
         if(!$reviewers and $product->acl != 'open') $reviewers = $this->loadModel('user')->getProductViewListUsers($product, '', '', '', '');
 
+        /* Get the module's children id list. */
+        $moduleID     = $moduleID ? $moduleID : (int)$this->cookie->lastStoryModule;
+        $moduleID     = isset($moduleOptionMenu[$moduleID]) ? $moduleID : 0;
+        $moduleIdList = $this->tree->getAllChildId($moduleID);
+
         /* Set Custom. */
         foreach(explode(',', $this->config->story->list->customCreateFields) as $field) $customFields[$field] = $this->lang->story->$field;
         $this->view->customFields = $customFields;
@@ -395,7 +400,7 @@ class myStory extends story
         $this->view->gobackLink       = (isset($output['from']) and $output['from'] == 'global') ? $this->createLink('product', 'browse', "productID=$productID") : '';
         $this->view->products         = $products;
         $this->view->users            = $users;
-        $this->view->moduleID         = $moduleID ? $moduleID : (int)$this->cookie->lastStoryModule;
+        $this->view->moduleID         = $moduleID;
         $this->view->moduleOptionMenu = $moduleOptionMenu;
         $this->view->plans            = str_replace('2030-01-01', $this->lang->story->undetermined, $this->loadModel('productplan')->getPairsForStory($productID, $branch, 'skipParent|unexpired|noclosed'));
         $this->view->planID           = $planID;
@@ -424,8 +429,8 @@ class myStory extends story
         $this->view->keywords         = $keywords;
         $this->view->mailto           = $mailto;
         $this->view->blockID          = $blockID;
-        $this->view->URS              = $storyType == 'story' ? $this->story->getRequirements($productID) : '';
-        $this->view->needReview       = ($this->app->user->account == $product->PO || $objectID > 0 || $this->config->story->needReview == 0) ? "checked='checked'" : "";
+        $this->view->URS              = $storyType == 'story' ? $this->story->getProductStoryPairs($productID, $branch, $moduleIdList, 'changing,active,reviewing', 'id_desc', 0, '', 'requirement') : '';
+        $this->view->needReview       = ($this->app->user->account == $product->PO or $objectID > 0 or $this->config->story->needReview == 0 or !$this->story->checkForceReview()) ? "checked='checked'" : "";
         $this->view->type             = $storyType;
 
         $this->display();

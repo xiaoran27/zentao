@@ -184,7 +184,7 @@ class myStory extends story
 
         /* Init vars. */
         $planID   = $plan;
-        $pri      = 0;
+        $pri      = 3;
         $estimate = '';
         $title    = '';
         $spec     = '';
@@ -239,8 +239,6 @@ class myStory extends story
         }
 
         $showFields = $this->config->story->custom->batchCreateFields;
-        //error_log($showFields);
-        
         if($product->type == 'normal')
         {
             $showFields = str_replace(array(0 => ",branch,", 1 => ",platform,"), '', ",$showFields,");
@@ -287,7 +285,7 @@ class myStory extends story
         $this->view->branch           = $branch;
         $this->view->branches         = $branches;
         /* When the user is product owner or add story in project or not set review, the default is not to review. */
-        $this->view->needReview       = ($this->app->user->account == $product->PO || $executionID > 0 || $this->config->story->needReview == 0) ? 0 : 1;
+        $this->view->needReview       = ($this->app->user->account == $product->PO or $executionID > 0 or $this->config->story->needReview == 0 or !$this->story->checkForceReview()) ? 0 : 1;
         $this->view->forceReview      = $this->story->checkForceReview();
         $this->view->executionID      = $executionID;
 

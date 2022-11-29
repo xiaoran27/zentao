@@ -14,6 +14,7 @@ include '../../../../../module/story/control.php';
 class myStory extends story
 {
 
+
     /**
      * Edit a story.
      *
@@ -25,22 +26,17 @@ class myStory extends story
      */
     public function edit($storyID, $kanbanGroup = 'default', $storyType = 'story')
     {
+        $this->loadModel('file');
         $this->app->loadLang('bug');
         $story = $this->story->getById($storyID, 0, true);
+        $this->commonAction($storyID);
 
         if(!empty($_POST))
         {
-            $changes = $this->story->update($storyID);
+            $this->story->update($storyID);
             if(dao::isError()) return print(js::error(dao::getError()));
-            if($this->post->comment != '' or !empty($changes))
-            {
-                $action   = !empty($changes) ? 'Edited' : 'Commented';
-                $actionID = $this->action->create('story', $storyID, $action, $this->post->comment);
-                $this->action->logHistory($actionID, $changes);
 
-                $editedStory = $this->dao->findById($storyID)->from(TABLE_STORY)->fetch();
-                if(isset($_POST['reviewer']) and $story->status == 'reviewing') $this->story->recordReviewAction($editedStory);
-            }
+            $this->loadModel('common')->log("_POST=$_POST, storyID=$storyID", __FILE__, __LINE__);
 
             $this->executeHooks($storyID);
 
@@ -78,8 +74,6 @@ class myStory extends story
             $params = $this->app->rawModule == 'story' ? "storyID=$storyID&version=0&param=0&storyType=$storyType" : "storyID=$storyID";
             return print(js::locate($this->createLink($this->app->rawModule, 'view', $params), 'parent'));
         }
-
-        $this->commonAction($storyID);
 
         /* Sort products. */
         $myProducts     = array();
@@ -133,7 +127,7 @@ class myStory extends story
         if($product->type == 'normal' and !empty($story->branch)) $this->view->moduleOptionMenu += $this->tree->getModulesName($story->module);
 
         $branch         = $product->type == 'branch' ? ($story->branch > 0 ? $story->branch : '0') : 'all';
-        $productStories = $this->story->getProductStoryPairs($story->product, $branch, 0, 'all', 'id_desc', 0, '');
+        $productStories = $this->story->getProductStoryPairs($story->product, $branch, 0, 'all', 'id_desc', 0, '', $story->type);
 
         $this->view->title            = $this->lang->story->edit . "STORY" . $this->lang->colon . $this->view->story->title;
         $this->view->position[]       = $this->lang->story->edit;
@@ -150,6 +144,7 @@ class myStory extends story
         $this->view->branchTagOption  = $branchTagOption;
         $this->view->reviewers        = array_keys($reviewerList);
         $this->view->reviewedReviewer = $reviewedReviewer;
+        $this->view->lastReviewer     = $this->story->getLastReviewer($story->id);
         $this->view->productReviewers = $this->user->getPairs('noclosed|nodeleted', array_keys($reviewerList), 0, $productReviewers);
 
         $this->display();

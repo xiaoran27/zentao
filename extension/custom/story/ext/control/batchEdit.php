@@ -4,6 +4,7 @@ include '../../../../../module/story/control.php';
 class myStory extends story
 {
 
+
     /**
      * Batch edit story.
      *
@@ -187,10 +188,10 @@ class myStory extends story
         $this->view->responseResultList  = array('' => '') + $this->lang->story->responseResultList;
         $this->view->purchaserList       = array('' => '') + $this->loadModel('common')->getPurchaserList();
         $this->view->users             = $users;
-        $this->view->priList           = array('0' => '') + $this->lang->story->priList;
-        $this->view->sourceList        = array('' => '') + $this->lang->story->sourceList;
-        $this->view->reasonList        = array('' => '') + $this->lang->story->reasonList;
-        $this->view->stageList         = array('' => '') + $this->lang->story->stageList;
+        $this->view->priList           = array('0' => '', 'ditto' => $this->lang->story->ditto) + $this->lang->story->priList;
+        $this->view->sourceList        = array('' => '',  'ditto' => $this->lang->story->ditto) + $this->lang->story->sourceList;
+        $this->view->reasonList        = array('' => '',  'ditto' => $this->lang->story->ditto) + $this->lang->story->reasonList;
+        $this->view->stageList         = array('' => '',  'ditto' => $this->lang->story->ditto) + $this->lang->story->stageList;
         $this->view->productID         = $productID;
         $this->view->products          = $products;
         $this->view->branchProduct     = $branchProduct;

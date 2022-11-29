@@ -34,7 +34,6 @@ class myStory extends story
 
                 $this->view->charts[$chart] = $chartOption;
                 $this->view->datas[$chart]  = $this->report->computePercent($chartData);
-                
             }
         }
 
@@ -57,5 +56,4 @@ class myStory extends story
         $this->view->checkedCharts = $this->post->charts ? join(',', $this->post->charts) : '';
         $this->display();
     }
-
 }
