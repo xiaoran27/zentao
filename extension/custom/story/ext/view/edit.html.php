@@ -259,7 +259,7 @@
                 <th><?php echo $lang->story->pri;?></th>
                 <td><?php echo html::select('pri', $lang->story->priList, $story->pri, "class='form-control chosen'");?></td>
               </tr>
-              <tr>
+              <tr class='hidden' >
                 <th><?php echo $lang->story->estimate;?></th>
                 <td><?php echo $story->parent >= 0 ? html::input('estimate', $story->estimate, "class='form-control'") : $story->estimate;?></td>
               </tr>
