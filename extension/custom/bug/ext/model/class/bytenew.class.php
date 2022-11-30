@@ -33,13 +33,14 @@ class bytenewBug extends BugModel
         return $purchaserList;
     }
 
-        /**
+    
+    /**
      * Get report data of purchaser
      *
      * @access public
      * @return array
      */
-    public function getDataOfPurchaser()
+    public function getDataOfPurchaser0()
     {
         $datas = $this->dao->select('purchaser as name, count(purchaser) as value')->from(TABLE_BUG)
             ->where($this->reportCondition())
@@ -47,10 +48,49 @@ class bytenewBug extends BugModel
         if(!$datas) return array();
 
         $purchaserList    = $this->loadModel('common')->getPurchaserList();
-        $this->config->bug->datatable->fieldList['occursEnv']['dataSource'] = array_keys($purchaserList);
-
-        foreach($datas as $purchaser => $data) $data->name = $purchaserList[$purchaser] != '' ? $purchaserList[$purchaser] : $purchaser;
+        // foreach($datas as $purchaser => $data) $data->name = $purchaserList[$purchaser] != '' ? $purchaserList[$purchaser] : $purchaser;
+        foreach($datas as $purchaser => $data) {
+            $purchaserExp = explode(',', $purchaser);
+            $names = '';
+            foreach( $purchaserExp as $one ) {
+                $one = trim($one);
+                if(empty($one))   continue;
+                if(!empty($names))  $names = $names.',';
+                $names = $names. ($purchaserList[$one] != '' ? $purchaserList[$one] : $one );
+            }
+            $data->name = $names;
+        }
+        
         return $datas;
+    }
+
+    /**
+     * Get report data of purchaser
+     *
+     * @access public
+     * @return array
+     */
+
+    public function getDataOfPurchaser()
+    {
+        $purchaserList    = $this->loadModel('common')->getPurchaserList();
+        
+        //purchaser 必须有值
+        $sql=$this->dao->select("substring_index(substring_index(concat(',',a.purchaser), ',', b.help_topic_id + 1), ',', - 1) AS purchaser")
+            ->from(TABLE_BUG)->alias('a inner join mysql.help_topic b')
+            ->on("b.help_topic_id < (length(concat(',',a.purchaser)) - length(REPLACE(concat(',',a.purchaser), ',', '')) + 1)")
+            ->where($this->reportCondition())->get();
+
+        $datas = $this->dao->select("purchaser as name, count(1) as value ")->from('('. $sql.')' )->alias('me')->where('me.purchaser !=""')->groupBy('name')->orderBy('value DESC')->fetchAll('name');
+        if(!$datas) return array();
+        foreach($datas as $purchaser => $data) $data->name = $purchaserList[$purchaser] != '' ? $purchaserList[$purchaser] : $purchaser;
+       
+        //purchaser 无值的情况
+        $datas2 = $this->dao->select("'NA' as name, count(1) as value")->from(TABLE_BUG)
+            ->where($this->reportCondition())->andwhere("length(ifnull(purchaser,''))=0")
+            ->groupBy('name')->orderBy('value DESC')->fetchAll('name');
+
+        return $datas +  $datas2;
     }
 
             /**
@@ -177,6 +217,7 @@ class bytenewBug extends BugModel
             ->join('os', ',')
             ->join('browser', ',')
             ->join('occursEnv', ',')
+            ->join('purchaser', ',')
             ->remove('files,labels,uid,oldTaskID,contactListMenu,region,lane,ticket')
             ->get();
 
@@ -269,7 +310,7 @@ class bytenewBug extends BugModel
         $pri       = 0;
         $feedbackBy      = '';
         $purchaser      = '';
-        $occursEnv      = '';
+        $occursEnvs      = '';
         $feedbackTime      = '';
         $collectTime      = '';
         foreach($data->title as $i => $title)
@@ -283,6 +324,7 @@ class bytenewBug extends BugModel
             $oses     = array_filter($data->oses[$i]);
             $browsers = array_filter($data->browsers[$i]);
             $occursEnvs     = array_filter($data->occursEnvs[$i]);
+            $purchaser     = array_filter($data->purchaser[$i]);
 
             if($data->modules[$i]    != 'ditto') $module    = (int)$data->modules[$i];
             if($data->projects[$i]   != 'ditto') $project   = (int)$data->projects[$i];
@@ -300,7 +342,7 @@ class bytenewBug extends BugModel
             $data->oses[$i]       = implode(',', $oses);
             $data->browsers[$i]   = implode(',', $browsers);
             $data->occursEnvs[$i]   = implode(',', $occursEnvs);
-            $data->purchaser[$i]       = $purchaser;
+            $data->purchaser[$i]       = implode(',', $purchaser);
         }
 
         /* Get bug data. */
@@ -335,7 +377,6 @@ class bytenewBug extends BugModel
             $bug->severity    = $data->severities[$i];
             $bug->os          = $data->oses[$i];
             $bug->browser     = $data->browsers[$i];
-            $bug->occursEnv     = $data->occursEnvs[$i];
             $bug->keywords    = $data->keywords[$i];
 
             if(isset($data->lanes[$i])) $bug->laneID = $data->lanes[$i];
@@ -835,6 +876,7 @@ class bytenewBug extends BugModel
             ->join('os', ',')
             ->join('browser', ',')
             ->join('occursEnv', ',')
+            ->join('purchaser', ',')
             ->setIF($this->post->assignedTo  != $oldBug->assignedTo, 'assignedDate', $now)
             ->setIF($this->post->resolvedBy  != '' and $this->post->resolvedDate == '', 'resolvedDate', $now)
             ->setIF($this->post->resolution  != '' and $this->post->resolvedDate == '', 'resolvedDate', $now)
@@ -968,6 +1010,7 @@ class bytenewBug extends BugModel
                 $os       = array_filter($data->os[$bugID]);
                 $browsers = array_filter($data->browsers[$bugID]);
                 $occursEnv       = array_filter($data->occursEnvs[$bugID]);
+                $purchaser       = array_filter($data->purchaser[$bugID]);
 
                 $bug = new stdclass();
                 $bug->id             = $bugID;
@@ -979,7 +1022,7 @@ class bytenewBug extends BugModel
                 $bug->color          = $data->colors[$bugID];
                 $bug->title          = $data->titles[$bugID];
                 $bug->feedbackBy     = $data->feedbackBy[$bugID];
-                $bug->purchaser      = $data->purchaser[$bugID];
+                $bug->purchaser      = implode(',', $purchaser);
                 $bug->occursEnv             = implode(',', $occursEnv);
                 $bug->feedbackTime      = $data->feedbackTime[$bugID];
                 $bug->collectTime      = $data->collectTime[$bugID];
@@ -3488,9 +3531,14 @@ class bytenewBug extends BugModel
                 echo $bug->feedbackBy;
                 break;
             case 'purchaser':
-                // echo $bug->purchaser;
                 $purchaserList    = $this->loadModel('common')->getPurchaserList();
-                echo zget($purchaserList, $bug->purchaser, $bug->purchaser);
+                $purchaserExp = explode(',', $bug->purchaser);
+                foreach($purchaserExp as $purchaser)
+                {
+                    $purchaser = trim($purchaser);
+                    if(empty($purchaser)) continue;
+                    echo zget($purchaserList, $purchaser) . " &nbsp;";
+                }
                 break;
             case 'occursEnv':
                 $occursEnvs = explode(',', $bug->occursEnv);
