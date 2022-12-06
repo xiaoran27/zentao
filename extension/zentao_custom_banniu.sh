@@ -51,6 +51,12 @@ action="${action:=install}"
     exit 100;
 }
 
+ver="${2}"
+[ "${action}" = "install" -o "${action}" = "uninstall" ] || {
+    log " '${action}' Not in ( 'install', 'uninstall'  ) !" 100;
+    exit 100;
+}
+
 
 [ -d "${zentao_custom_dir}" ] || {
     log "Not exists dir: ${zentao_custom_dir}" 105;
@@ -64,36 +70,27 @@ custom_dir="${SOURCE_DIR}/custom"
     exit 110;
 }
 
-
+ #rel221102,rel221102,202211021708,install
 banniu_upgrade="${zentao_ext_dir}/banniu_upgrade.txt"
 touch ${banniu_upgrade}
 upgrade_line="`tail -n1 ${banniu_upgrade} 2>/dev/null`"
 upgrade_line="${upgrade_line//[$'\r\n']}"
-lastest_ver="";
-lastest_ver_num="0";
-lastest_YYYYmmddHHMM="";
-lastest_action="";
+banniu_upgrade_array=('' '' '' '')
 [ "N${upgrade_line}" = "N" ] || {
-    #rel221102=202211021708=install
-    lastest_ver="_${upgrade_line%%=*}";
-    # lastest_ver_num="${lastest_ver:4}";
-    upgrade_line_nover="${upgrade_line#*=}";
-    lastest_YYYYmmddHHMM="${upgrade_line_nover%%=*}";
-    lastest_action="${upgrade_line_nover##*=}";
+    #rel221102,rel221102,202211021708,install
+    banniu_upgrade_array=(${upgrade_line//,/ })
 }
-[ "N${lastest_ver}" = "N" -o "N${lastest_YYYYmmddHHMM}" = "N"  ] && [ "${action}" = "uninstall" ] && {
-    log " Not exists a version for '${action}'!" 130;
-    exit 130;
-}
+lastest_ver="_${banniu_upgrade_array[0]}";
+lastest_ver_end="_${banniu_upgrade_array[1]}";
+lastest_YYYYmmddHHMM="${banniu_upgrade_array[2]}";
+lastest_action="${banniu_upgrade_array[3]}";
 
 
-sql_begin_flag="sql.start.banniu${lastest_ver}"
-fullsqlfile="${custom_dir}/banniu.sql"
+
+
 if [ "${action}" = "install" ]; then
-    sqlfile="${custom_dir}/banniu${lastest_ver}.sql";
-    sql_begin_flag="sql.end.banniu${lastest_ver}"
+    fullsqlfile="${custom_dir}/banniu.sql"
 else
-    sqlfile="${custom_dir}/banniu_${action}${lastest_ver}.sql";
     fullsqlfile="${custom_dir}/banniu_uninstall.sql";
 fi
 [  -f "${fullsqlfile}" ] || {
@@ -101,25 +98,72 @@ fi
     exit 140;
 }
 
+sql_begin_flag="sql.start.banniu${lastest_ver}"
+sql_end_flag="sql.end.banniu${lastest_ver_end}"
+sql_begin_flag_line="1"
+sql_end_flag_line="$"
 
-[ "N${lastest_ver}" = "N" ] && {
+## ${action} + ${lastest_ver}
+if [ "${action}" = "uninstall"  -a ( "N${lastest_ver}" = "N_" -o "N${lastest_YYYYmmddHHMM}" = "N"  ) ]; then 
+    log " Not exists a version for '${action}'!" 130;
+    exit 130;
+elif [ "${action}" = "install"  -a "N${lastest_ver}" = "N_" ]; then 
     sql_begin_flag="sql.start.banniu_rel"
-    lastest_ver_line="`grep ${sql_begin_flag} ${fullsqlfile} | head -n 2 |  tail -n1`";
+    lastest_ver_line="`grep -n ${sql_begin_flag} ${fullsqlfile} | head -n 2 |  tail -n1`";
     lastest_ver_line="${lastest_ver_line//[$'\r\n']}"
-    #-- sql.start.banniu_rel221102
+    # 5:-- sql.start.banniu_rel221102
     lastest_ver="_${lastest_ver_line##*_}";
-    # [ "${#lastest_ver}" -gt 4 ] && lastest_ver_num="${lastest_ver:4}"
     sql_begin_flag="sql.start.banniu${lastest_ver}"
-}
+    sql_begin_flag_line="${lastest_ver_line%%:*}";
 
-[ "${fullsqlfile}" = "${sqlfile}" ]  || [ -f "${sqlfile}" ]  || {
+    sql_end_flag="sql.end.banniu_rel"
+    lastest_ver_line="`grep -n ${sql_end_flag} ${fullsqlfile} | tail -n1`";
+    lastest_ver_line="${lastest_ver_line//[$'\r\n']}"
+    # 100:-- sql.end.banniu_rel221102
+    lastest_ver_end="_${lastest_ver_line##*_}";
+    sql_end_flag="sql.end.banniu${lastest_ver_end}"
+    sql_end_flag_line="${lastest_ver_line%%:*}";
+elif [ ! "N${lastest_ver}" = "N_" ]; then 
+    
+
+
+    sql_begin_flag="sql.start.banniu_rel"
+    lastest_ver_line="`grep -n ${sql_begin_flag} ${fullsqlfile} | head -n 2 |  tail -n1`";
+    lastest_ver_line="${lastest_ver_line//[$'\r\n']}"
+    # 5:-- sql.start.banniu_rel221102
+    lastest_ver="_${lastest_ver_line##*_}";
+    sql_begin_flag="sql.start.banniu${lastest_ver}"
+    sql_begin_flag_line="${lastest_ver_line%%:*}";
+
+    sql_end_flag="sql.end.banniu_rel"
+    lastest_ver_line="`grep -n ${sql_end_flag} ${fullsqlfile} | tail -n1`";
+    lastest_ver_line="${lastest_ver_line//[$'\r\n']}"
+    # 100:-- sql.end.banniu_rel221102
+    lastest_ver_end="_${lastest_ver_line##*_}";
+    sql_end_flag="sql.end.banniu${lastest_ver_end}"
+    sql_end_flag_line="${lastest_ver_line%%:*}";
+
+    sql_end_flag="sql.end.banniu_rel"
+    lastest_ver_line="`grep -n ${sql_end_flag} ${fullsqlfile} | tail -n1`";
+    lastest_ver_line="${lastest_ver_line//[$'\r\n']}"
+    # 100:-- sql.end.banniu_rel221102
+    lastest_ver_end="_${lastest_ver_line##*_}";
+    sql_end_flag="sql.end.banniu${lastest_ver_end}"
+    sql_end_flag_line="${lastest_ver_line%%:*}";
+
+if
+
+
+
+sqlfile="${custom_dir}/banniu_${action}${lastest_ver}${lastest_ver_end}.sql";
+[ -f "${sqlfile}" ]  || {
     log "Not exists , but generate file: ${sqlfile}" ;
-    grep -A9999 "${sql_begin_flag}" ${fullsqlfile} > ${sqlfile}
+    sed -n "${sql_begin_flag_line},${sql_end_flag_line}p"  ${fullsqlfile} > ${sqlfile}
 }
 
 
 YYYYmmddHHMM="`date "+%Y%m%d%H%M"`"
-zentao_custom_dir_bktgz="${zentao_tmp_backup_dir}/custom${lastest_ver}_BK${YYYYmmddHHMM}.tgz"
+zentao_custom_dir_bktgz="${zentao_tmp_backup_dir}/custom${lastest_ver}${lastest_ver_end}_BK${YYYYmmddHHMM}.tgz"
 cmd="( cd ${zentao_ext_dir} && tar czf ${zentao_custom_dir_bktgz} custom )"
 log "${cmd}...@`date "+%Y%m%d%H%M%S"`"
 time eval "${cmd}"
@@ -150,7 +194,7 @@ log "${cmd}...finished(${rtnval})@`date "+%Y%m%d%H%M%S"`"
     exit 150;
 }
 
-zentao_custom_dir_bkdb="${zentao_tmp_backup_dir}/db${lastest_ver}_BK${YYYYmmddHHMM}.sql"
+zentao_custom_dir_bkdb="${zentao_tmp_backup_dir}/db${lastest_ver}${lastest_ver_end}_BK${YYYYmmddHHMM}.sql"
 cmd_mysqldump="${zbox_dir}/run/mysql/mysqldump"
 cmd="${cmd_mysqldump} -h${mysql_host} -P${mysql_port} -u${mysql_user} --password=${mysql_pwd}   --default-character-set=utf8 --single-transaction --triggers --routines --events  ${mysql_dbname} >${zentao_custom_dir_bkdb} "
 log "${cmd}...@`date "+%Y%m%d%H%M%S"`"
@@ -168,12 +212,12 @@ log "${cmd}...finished(${rtnval})@`date "+%Y%m%d%H%M%S"`"
 
 
 if [ "${action}" = "uninstall" ]; then
-    zentao_custom_dir_bktgz="${zentao_tmp_backup_dir}/custom${lastest_ver}_BK${lastest_YYYYmmddHHMM}.tgz"
+    zentao_custom_dir_bktgz="${zentao_tmp_backup_dir}/custom${lastest_ver}${lastest_ver_end}_BK${lastest_YYYYmmddHHMM}.tgz"
     [ -f "${zentao_custom_dir_bktgz}" ] || {
         log "Not exists backup file: ${zentao_custom_dir_bktgz}!" 165 ;
         exit 165;
     }
-    tmpdir="/tmp/custom${lastest_ver}_BK${lastest_YYYYmmddHHMM}"
+    tmpdir="/tmp/custom${lastest_ver}${lastest_ver_end}_BK${lastest_YYYYmmddHHMM}"
     [ -d "${tmpdir}" ] || mkdir -p "${tmpdir}"
 
     cmd="tar -xzf ${zentao_custom_dir_bktgz} -C ${tmpdir}"
