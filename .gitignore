@@ -22,3 +22,9 @@
 /backup
 /.git.zip
 /extension/*.zip
+/extension/custom/zentao*bk.sql
+/extension/custom/banniu_uninstall_rel*.sql
+/extension/custom/banniu_rel*.sql
+/extension/custom/客户名称转拼音*.*
+/extension/custom/已成交班牛企业版老客户*.*
+/extension/custom/banniu_rel*.sql
