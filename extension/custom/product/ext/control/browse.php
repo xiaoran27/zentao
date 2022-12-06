@@ -194,9 +194,13 @@ class myProduct extends product
         }
 
         $purchaserList    = $this->loadModel('common')->getPurchaserList();
-        $this->config->product->search['params']['purchaser']     = array('operator' => '=', 'control' => 'select', 'values' => $purchaserList);
+        $this->config->product->search['params']['purchaser']     = array('operator' => 'include', 'control' => 'select', 'values' => $purchaserList);
         $this->view->purchaserList     = $purchaserList;
         $this->view->purchasers     = array_keys($purchaserList);
+
+        $bizProjects = $this->loadModel('project')->getPairsListForB100();
+        if ( !$bizProjects ) $bizProjects = array();
+        $this->view->bizProjects      = $bizProjects;
 
         /* Build search form. */
         $rawModule = $this->app->rawModule;

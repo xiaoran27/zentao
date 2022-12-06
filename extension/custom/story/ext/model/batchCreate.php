@@ -1,5 +1,10 @@
 <?php
 
+    public function batchCreate($productID = 0, $branch = 0, $type = 'story')
+    {
+        return $this->loadExtension('bytenew')->batchCreate($productID , $branch , $type );
+    }
+    
     /**
      * Batch create stories.
      *
@@ -7,7 +12,7 @@
      * @return int|bool the id of the created story or false when error.
      * @return type requirement|story
      */
-    public function batchCreate($productID = 0, $branch = 0, $type = 'story')
+    public function batchCreate0($productID = 0, $branch = 0, $type = 'story')
     {
         $forceReview = $this->checkForceReview();
 

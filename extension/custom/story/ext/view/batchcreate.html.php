@@ -59,6 +59,7 @@
             <?php endif;?>
             <th class='c-name required has-btn'><?php echo $lang->story->title;?></th>
             <th class='c-purchaser <?php echo zget($visibleFields, 'purchaser', ' hidden') . zget($requiredFields, 'purchaser', '', ' required');?> purchaserBox'><?php echo $lang->story->purchaser;?></th>
+            <th class='c-bizProject <?php echo zget($visibleFields, 'bizProject', ' hidden') . zget($requiredFields, 'bizProject', '', ' required');?> bizProjectBox'><?php echo $lang->story->bizProject;?></th>
             <th class='c-uatDate <?php echo zget($visibleFields, 'uatDate', ' hidden') . zget($requiredFields, 'uatDate', '', ' required');?> uatDateBox'><?php echo $lang->story->uatDate;?></th>
             <th class='c-bzCategory <?php echo zget($visibleFields, 'bzCategory', ' hidden') . zget($requiredFields, 'bzCategory', '', ' required');?> bzCategoryBox'><?php echo $lang->story->bzCategory;?></th>
             <th class='c-prCategory <?php echo zget($visibleFields, 'prCategory', ' hidden') . zget($requiredFields, 'prCategory', '', ' required');?> prCategoryBox'><?php echo $lang->story->prCategory;?></th>
@@ -112,8 +113,9 @@
                 </span>
               </div>
             </td>
-            <td class='<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select('purchaser[$id]', $purchaserList, '', "class='form-control chosen' id='purchaser_\$id'");?></td>
-            <td class='<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input('uatDate[$id]', '', "class='form-control form-date' ");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select('purchaser[$id]', $purchaserList, '', "class='form-control chosen' id='purchaser_\$id'");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'bizProject', ' hidden')?> bizProjectBox'><?php echo html::select('bizProject[$id]', $bizProjectList, '', "class='form-control chosen' id='bizProject_\$id'");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input('uatDate[$id]', '', "class='form-control form-date' ");?></td>
             <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select('bzCategory[$id]', $bzCategoryList, '', "class='form-control chosen' id='bzCategory_\$id'");?></td>
             <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select('prCategory[$id]', $prCategoryList, '', "class='form-control chosen' id='prCategory_\$id'");?></td>
             <?php if($type == 'requirement'):?>
@@ -185,8 +187,9 @@
           </span>
         </div>
       </td>
-      <td class='<?php echo zget($visibleFields, 'purchaser', 'hidden')?> purchaserBox'><?php echo html::select("purchaser[$i]", $purchaserList, 'ditto', "class='form-control chosen' id='purchaser_$i'");?></td>
-      <td class='<?php echo zget($visibleFields, 'uatDate', 'hidden')?> uatDateBox'><?php echo html::input("uatDate[$i]", '', "class='form-control form-date' id='uatDate_$i'");?></td>      
+      <td class='text-left<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select("purchaser[$i]", $purchaserList, 'ditto', "class='form-control chosen'  id='purchaser_$i'");?></td>
+      <td class='text-left<?php echo zget($visibleFields, 'bizProject', ' hidden')?> bizProjectBox'><?php echo html::select("bizProject[$i]", $bizProjects, 'ditto', "class='form-control chosen' id='bizProject_$i'"); ?></td>
+      <td class='text-left<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input("uatDate[$i]", '', "class='form-control form-date' id='uatDate_$i'");?></td>      
       <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select("bzCategory[$i]", $bzCategoryList, 'ditto', "class='form-control chosen' id='bzCategory_$i'");?></td>
       <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select("prCategory[$i]", $prCategoryList, 'ditto', "class='form-control chosen' id='prCategory_$i'");?></td>
       <?php if($type == 'requirement'):?>

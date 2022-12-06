@@ -195,7 +195,11 @@
               <?php endif;?>              
               <tr>
                 <th><?php echo $lang->story->purchaser;?></th>
-                <td><?php echo html::select('purchaser', $purchaserList, $story->purchaser, "class='form-control chosen'");?></td>
+                <td><?php echo html::select('purchaser[]', $purchaserList, $story->purchaser, "class='form-control chosen' multiple");?></td>
+              </tr>
+              <tr>
+                <th><?php echo $lang->story->bizProject;?></th>
+                <td><?php echo html::select('bizProject', $bizProjects, $story->bizProject, "class='form-control chosen'");?></td>
               </tr>          
               <tr>
                 <th><?php echo $lang->story->uatDate;?></th>
@@ -208,6 +212,10 @@
               <tr>
                 <th><?php echo $lang->story->prCategory;?></th>
                 <td><?php echo html::select('prCategory', ( $story->type == 'requirement'?$lang->story->prCategoryList0:$lang->story->prCategoryList ), $story->prCategory, "class='form-control chosen' ");?></td>
+              </tr>
+              <tr>
+                <th><?php echo $lang->story->prLevel;?></th>
+                <td><?php echo html::select('prLevel', $lang->story->prLevelList, $story->prLevel, "class='form-control chosen' ");?></td>
               </tr>
               <?php if($story->type == 'requirement'):?>
                 <tr>

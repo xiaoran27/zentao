@@ -12,6 +12,7 @@
 ?>
 <?php include '../../../../../module/common/view/header.html.php';?>
 <?php include '../../../../../module/common/view/kindeditor.html.php';?>
+<?php $bizProjects = $this->loadModel('project')->getPairsListForB100();?>
 <?php $browseLink = $app->session->storyList ? $app->session->storyList : $this->createLink('product', 'browse', "productID=$story->product");?>
 <?php js::set('sysurl', common::getSysUrl());?>
 <?php if(strpos($_SERVER["QUERY_STRING"], 'isNotice=1') === false):?>
@@ -273,8 +274,19 @@
                   <th><?php echo $lang->story->purchaser;?></th>
                   <td><?php 
                   $purchaserList = $this->loadModel('common')->getPurchaserList();
-                  echo zget($purchaserList, $story->purchaser, $story->purchaser);
-                  ?></td>
+                  $purchaserExp = explode(',', $story->purchaser);?>
+                  <?php if($purchaserExp):?>
+                  <p class='purchaserExpContent'>
+                    <?php foreach($purchaserExp as $purchaser):?>
+                    <?php if($purchaser) echo "<span class='label label-outline'>" .  zget($purchaserList, $purchaser) . "</span>";?>
+                    <?php endforeach;?>
+                  </p>
+                  <?php endif;?>
+                  </td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->story->bizProject;?></th>
+                  <td id='bzCategory'><?php echo zget($bizProjects, $story->bizProject, $story->bizProject);?></td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->story->uatDate;?></th>
@@ -282,7 +294,7 @@
                 </tr>
                 <tr>
                   <th><?php echo $lang->story->bzCategory;?></th>
-                  <td id='bzCategory'><?php echo $lang->story->bzCategoryList[$story->bzCategory];?></td>
+                  <td id='bzCategory'><?php echo zget($lang->story->bzCategoryList, $story->bzCategory, $story->bzCategory);?></td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->story->prCategory;?></th>

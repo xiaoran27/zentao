@@ -300,6 +300,7 @@ class bytenewStory extends StoryModel
             ->setIF($bugID > 0, 'fromBug', $bugID)
             ->join('assignedTo', '')
             ->join('mailto', ',')
+            ->join('purchaser', ',')
             ->stripTags($this->config->story->editor->create['id'], $this->config->allowedTags)
             ->remove('files,labels,reviewer,needNotReview,newStory,uid,contactListMenu,URS,region,lane,ticket')
             ->get();
@@ -523,6 +524,18 @@ class bytenewStory extends StoryModel
     {
         $forceReview = $this->checkForceReview();
 
+        $reviewers = '';
+        foreach($_POST['title'] as $index => $value)
+        {
+            if($_POST['title'][$index] and isset($_POST['reviewer'][$index]) and empty($_POST['reviewDitto'][$index])) $reviewers = $_POST['reviewer'][$index] = array_filter($_POST['reviewer'][$index]);
+            if($_POST['title'][$index] and isset($_POST['reviewer'][$index]) and !empty($_POST['reviewDitto'][$index])) $_POST['reviewer'][$index] = $reviewers;
+            if($_POST['title'][$index] and empty($_POST['reviewer'][$index]) and $forceReview)
+            {
+                dao::$errors[] = $this->lang->story->errorEmptyReviewedBy;
+                return false;
+            }
+        }
+
         $this->loadModel('action');
         $branch    = (int)$branch;
         $productID = (int)$productID;
@@ -544,15 +557,14 @@ class bytenewStory extends StoryModel
         $plan   = '';
         $pri    = 0;
         $source = '';
+        $bzCategory = '';
+        $prCategory = '';
+        $responseResult = '0';
+        $purchaser='';
+        $bizProject='';
 
         foreach($stories->title as $i => $title)
         {
-            if(empty($title) and $this->common->checkValidRow('story', $stories, $i))
-            {
-                dao::$errors['message'][] = sprintf($this->lang->error->notempty, $this->lang->story->title);
-                return false;
-            }
-
             $module = $stories->module[$i] == 'ditto' ? $module : $stories->module[$i];
             $plan   = isset($stories->plan[$i]) ? ($stories->plan[$i] == 'ditto' ? $plan : $stories->plan[$i]) : '';
             $pri    = $stories->pri[$i]    == 'ditto' ? $pri    : $stories->pri[$i];
@@ -561,27 +573,34 @@ class bytenewStory extends StoryModel
             $stories->plan[$i]   = $plan;
             $stories->pri[$i]    = (int)$pri;
             $stories->source[$i] = $source;
+
+
+            $bzCategory = $stories->bzCategory[$i] == 'ditto' ? $bzCategory : $stories->bzCategory[$i];
+            $prCategory = $stories->prCategory[$i] == 'ditto' ? $prCategory : $stories->prCategory[$i];
+            $responseResult = $stories->responseResult[$i] == 'ditto' ? $responseResult : $stories->responseResult[$i];
+            $stories->bzCategory[$i] = $bzCategory;
+            $stories->prCategory[$i] = $prCategory;
+            $stories->responseResult[$i] = $responseResult;
+
+            $purchaser = $stories->purchaser[$i] == 'ditto' ? $purchaser : $stories->purchaser[$i];
+            $stories->purchaser[$i] = $purchaser;
+
+            $bizProject = $stories->bizProject[$i] == 'ditto' ? $bizProject : $stories->bizProject[$i];
+            $stories->bizProject[$i] = $bizProject;
+
+            
+
         }
 
         if(isset($stories->uploadImage)) $this->loadModel('file');
 
         $extendFields = $this->getFlowExtendFields();
         $data         = array();
-        $reviewers    = '';
         foreach($stories->title as $i => $title)
         {
             if(empty($title)) continue;
 
-            $stories->reviewer[$i] = array_filter($stories->reviewer[$i]);
             if(empty($stories->reviewer[$i]) and empty($stories->reviewerDitto[$i])) $stories->reviewer[$i] = array();
-            $reviewers = (isset($stories->reviewDitto[$i])) ? $reviewers : $stories->reviewer[$i];
-            $stories->reviewer[$i] = $reviewers;
-            $_POST['reviewer'][$i] = $reviewers;
-            if(empty($stories->reviewer[$i]) and $forceReview)
-            {
-                dao::$errors[] = $this->lang->story->errorEmptyReviewedBy;
-                return false;
-            }
 
             $story = new stdclass();
             $story->type       = $type;
@@ -590,6 +609,12 @@ class bytenewStory extends StoryModel
             $story->plan       = $stories->plan[$i];
             $story->color      = $stories->color[$i];
             $story->title      = $stories->title[$i];
+            $story->bzCategory     = $stories->bzCategory[$i];
+            $story->prCategory     = $stories->prCategory[$i];
+            $story->responseResult     = $stories->responseResult[$i];
+            $story->uatDate     = $stories->uatDate[$i];
+	        $story->purchaser     = implode(',',$stories->purchaser[$i]);
+            $story->bizProject     = $stories->bizProject[$i];
             $story->source     = $stories->source[$i];
             $story->category   = $stories->category[$i];
             $story->pri        = $stories->pri[$i];
@@ -902,6 +927,7 @@ class bytenewStory extends StoryModel
             ->setIF(!empty($_POST['plan'][0]) and $oldStory->stage == 'wait', 'stage', 'planned')
             ->stripTags($this->config->story->editor->edit['id'], $this->config->allowedTags)
             ->join('mailto', ',')
+            ->join('purchaser', ',')
             ->join('linkStories', ',')
             ->join('linkRequirements', ',')
             ->join('childStories', ',')
@@ -1384,6 +1410,8 @@ class bytenewStory extends StoryModel
                 if(isset($data->closedBys[$storyID])     and ($data->closedBys[$storyID]     == 'ditto')) $data->closedBys[$storyID]     = isset($prev['closedBy'])     ? $prev['closedBy']     : '';
                 if(isset($data->closedReasons[$storyID]) and ($data->closedReasons[$storyID] == 'ditto')) $data->closedReasons[$storyID] = isset($prev['closedReason']) ? $prev['closedReason'] : '';
 
+                
+
                 $prev['pri']    = $data->pris[$storyID];
                 $prev['branch'] = isset($data->branches[$storyID]) ? $data->branches[$storyID] : 0;
                 $prev['module'] = $data->modules[$storyID];
@@ -1392,6 +1420,14 @@ class bytenewStory extends StoryModel
                 if(isset($data->stages[$storyID]))        $prev['stage']        = $data->stages[$storyID];
                 if(isset($data->closedBys[$storyID]))     $prev['closedBy']     = $data->closedBys[$storyID];
                 if(isset($data->closedReasons[$storyID])) $prev['closedReason'] = $data->closedReasons[$storyID];
+
+
+                if($data->purchaser[$storyID]    == 'ditto') $data->purchaser[$storyID]    = isset($prev['purchaser'])   ? $prev['purchaser']   : '';
+                $prev['purchaser']    = $data->purchaser[$storyID];
+
+                if($data->bizProject[$storyID]    == 'ditto') $data->bizProject[$storyID]    = isset($prev['bizProject'])   ? $prev['bizProject']   : '';
+                $prev['bizProject']    = $data->bizProject[$storyID];
+
             }
 
             $extendFields = $this->getFlowExtendFields();
@@ -1445,6 +1481,9 @@ class bytenewStory extends StoryModel
 
                     $story->{$extendField->field} = htmlSpecialString($story->{$extendField->field});
                 }
+
+                $story->purchaser   = implode(',', $data->purchaser[$storyID]);
+                $story->bizProject  = $data->bizProject[$storyID];
 
                 $stories[$storyID] = $story;
             }
@@ -4720,12 +4759,12 @@ class bytenewStory extends StoryModel
 
         if($tab == 'project')
         {
-            $storyLink = helper::createLink('projectstory', 'view', "storyID=$story->id&project={$this->session->project}");
+            $storyLink = helper::createLink('projectstory', 'view', "storyID=$story->id");
             $canView   = common::hasPriv('projectstory', 'view');
         }
         elseif($tab == 'execution')
         {
-            $storyLink = helper::createLink('execution', 'storyView', "storyID=$story->id&execution={$this->session->execution}");
+            $storyLink = helper::createLink('execution', 'storyView', "storyID=$story->id");
             $canView   = common::hasPriv('execution', 'storyView');
         }
 
@@ -4883,8 +4922,8 @@ class bytenewStory extends StoryModel
                 if(isset($branches[$story->branch]) and $showBranch and $this->config->vision == 'rnd') echo "<span class='label label-outline label-badge' title={$branches[$story->branch]}>{$branches[$story->branch]}</span> ";
                 if($story->module and isset($modulePairs[$story->module])) echo "<span class='label label-gray label-badge'>{$modulePairs[$story->module]}</span> ";
                 if($story->parent > 0) echo '<span class="label label-badge label-light" title="' . $this->lang->story->children . '">' . $this->lang->story->childrenAB . '</span> ';
-                echo $canView ? html::a($storyLink, $story->title, '', "title='$story->title' style='color: $story->color' data-app='$tab'") : "<span style='color: $story->color'>{$story->title}</span>";
-                if(!empty($story->children)) echo '<a class="story-toggle" data-id="' . $story->id . '"><i class="icon icon-angle-right"></i></a>';
+                echo $canView ? html::a($storyLink, $story->title, '', "style='color: $story->color' data-app='$tab'") : "<span style='color: $story->color'>{$story->title}</span>";
+                if(!empty($story->children)) echo '<a class="story-toggle" data-id="' . $story->id . '"><i class="icon icon-angle-double-right"></i></a>';
                 break;
             case 'plan':
                 echo isset($story->planTitle) ? $story->planTitle : '';
@@ -4894,6 +4933,34 @@ class bytenewStory extends StoryModel
                 break;
             case 'keywords':
                 echo $story->keywords;
+                break;
+            case 'bzCategory':
+                echo zget($this->lang->story->bzCategoryList, $story->bzCategory, $story->bzCategory);
+                break;
+            case 'prCategory':
+                echo zget($this->lang->story->prCategoryList, $story->prCategory, $story->prCategory);
+                break;
+            case 'responseResult':
+                echo zget($this->lang->story->responseResultList, $story->responseResult, $story->responseResult);
+                break;
+            case 'uatDate':
+                echo helper::isZeroDate($story->uatDate) ? '' : $story->uatDate;
+                break;
+            case 'bizProject':
+                $bizProjects = $this->loadModel('project')->getPairsListForB100();
+                echo zget($bizProjects, $story->bizProject, $story->bizProject);
+                break;
+            case 'purchaser':
+                // echo $story->purchaser;
+                $purchaserList = $this->loadModel('common')->getPurchaserList();
+                // echo zget($purchaserList, $story->purchaser, $story->purchaser);
+                $purchaserExp = explode(',', $story->purchaser);
+                foreach($purchaserExp as $purchaser)
+                {
+                    $purchaser = trim($purchaser);
+                    if(empty($purchaser)) continue;
+                    echo zget($purchaserList, $purchaser, $purchaser) . ' &nbsp;';
+                }
                 break;
             case 'source':
                 echo zget($this->lang->story->sourceList, $story->source, $story->source);
@@ -5009,7 +5076,7 @@ class bytenewStory extends StoryModel
                     $menuType = 'browse';
                     $execution = '';
                 }
-                echo $this->buildOperateMenu($story, $menuType, $execution, $storyType);
+                echo $this->buildOperateMenu($story, $menuType, $execution);
                 break;
             }
             echo '</td>';

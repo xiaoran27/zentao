@@ -78,22 +78,33 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
           </tr>	  
           <tr>
             <th><?php echo $lang->story->purchaser;?></th>
-            <td colspan="2"><?php echo html::select('purchaser', $purchaserList, $purchaser, "class='form-control chosen'");?></td>
-            
-            <td colspan='2' id='uatDate'>
-              <div class='input-group'>
-                <span class='input-group-addon'><?php echo $lang->story->uatDate?></span>
-                <span><?php echo html::input('uatDate', $uatDate, "class='form-control form-date'");?></span>
+            <td colspan="2"><?php echo html::select('purchaser[]', $purchaserList, $purchaser, "class='form-control chosen' multiple");?></td>
+            <td>
+              <div class="input-group">
+                   <div class="input-group-addon" style="min-width: 77px;"><?php echo $lang->story->bizProject;?></div>
+                  <?php echo html::select('bizProject', $bizProjects, $bizProject, "class='form-control chosen'");?>
+              </div>
+            </td>
+            <td >
+              <div class="input-group">
+                  <span class='input-group-addon' id="uatDateBox"><?php echo $lang->story->uatDate;?></span>
+                  <?php echo html::input('uatDate', $uatDate, "class='form-control form-date' style='min-width: 100px;'");?>
               </div>
             </td>
           </tr>
           <tr>
             <th><?php echo $lang->story->bzCategory;?></th>
             <td colspan="2"><?php echo html::select('bzCategory', $lang->story->bzCategoryList, $bzCategory, "class='form-control chosen'");?></td>
-            <td colspan='2' >
-              <div class='input-group' id='prCategoryIdBox'>
-                <div class="input-group-addon prCategory"><?php echo $lang->story->prCategory;?></div>
-                <?php echo html::select('prCategory', $type == 'story'?$lang->story->prCategoryList:$lang->story->prCategoryList0, $prCategory, "class='form-control chosen'");?>
+            <td >
+                <div class="input-group prCategoryIdBox">
+                  <div class="input-group-addon " style="min-width: 77px;"><?php echo $lang->story->prCategory;?></div>
+                  <?php echo html::select('prCategory', $type == 'story'?$lang->story->prCategoryList:$lang->story->prCategoryList0, $prCategory, "class='form-control chosen' required");?>
+                </div>
+            </td>
+            <td >
+              <div class="input-group">
+                  <span class='input-group-addon' id="prLevelBox"><?php echo $lang->story->prLevel;?></span>
+                  <?php echo html::select('prLevel', $lang->story->prLevelList, $prLevel, "class='form-control chosen' style='min-width: 100px;'");?>
               </div>
             </td>
           </tr>

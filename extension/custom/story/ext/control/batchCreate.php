@@ -274,6 +274,13 @@ class myStory extends story
         $this->view->uatDate       = $uatDate;
 	    $this->view->purchaser           = $purchaser;
         $this->view->purchaserList       = array('' => '',  'ditto' => $this->lang->story->ditto) + $this->loadModel('common')->getPurchaserList();
+        $this->view->purchasers       = $this->view->purchaserList   ;
+        
+        $bizProjects = $this->loadModel('project')->getPairsListForB100();
+        if ( !$bizProjects ) $bizProjects = array();
+        $this->view->bizProjects      = array('' => '',  'ditto' => $this->lang->story->ditto) + $bizProjects;
+        $this->view->bizProjectList      = $this->view->bizProjects ;
+
         $this->view->sourceList       = $sourceList;
         $this->view->planID           = $planID;
         $this->view->pri              = $pri;

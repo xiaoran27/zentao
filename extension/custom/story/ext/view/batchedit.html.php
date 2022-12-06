@@ -61,6 +61,7 @@ foreach(explode(',', $config->story->edit->requiredFields) as $field)
           <th class='c-plan<?php echo zget($visibleFields, 'plan', ' hidden')?> col-plan'><?php echo $lang->story->planAB;?></th>
           <th class='c-title required'><?php echo $lang->story->title;?></th>
           <th class='c-purchaser'><?php echo $lang->story->purchaser;?></th>
+          <th class='c-bizProject'><?php echo $lang->story->bizProject;?></th>
           <th class='c-uatDate'><?php echo $lang->story->uatDate;?></th>
           <th class='c-bzCategory required'><?php echo $lang->story->bzCategory;?></th>
           <th class='c-prCategory required'><?php echo $lang->story->prCategory;?></th>
@@ -118,7 +119,8 @@ foreach(explode(',', $config->story->edit->requiredFields) as $field)
               </div>
             </div>
           </td>
-          <td><?php echo html::select("purchaser[$storyID]",  $purchaserList, $story->purchaser, "class='form-control picker-select' data-drop-width='auto' id='purchaser_$storyID'");?></td>
+          <td><?php echo html::select("purchaser[$storyID][]",  $purchaserList, $story->purchaser, "class='form-control picker-select' multiple data-drop-width='auto' id='purchaser_$storyID'");?></td>
+          <td><?php echo html::select("bizProject[$storyID]",  $bizProjects, $story->bizProject, "class='form-control picker-select' data-drop-width='auto' id='bizProject_$storyID'");?></td>
           <td><?php echo html::input("uatDate[$storyID]", helper::isZeroDate($story->uatDate) ? '' : $story->uatDate, "class='form-control form-date' id='uatDate_$storyID'");?></td>
           <td><?php echo html::select("bzCategories[$storyID]",  $bzCategoryList, $story->bzCategory, "class='form-control picker-select' data-drop-width='auto' id='bzCategory_$storyID'");?></td>
           <td><?php echo html::select("prCategories[$storyID]",  $prCategoryList, $story->prCategory, "class='form-control picker-select' data-drop-width='auto' id='prCategory_$storyID'");?></td>
