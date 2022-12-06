@@ -850,3 +850,70 @@ insert into zt_purchaser (name,code, category,mtime) values('爱彼特（杭州�
 
 
 -- sql.end.banniu_rel221107
+
+
+-- sql.start.banniu_rel221125
+
+-- 2022-11-18 17:24:37
+
+insert into zt_purchaser (name,code, category,mtime) values('杭州正马软件科技有限公司','hzzmrjkjyxgs','LKA','2022-11-25')
+,('上海正马软件科技有限公司','shzmrjkjyxgs','LKA','2022-11-25') ;
+
+-- sql.end.banniu_rel221125
+
+
+
+-- sql.start.banniu_rel221207
+
+-- 2022-11-28 20:31:58
+
+update zt_purchaser set ctime=mtime ;
+ALTER TABLE zt_purchaser MODIFY COLUMN  mtime datetime  NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ;
+
+ALTER TABLE zt_story ADD prLevel varchar(32) DEFAULT 'C' NOT NULL COMMENT '需求等级';
+
+ALTER TABLE zt_story MODIFY COLUMN responseResult varchar(32) DEFAULT 'todo' NOT NULL COMMENT '响应结果';
+update zt_story set responseResult = 'todo' where responseResult='0';
+update zt_story set responseResult = 'reject' where responseResult='1';
+update zt_story set responseResult = 'research' where responseResult='2';
+update zt_story set responseResult = 'accept' where responseResult='3';
+ALTER TABLE zt_story ADD rspRecievedTime datetime NULL   COMMENT '接收时间';
+ALTER TABLE zt_story ADD rspRejectTime datetime NULL   COMMENT '拒绝时间';
+ALTER TABLE zt_story ADD rspResearchTime datetime NULL  COMMENT '调研时间';
+ALTER TABLE zt_story ADD rspAcceptTime datetime NULL  COMMENT '接受时间';
+
+DROP TRIGGER IF EXISTS zentao.tri_story_bu;
+DELIMITER $$
+$$
+CREATE TRIGGER tri_story_bu BEFORE UPDATE ON zt_story FOR EACH ROW
+BEGIN
+  IF( old.rspRecievedTime is null and ( 'recieved' = new.responseResult or 'suspend' = new.responseResult )  ) THEN
+    SET new.rspRecievedTime=now();
+  ELSEIF( old.rspResearchTime is null and  'research' = new.responseResult  ) THEN
+    SET new.rspResearchTime=now();
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspResearchTime);
+  ELSEIF( old.rspRejectTime is null and 'reject' = new.responseResult  ) THEN
+    SET new.rspRejectTime=now();
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspRejectTime);
+    set new.rspResearchTime=ifnull(old.rspResearchTime, new.rspRejectTime);
+  ELSEIF( old.rspAcceptTime is null and 'accept' = new.responseResult  ) THEN
+    SET new.rspAcceptTime=now();
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspAcceptTime);
+    set new.rspResearchTime=ifnull(old.rspResearchTime, new.rspAcceptTime);
+  END if;
+END
+$$
+DELIMITER ;
+
+ALTER TABLE zt_story ADD bizProject varchar(64) DEFAULT '' NOT NULL COMMENT '项目名称';
+
+ALTER TABLE zt_storyspec ADD bizStage mediumtext DEFAULT '' NOT NULL COMMENT '业务场景';
+ALTER TABLE zt_storyspec ADD bizTarget mediumtext DEFAULT '' NOT NULL COMMENT '达成目标';
+ALTER TABLE zt_storyspec ADD bizValue mediumtext DEFAULT '' NOT NULL COMMENT '萃取价值';
+
+-- 2022-12-6 17:29:39  可能有20*15字符
+ALTER TABLE zt_story MODIFY COLUMN  purchaser varchar(256) NULL COMMENT '客户名称';
+ALTER TABLE zt_bug MODIFY COLUMN  purchaser varchar(256) NULL COMMENT '客户名称'; 
+
+
+-- sql.end.banniu_rel221207
