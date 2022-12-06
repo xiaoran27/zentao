@@ -225,16 +225,25 @@
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->purchaser;?></th>
-                  <td><?php echo zget($purchaserList, $bug->purchaser,$bug->purchaser);?></td>
+                  <td>
+                  <?php $purchaserExp = explode(',', $bug->purchaser);?>
+                  <?php if($purchaserExp):?>
+                  <p class='purchaserContent'>
+                    <?php foreach($purchaserExp as $purchaser):?>
+                    <?php if($purchaser) echo "<span class='label label-outline'>" .  zget($purchaserList, $purchaser, $purchaser) . "</span>";?>
+                    <?php endforeach;?>
+                  </p>
+                  <?php endif;?>
+                  </td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->occursEnv;?></th>
                   <td>
-                  <?php $occursEnvList = explode(',', $bug->occursEnvList);?>
-                  <?php if($occursEnvList):?>
+                  <?php $occursEnvExp = explode(',', $bug->occursEnv);?>
+                  <?php if($occursEnvExp):?>
                   <p class='occursEnvListContent'>
-                    <?php foreach($occursEnvList as $occursEnv):?>
-                    <?php if($occursEnv) echo "<span class='label label-outline'>" .  zget($lang->bug->occursEnvList, $occursEnv) . "</span>";?>
+                    <?php foreach($occursEnvExp as $occursEnv):?>
+                    <?php if($occursEnv) echo "<span class='label label-outline'>" .  zget($lang->bug->occursEnvList, $occursEnv, $occursEnv) . "</span>";?>
                     <?php endforeach;?>
                   </p>
                   <?php endif;?>

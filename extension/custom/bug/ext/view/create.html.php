@@ -212,7 +212,7 @@ if($this->app->tab == 'project')   js::set('objectID', $projectID);
             <td >
               <div class="input-group <?php echo zget($config->bug->create->requiredFields, 'purchaser', '', ' required');?>"> 
                 <span class='input-group-addon'><?php echo $lang->bug->purchaser?></span>
-                <?php echo html::select('purchaser', $purchaserList, $purchaser, "class='form-control chosen' ");?>
+                <?php echo html::select('purchaser[]', $purchaserList, $purchaser, "class='form-control chosen' multiple");?>
               </div>
             </td>
           </tr>

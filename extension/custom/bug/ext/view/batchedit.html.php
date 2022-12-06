@@ -105,7 +105,7 @@
               <div>
             </td>
             <td class='<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select("purchaser[$bugID]", $purchaserList, $bug->purchaser, "class='form-control chosen' ");?></td>
-            <td class='<?php echo zget($visibleFields, 'occursEnv', ' hidden')?> occursEnvBox' style='overflow:visible'>      <?php echo html::select("occursEnvs[$bugID][]", $lang->bug->occursEnvList, $bug->occursEnv, "class='form-control chosen' multiple");?></td>
+            <td class='<?php echo zget($visibleFields, 'occursEnv', ' hidden')?> occursEnvBox'>      <?php echo html::select("occursEnvs[$bugID][]", $lang->bug->occursEnvList, $bug->occursEnv, "class='form-control chosen' multiple");?></td>
             <td class='<?php echo zget($visibleFields, 'feedbackTime', ' hidden')?> feedbackTimeBox'><?php echo html::input("feedbackTime[$bugID]", helper::isZeroDate($bug->feedbackTime) ? '' : $bug->feedbackTime, "class='form-control form-datetime'");?></td>
             <td class='<?php echo zget($visibleFields, 'collectTime', ' hidden')?> collectTimeBox'><?php echo html::input("collectTime[$bugID]", helper::isZeroDate($bug->collectTime) ? '' : $bug->collectTime, "class='form-control form-datetime'");?></td>
 

@@ -170,7 +170,7 @@ if($this->app->tab == 'project')   js::set('objectID', $bug->project);
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->purchaser;?></th>
-                  <td><?php echo html::select('purchaser', $purchaserList, $bug->purchaser, "class='form-control chosen' ");?></td>
+                  <td><?php echo html::select('purchaser[]', $purchaserList, $bug->purchaser, "class='form-control chosen' multiple");?></td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->occursEnv;?></th>
