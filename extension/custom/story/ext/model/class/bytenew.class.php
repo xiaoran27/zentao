@@ -3,7 +3,42 @@
 class bytenewStory extends StoryModel
 {
 
+    /**
+     * Get report data of prLevel
+     *
+     * @access public
+     * @return array
+     */
+    public function getDataOfBizProject()
+    {
+        $bizProjectList = array('' =>"NA") + $this->loadModel('project')->getPairsListForB100();
+        
+        $datas = $this->dao->select('bizProject as name, count(bizProject) as value')->from(TABLE_STORY)
+            ->where($this->reportCondition())
+            ->groupBy('name')->orderBy('value DESC')->fetchAll('name');
+        if(!$datas) return array();
+        foreach($datas as $one => $data) $data->name = $bizProjectList[$one] != '' ? $bizProjectList[$one] : $one;
+        return $datas;
+    }
     
+    /**
+     * Get report data of prLevel
+     *
+     * @access public
+     * @return array
+     */
+    public function getDataOfPrLevel()
+    {
+        $datas = $this->dao->select('prLevel as name, count(prLevel) as value')->from(TABLE_STORY)
+            ->where($this->reportCondition())
+            ->groupBy('name')->orderBy('value DESC')->fetchAll('name');
+        if(!$datas) return array();
+
+        $prLevelList = array('' =>"NA") + $this->lang->story->prLevelList;
+        foreach($datas as $one => $data) $data->name = $prLevelList[$one] != '' ? $prLevelList[$one] : $one;
+        return $datas;
+    }
+        
     /**
      * Get report data of bzCategory
      *
@@ -42,7 +77,7 @@ class bytenewStory extends StoryModel
      * @access public
      * @return array
      */
-    public function getDataOfPurchaser()
+    public function getDataOfPurchaser0()
     {
         $purchaserList = $this->loadModel('common')->getPurchaserList();
 
@@ -52,6 +87,28 @@ class bytenewStory extends StoryModel
         if(!$datas) return array();
         foreach($datas as $key => $data) $data->name = $purchaserList[$key] != '' ? $purchaserList[$key] : $key;
         return $datas;
+    }
+
+    public function getDataOfPurchaser()
+    {
+        $purchaserList    = $this->loadModel('common')->getPurchaserList();
+        
+        //purchaser 必须有值
+        $sql=$this->dao->select("substring_index(substring_index(concat(',',a.purchaser), ',', b.help_topic_id + 1), ',', - 1) AS purchaser")
+            ->from(TABLE_STORY)->alias('a inner join mysql.help_topic b')
+            ->on("b.help_topic_id < (length(concat(',',a.purchaser)) - length(REPLACE(concat(',',a.purchaser), ',', '')) + 1)")
+            ->where($this->reportCondition())->get();
+
+        $datas = $this->dao->select("purchaser as name, count(1) as value ")->from('('. $sql.')' )->alias('me')->where('me.purchaser !=""')->groupBy('name')->orderBy('value DESC')->fetchAll('name');
+        if(!$datas) return array();
+        foreach($datas as $purchaser => $data) $data->name = $purchaserList[$purchaser] != '' ? $purchaserList[$purchaser] : $purchaser;
+       
+        //purchaser 无值的情况
+        $datas2 = $this->dao->select("'NA' as name, count(1) as value")->from(TABLE_STORY)
+            ->where($this->reportCondition())->andwhere("length(ifnull(purchaser,''))=0")
+            ->groupBy('name')->orderBy('value DESC')->fetchAll('name');
+
+        return $datas +  $datas2;
     }
 
 
