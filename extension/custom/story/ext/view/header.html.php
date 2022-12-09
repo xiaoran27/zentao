@@ -1,3 +1,12 @@
+
+<?php 
+if( $type == 'requirement' || $story->type == 'requirement' ){
+  $config->story->create->requiredFields .= ",purchaser,bzCategory"; 
+  $config->story->edit->requiredFields .= ",purchaser,bzCategory"; 
+  $config->story->change->requiredFields .= ",purchaser,bzCategory"; 
+}
+?>
+
 <?php include '../../../../../module/common/view/header.html.php';?>
 <?php include '../../../../../module/common/view/kindeditor.html.php';?>
 <?php js::set('rawMethod', $this->app->rawMethod);?>

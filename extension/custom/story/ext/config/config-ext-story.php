@@ -14,9 +14,9 @@ $config->story->purchasers = array_keys($lang->story->purchaserList);
 $config->story->prLevels = array_keys($lang->story->prLevelList);
 
 
-$config->story->create->requiredFields = 'product,title,bzCategory,prCategory';
-$config->story->edit->requiredFields = 'product,title,bzCategory,prCategory';
-$config->story->change->requiredFields = 'product,title,bzCategory,prCategory';
+$config->story->create->requiredFields = 'product,title,prCategory';
+$config->story->edit->requiredFields = 'product,title,prCategory';
+$config->story->change->requiredFields = 'product,title,prCategory';
 
 
 $config->story->exportFields = '
@@ -53,7 +53,7 @@ $config->story->datatable->fieldList['module']['width']      = '50';
 $config->story->datatable->fieldList['bzCategory']['title']    = 'bzCategory';
 $config->story->datatable->fieldList['bzCategory']['fixed']    = 'left';
 $config->story->datatable->fieldList['bzCategory']['width']    = '50';
-$config->story->datatable->fieldList['bzCategory']['required'] = 'yes';
+$config->story->datatable->fieldList['bzCategory']['required'] = 'no';
 $config->story->datatable->fieldList['bzCategory']['control']    = 'select';
 $config->story->datatable->fieldList['bzCategory']['dataSource'] = $config->story->bzCategories;
 
