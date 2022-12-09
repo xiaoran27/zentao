@@ -1,6 +1,7 @@
 <?php include '../../../../../module/common/view/header.html.php';?>
 <?php include '../../../../../module/common/view/kindeditor.html.php';?>
 <?php js::set('rawMethod', $this->app->rawMethod);?>
+<?php $common->syncStarlink();?>
 <script>
 /**
  * Load product.
