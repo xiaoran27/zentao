@@ -14,20 +14,20 @@ class bytenewProject  extends projectModel
     public function getPairsListForB100($name='B100项目集', $type = 'project')
     {
 
-        $id = $this->dao->select('id')->from(TABLE_PROJECT)
-            ->where('grade')->eq(1)
+        $path = $this->dao->select('path')->from(TABLE_PROJECT)
+            ->where('type')->eq('program')
             ->andWhere('name')->eq($name)
-            ->fetch('id');
-        // $this->loadModel('common')->log(json_encode($id,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-        if(!$id) return array();
+            ->fetch('path');
+        $this->loadModel('common')->log(json_encode($path,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        if(!$path || empty($path) ) return array();
 
         //select id,name from zt_project where type='project' and path like ',15,%';
         $pairsList = $this->dao->select('id, name')->from(TABLE_PROJECT)
             ->where('type')->eq($type)
             ->andWhere('deleted')->eq(0)
-            ->andWhere('path')->like(",$id,%")
+            ->andWhere('path')->like("$path%")
             ->fetchPairs('id', 'name');
-        // $this->loadModel('common')->log(json_encode($pairsList,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $this->loadModel('common')->log(json_encode($pairsList,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if(!$pairsList) return array();
 
         return array(''=>'') + $pairsList;

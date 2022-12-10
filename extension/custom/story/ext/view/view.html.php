@@ -12,7 +12,14 @@
 ?>
 <?php include '../../../../../module/common/view/header.html.php';?>
 <?php include '../../../../../module/common/view/kindeditor.html.php';?>
-<?php $bizProjects = $this->loadModel('project')->getPairsListForB100();?>
+
+<?php 
+$bizProjects = $this->loadModel('project')->getPairsListForB100();
+$bizProjectList = $bizProjects ;
+js::set('bizProjects', $bizProjects);
+js::set('bizProjectList', $bizProjectList);
+?>
+
 <?php $browseLink = $app->session->storyList ? $app->session->storyList : $this->createLink('product', 'browse', "productID=$story->product");?>
 <?php js::set('sysurl', common::getSysUrl());?>
 <?php if(strpos($_SERVER["QUERY_STRING"], 'isNotice=1') === false):?>

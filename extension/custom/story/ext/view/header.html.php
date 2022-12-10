@@ -5,12 +5,20 @@ if( $type == 'requirement' || $story->type == 'requirement' ){
   $config->story->edit->requiredFields .= ",purchaser,bzCategory"; 
   $config->story->change->requiredFields .= ",purchaser,bzCategory"; 
 }
+
+$common->syncStarlink();
+
+$bizProjects = $this->loadModel('project')->getPairsListForB100();
+$bizProjectList = $bizProjects ;
+js::set('bizProjects', $bizProjects);
+js::set('bizProjectList', $bizProjectList);
+
+echo $bizProjectList;
 ?>
 
 <?php include '../../../../../module/common/view/header.html.php';?>
 <?php include '../../../../../module/common/view/kindeditor.html.php';?>
 <?php js::set('rawMethod', $this->app->rawMethod);?>
-<?php $common->syncStarlink();?>
 <script>
 /**
  * Load product.
