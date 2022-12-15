@@ -917,3 +917,18 @@ ALTER TABLE zt_bug MODIFY COLUMN  purchaser varchar(256) NULL COMMENT '客户名
 
 
 -- sql.end.banniu_rel221207
+
+
+
+-- sql.start.banniu_rel221215
+
+-- 2022-12-15 22:17:29
+
+--  拼音 , 74===00074
+-- select  code, name from zt_purchaser where left (code,1)>'9' or left (code,1)='0'
+-- select code, name from zt_purchaser where name in ( select name from zt_purchaser  group by name having  count(name) >1 )
+delete from zt_purchaser where left (code,1)>'9' or left (code,1)='0' ;
+CREATE UNIQUE INDEX zt_purchaser_name_IDX USING BTREE ON zentao.zt_purchaser (name) ;
+
+-- sql.end.banniu_rel221215
+

@@ -17,7 +17,7 @@
         $vals = $pinyin->convert($zhstr);
         $pystr = '';
         foreach($vals as $py ) $pystr .= $py[0];
-        $this->log("zhstr=$zhstr, pystr=$pystr", __FILE__, __LINE__);
+        // $this->log("zhstr=$zhstr, pystr=$pystr", __FILE__, __LINE__);
 
         return $pystr;
 

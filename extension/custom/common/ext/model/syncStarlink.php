@@ -83,9 +83,13 @@ public function syncStarlink()
         $purchaser->name = $data['customerName'];
         $purchaser->category = $data['type'];
 
+        $code_pinyin = $this->pinyin($purchaser->name);
         if ( empty($purchaser->code) ) {
-            $purchaser->code = $this->pinyin($purchaser->name);
+            $purchaser->code = $code_pinyin;
             $this->log("to Pinyin: " . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        }else{
+            // 去除前面的0
+            $purchaser->code = '' . ($purchaser->code+0) ;
         }
 
         if ( $purchaser->category == "普通商家" ) {
@@ -100,7 +104,11 @@ public function syncStarlink()
             $purchaser->category = "SMB";
         }
 
-        $purchaserNow = $this->dao->select("code,name,category")->from($TABLE_PURCHASER)->where("code")->eq($purchaser->code)->fetch();
+
+        $purchaserNow = $this->dao->select("*")->from($TABLE_PURCHASER)
+            ->where("code")->eq($purchaser->code)
+            ->orWhere("code")->eq($code_pinyin)
+            ->fetch();
         
         // $this->log(json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         // $this->log(json_encode($purchaserNow,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
@@ -109,7 +117,7 @@ public function syncStarlink()
             $this->dao->insert($TABLE_PURCHASER)->data($purchaser)->exec();
             $cnt_ins = $cnt_ins + 1;
         }elseif ( $purchaser->code != $purchaserNow->code || $purchaser->name != $purchaserNow->name || $purchaser->category != $purchaserNow->category) {
-            $this->dao->update($TABLE_PURCHASER)->data($purchaser)->where('code')->eq($code)->exec();
+            $this->dao->update($TABLE_PURCHASER)->data($purchaser)->where('code')->eq($purchaserNow->code)->exec();
             $cnt_upd = $cnt_upd + 1;
         }else{
             $cnt_same = $cnt_same + 1;
