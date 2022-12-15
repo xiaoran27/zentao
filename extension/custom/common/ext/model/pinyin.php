@@ -9,26 +9,39 @@
      * @access public
      * @return string
      */
-    public static function pinyin($zhstr, $fn='abbr')
+    public function pinyin($zhstr, $fn='convert')
     {
+        global $app;
         static $pinyin;
         if(empty($pinyin)) $pinyin = $app->loadClass('pinyin');
+        $vals = $pinyin->convert($zhstr);
+        $pystr = '';
+        foreach($vals as $py ) $pystr .= $py[0];
+        $this->log("zhstr=$zhstr, pystr=$pystr", __FILE__, __LINE__);
 
+        return $pystr;
+
+        /*
         if(empty($pinyin)) $fn='abbr';
+        $this->log("zhstr=$zhstr, fn=$fn" , __FILE__, __LINE__);
 
+        // https://github.com/overtrue/pinyin
         if ($fn == 'convert'){
             $vals = $pinyin->convert($zhstr,PINYIN_UMLAUT_V);
-            $pystr = implode(vals);
+            $pystr = implode($vals);
         }else if ($fn == 'permalink'){
             $pystr = $pinyin->permalink($zhstr);
         }else if ($fn == 'sentence'){
             $pystr = $pinyin->sentence($zhstr);
         }else if ($fn == 'name'){
             $vals = $pinyin->name($zhstr);
-            $pystr = implode(vals);
+            $pystr = implode($vals);
         }else{
             $pystr = $pinyin->abbr($zhstr);
         }
 
+        $this->log("zhstr=$zhstr, pystr=$pystr" , __FILE__, __LINE__);
+
         return $pystr;
+        */
     }
