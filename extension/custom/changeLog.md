@@ -1,6 +1,17 @@
 [toc]
 
 
+#  rel221215
+
+## added:
+
+1. 需求分类 调整
+
+## fixed:  
+
+1. 修复pinyin调用问题
+
+
 #  rel221209
 
 ## added:
