@@ -144,6 +144,45 @@ class bytenewStory extends StoryModel
         return $datas;
     }
 
+    
+    /**
+     * add a purchaser.
+     *
+     * @param  string $name
+     * @param  string $code
+     * @param  string $category='B100'
+     * @access public
+     * @return void
+     */
+    public function addPurchaser($name, $code='', $category='B100')
+    {
+        $line = new stdClass();
+        $line->name   = $name;
+        $line->code = $code;
+        $line->category  = $category;
+
+        $common = $this->loadModel('common');
+        if(empty($line->name)) {
+            $common->log(json_encode($line,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            return -1;
+        }
+
+        
+        if(empty($line->code)) {
+            $line->code = $common->pinyin($line->name);
+        }
+        
+        static $TABLE_PURCHASER  = 'zt_purchaser';
+        $this->dao->insert($TABLE_PURCHASER)->data($line)->exec();
+        if(!dao::isError())
+        {
+            $line->lineID = $this->dao->lastInsertID();
+        }
+        $common->log(json_encode($line,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        
+        return $line->lineID;
+    }
+
 
     /**
      * Get a story by id.
