@@ -932,3 +932,23 @@ CREATE UNIQUE INDEX zt_purchaser_name_IDX USING BTREE ON zentao.zt_purchaser (na
 
 -- sql.end.banniu_rel221215
 
+
+-- sql.start.banniu_rel221226
+
+-- 2022-12-20 18:51:05
+
+-- 星链暂不支持，故手工先插入
+-- insert into zt_purchaser (name,code, category,mtime) values('杭州正马软件科技有限公司','hzzmrjkjyxgs','LKA','2022-11-25')
+-- ,('上海正马软件科技有限公司','shzmrjkjyxgs','LKA','2022-11-25') ;
+
+-- insert into zt_purchaser (name,code, category,mtime) values('惠州TCL移动通信有限公司','hztclydtxyxgs','B500','2022-12-20');
+
+-- 2022-12-26 12:14:17
+-- insert into zt_purchaser (name,code, category,mtime) values('名鞋库网络科技有限公司','mxkwlkjyxgs','B500','2022-12-26');
+-- URL添加客户 http://127.0.0.1:81/zentao/story-addPurchaser-[客户名称].json?tid=usb7jpuw
+
+-- B101~500 ==> B500
+update zt_purchaser set category='B500' where category like '%101%';
+update zt_story set bzCategory='B500' where bzCategory like '%101%';
+
+-- sql.end.banniu_rel221226

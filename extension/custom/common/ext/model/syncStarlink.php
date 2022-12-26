@@ -94,10 +94,12 @@ public function syncStarlink()
 
         if ( $purchaser->category == "普通商家" ) {
             $purchaser->category = "SMB";
+        }elseif ($purchaser->category == "B5商家" ) {
+            $purchaser->category = "B5";
         }elseif ($purchaser->category == "B100商家" ) {
             $purchaser->category = "B100";
         }elseif ($purchaser->category == "B500商家" ) {
-            $purchaser->category = "101-500";
+            $purchaser->category = "B500";
         }elseif ($purchaser->category == "LKA商家" ) {
             $purchaser->category = "LKA";
         }else {
