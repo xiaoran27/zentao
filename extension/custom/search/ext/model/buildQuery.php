@@ -23,6 +23,11 @@
         if($groupAndOr != 'AND' and $groupAndOr != 'OR') $groupAndOr = 'AND';
         if($groupAndOr3 != 'AND' and $groupAndOr3 != 'OR') $groupAndOr3 = 'AND';
 
+
+        $formSessionName = $module . 'Form';
+        $formSession     = $_SESSION[$formSessionName];
+        // $this->loadModel('common')->log(json_encode($formSession,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
         for($i = 1; $i <= $groupItems * $groups; $i ++)
         {
             /* The and or between two groups. */
@@ -35,6 +40,7 @@
             $andOrName    = "andOr$i";
             $operatorName = "operator$i";
             $valueName    = "value$i";
+
 
             /* Fix bug #2704. */
             $field = $this->post->$fieldName;
@@ -53,6 +59,7 @@
             if($andOr != 'AND' and $andOr != 'OR') $andOr = 'AND';
 
             /* Set operator. */
+            // $this->loadModel('common')->log(json_encode($this->post->$valueName,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             $value    = addcslashes(trim($this->post->$valueName), '%');
             $operator = $this->post->$operatorName;
             if(!isset($this->lang->search->operators[$operator])) $operator = '=';
@@ -65,6 +72,18 @@
                 {
                     $allModules = $this->loadModel('tree')->getAllChildId($value);
                     if($allModules) $condition = helper::dbIN($allModules);
+                }
+                elseif($this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' )  
+                {
+                    // openedBy,assignedTo 支持多选查询
+                    // $value    = $formSession[$valueName];
+                    $value    = Array_filter ( $this->post->$valueName ); 
+                    // $this->loadModel('common')->log(json_encode($value,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                    if (empty($value)  or  ( count($value) == 1 and $value[0] == '' ) ) {
+                        continue;
+                    }else{
+                        $condition = helper::dbIN($value);
+                    }
                 }
                 else
                 {
@@ -95,6 +114,18 @@
                     $allDepts = $this->loadModel('dept')->getAllChildId($value);
                     $condition = helper::dbIN($allDepts);
                 }
+                elseif($this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' )
+                {
+                    // openedBy,assignedTo 支持多选查询
+                    // $value    = $formSession[$valueName];
+                    $value    = Array_filter ( $this->post->$valueName ); 
+                    // $this->loadModel('common')->log(json_encode($value,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                    if (empty($value)  or  ( count($value) == 1 and $value[0] == '' ) ) {
+                        continue;
+                    }else{
+                        $condition = helper::dbIN($value);
+                    }
+                }
                 else
                 {
                     $condition = ' = ' . $this->dbh->quote($value) . ' ';
@@ -113,6 +144,17 @@
                     $value     = implode(',', $values);
                     $operator  = 'IN';
                     $condition = $operator . ' (' . $value . ') ';
+                }elseif($operator == '=' and ( $this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' ) )
+                {
+                    // openedBy,assignedTo 支持多选查询
+                    // $value    = $formSession[$valueName];
+                    $value    = Array_filter ( $this->post->$valueName ); 
+                    // $this->loadModel('common')->log(json_encode($value,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                    if (empty($value)  or  ( count($value) == 1 and $value[0] == '' ) ) {
+                        continue;
+                    }else{
+                        $condition = helper::dbIN($value);
+                    }
                 }
             }
 

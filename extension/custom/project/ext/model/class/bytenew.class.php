@@ -18,7 +18,7 @@ class bytenewProject  extends projectModel
             ->where('type')->eq('program')
             ->andWhere('name')->eq($name)
             ->fetch('path');
-        $this->loadModel('common')->log(json_encode($path,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        // $this->loadModel('common')->log(json_encode($path,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if(!$path || empty($path) ) return array();
 
         //select id,name from zt_project where type='project' and path like ',15,%';
@@ -27,7 +27,7 @@ class bytenewProject  extends projectModel
             ->andWhere('deleted')->eq(0)
             ->andWhere('path')->like("$path%")
             ->fetchPairs('id', 'name');
-        $this->loadModel('common')->log(json_encode($pairsList,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        // $this->loadModel('common')->log(json_encode($pairsList,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if(!$pairsList) return array();
 
         return array(''=>'') + $pairsList;
