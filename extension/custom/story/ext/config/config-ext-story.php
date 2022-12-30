@@ -29,22 +29,22 @@ $config->story->exportFields = '
     rspRecievedTime, rspResearchTime, rspAcceptTime, rspRejectTime,
     childStories, linkStories, duplicateStory, files';
 
-$config->story->list->customCreateFields      = 'purchaser,bzCategory,prCategory,uatDate,source,verify,pri,mailto,keywords';
-$config->story->list->customBatchCreateFields = 'plan,purchaser,bzCategory,prCategory,uatDate,spec,source,verify,pri,review,keywords';
-$config->story->list->customBatchEditFields   = 'branch,plan,purchaser,bzCategory,prCategory,uatDate, pri,assignedTo,source,stage,closedBy,closedReason,keywords';
+$config->story->list->customCreateFields      = 'purchaser,bzCategory,prCategory,uatDate,source,verify,pri';
+$config->story->list->customBatchCreateFields = 'purchaser,bzCategory,prCategory,uatDate,spec,source,verify,pri';
+$config->story->list->customBatchEditFields   = 'purchaser,bzCategory,prCategory,uatDate, pri,assignedTo';
 
 $config->story->custom->createFields      = $config->story->list->customCreateFields;
-$config->story->custom->batchCreateFields = 'module,plan,purchaser,bzCategory,prCategory,uatDate,spec,pri,review,%s';
-$config->story->custom->batchEditFields   = 'branch,module,plan,purchaser,bzCategory,prCategory,uatDate,pri,source,stage,closedBy,closedReason';
+$config->story->custom->batchCreateFields = 'purchaser,bzCategory,prCategory,uatDate,spec,pri,%s';
+$config->story->custom->batchEditFields   = 'purchaser,bzCategory,prCategory,uatDate,pri';
 
 $config->story->datatable->defaultField = array('id', 'title', 'pri', 'plan', 'status', 'openedBy', 'reviewedBy', 'stage', 'assignedTo', 'taskCount', 'actions');
 if($app->tab == 'execution')
 {
-    $config->story->datatable->defaultField = array('id','order', 'pri', 'title', 'purchaser', 'bzCategory', 'prCategory', 'uatDate', 'plan', 'openedBy', 'assignedTo', 'estimate', 'status', 'stage', 'taskCount', 'actions');
+    $config->story->datatable->defaultField = array('id','order', 'pri', 'title', 'purchaser', 'bzCategory', 'prCategory', 'uatDate', 'openedBy', 'assignedTo', 'status', 'stage', 'taskCount', 'actions');
 }
 else
 {
-    $config->story->datatable->defaultField = array('id', 'pri', 'title', 'purchaser', 'bzCategory','prCategory', 'uatDate', 'plan', 'openedBy', 'assignedTo', 'estimate', 'status', 'stage', 'taskCount', 'actions');
+    $config->story->datatable->defaultField = array('id', 'pri', 'title', 'purchaser', 'bzCategory','prCategory', 'uatDate', 'openedBy', 'assignedTo', 'status', 'stage', 'taskCount', 'actions');
 }
 
 $config->story->datatable->fieldList['title']['width']    = '90';
