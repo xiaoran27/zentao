@@ -465,7 +465,7 @@ $(function()
         $searchForm.toggleClass('showmore', expand);
         for(i = 1; i <= groupItems * groups; i ++)
         {
-            if(i != 1 && i != groupItems + 1 )
+            if(i % groupItems != 1 )  //搜索第一行一直show
             {
                 $searchForm.find('#searchbox' + i).toggleClass('hidden', !expand);
             }
@@ -584,6 +584,11 @@ $(function()
         }
         else if(params[fieldName]['control'] == 'select')
         {
+            // 多选的name属性值追加'[]'
+            var multiSel = ( fieldName == 'openedBy' || fieldName == 'assignedTo' ) ;
+            $searchForm.find('#value' + fieldNO).attr({name : 'value' + fieldNO + (multiSel?"[]":""), id : 'value' + fieldNO });
+        
+
             $searchForm.find(".picker#value" + fieldNO).remove();
             if($searchForm.find("#value" + fieldNO).attr('data-pickertype') == 'remote')
             {
