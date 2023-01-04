@@ -933,7 +933,7 @@ CREATE UNIQUE INDEX zt_purchaser_name_IDX USING BTREE ON zentao.zt_purchaser (na
 -- sql.end.banniu_rel221215
 
 
--- sql.start.banniu_rel221226
+-- sql.start.banniu_rel230104
 
 -- 2022-12-20 18:51:05
 
@@ -951,4 +951,4 @@ CREATE UNIQUE INDEX zt_purchaser_name_IDX USING BTREE ON zentao.zt_purchaser (na
 update zt_purchaser set category='B500' where category like '%101%';
 update zt_story set bzCategory='B500' where bzCategory like '%101%';
 
--- sql.end.banniu_rel221226
+-- sql.end.banniu_rel230104
