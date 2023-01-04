@@ -184,12 +184,12 @@ class myStory extends story
 
         /* Init vars. */
         $planID   = $plan;
-        $pri      = 3;
-        $estimate = '';
-        $title    = '';
-        $spec     = '';
-        $uatDate    = '';
-	    $purchaser   = '';
+        $pri      = isset($story)?$story->pri:3;
+        $estimate = isset($story)?$story->estimate:'';
+        $title    = isset($story)?$story->title:'';
+        $spec     = isset($story)?$story->spec:'';
+        $uatDate    = isset($story)?$story->uatDate:'';
+	    $purchaser   = isset($story)?$story->purchaser:'';
 
         /* Process upload images. */
         if($this->session->storyImagesFile)
@@ -253,6 +253,7 @@ class myStory extends story
         $this->view->customFields = $customFields;
         $this->view->showFields   = $showFields;
 
+
         $this->view->title            = $product->name . $this->lang->colon . ($storyID ? $this->lang->story->subdivide : $this->lang->story->batchCreate);
         $this->view->productName      = $product->name;
         $this->view->position[]       = html::a($this->createLink('product', 'browse', "product=$productID&branch=$branch"), $product->name);
@@ -295,6 +296,9 @@ class myStory extends story
         $this->view->needReview       = ($this->app->user->account == $product->PO or $executionID > 0 or $this->config->story->needReview == 0 or !$this->story->checkForceReview()) ? 0 : 1;
         $this->view->forceReview      = $this->story->checkForceReview();
         $this->view->executionID      = $executionID;
+
+
+        $this->view->story          = $story;
 
         $this->display();
     }

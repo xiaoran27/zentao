@@ -97,9 +97,10 @@
             <td class='text-left'><?php echo html::select('lanes[$id]', $lanePairs, $laneID, "class='form-control chosen'");?>
             <?php endif;?>
             <td style='overflow:visible'>
+            <?php echo html::input('assignedTo[$id]', empty($story)?'':$story->assignedTo, "class='form-control hidden'");?>
               <div class="input-group">
                 <div class="input-control has-icon-right">
-                  <input type="text" name="title[$id]" id="title$id" value="" class="form-control title-import input-story-title" autocomplete="off">
+                <input type="text" name="title[$id]" id="title$id" value="<?php echo empty($story)?$storyTitle:$story->title;?>" class="form-control title-import input-story-title" autocomplete="off">
                   <div class="colorpicker">
                     <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"><span class="cp-title"></span><span class="color-bar"></span><i class="ic"></i></button>
                     <ul class="dropdown-menu clearfix">
@@ -113,22 +114,22 @@
                 </span>
               </div>
             </td>
-            <td class='text-left<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select('purchaser[$id]', $purchaserList, '', "class='form-control chosen' id='purchaser_\$id'");?></td>
-            <td class='text-left<?php echo zget($visibleFields, 'bizProject', ' hidden')?> bizProjectBox'><?php echo html::select('bizProject[$id]', $bizProjectList, '', "class='form-control chosen' id='bizProject_\$id'");?></td>
-            <td class='text-left<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input('uatDate[$id]', '', "class='form-control form-date' ");?></td>
-            <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select('bzCategory[$id]', $bzCategoryList, '', "class='form-control chosen' id='bzCategory_\$id'");?></td>
-            <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select('prCategory[$id]', $prCategoryList, '', "class='form-control chosen' id='prCategory_\$id'");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select('purchaser[$id]', $purchaserList, empty($story)?'':$story->purchaser, "class='form-control chosen' id='purchaser_\$id'  ");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'bizProject', ' hidden')?> bizProjectBox'><?php echo html::select('bizProject[$id]', $bizProjectList, empty($story)?'':$story->bizProject, "class='form-control chosen' id='bizProject_\$id'");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input('uatDate[$id]', empty($story)?'':$story->uatDate, "class='form-control form-date' ");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select('bzCategory[$id]', $bzCategoryList, empty($story)?'':$story->bzCategory, "class='form-control chosen' id='bzCategory_\$id'");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select('prCategory[$id]', $prCategoryList, empty($story)?'':$story->prCategory, "class='form-control chosen' id='prCategory_\$id'");?></td>
             <?php if($type == 'requirement'):?>
-              <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select('responseResult[$id]', $responseResultList, '', "class='form-control chosen' id='responseResult_\$id'");?></td>
+              <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select('responseResult[$id]', $responseResultList, 'todo', "class='form-control chosen' id='responseResult_\$id'");?></td>
             <?php endif;?>
 
-            <td class='<?php echo zget($visibleFields, 'spec', 'hidden')?> specBox'><textarea name="spec[$id]" id="spec$id" rows="1" class="form-control autosize"></textarea></td>
+            <td class='<?php echo zget($visibleFields, 'spec', 'hidden')?> specBox'><textarea name="spec[$id]" id="spec$id" rows="1" class="form-control autosize"><?php echo empty($story)?$spec:$story->spec; ?></textarea></td>
             <td class='text-left<?php echo zget($visibleFields, 'source', ' hidden')?> sourceBox'><?php echo html::select('source[$id]', $sourceList, '', "class='form-control chosen' id='source_\$id'");?></td>
             <td class='<?php echo zget($visibleFields, 'source', 'hidden')?> sourceBox'><?php echo html::input('sourceNote[$id]', '', "class='form-control' id='sourceNote_\$id'");?></td>
-            <td class='<?php echo zget($visibleFields, 'verify', 'hidden')?> verifyBox'><textarea name="verify[$id]" id="verify$id" rows="1" class="form-control autosize"></textarea></td>
-            <td class='text-left' style='overflow:visible'><?php echo html::select('category[$id]', $lang->story->categoryList, 'feature', "class='form-control chosen'");?></td>
-            <td class='text-left<?php echo zget($visibleFields, 'pri', ' hidden')?> priBox' style='overflow:visible'><?php echo html::select('pri[$id]', $priList, $pri, "class='form-control chosen'");?></td>
-            <td class='<?php echo zget($visibleFields, 'estimate', 'hidden')?> estimateBox'><?php echo html::input('estimate[$id]', $estimate, "class='form-control'");?></td>
+            <td class='<?php echo zget($visibleFields, 'verify', 'hidden')?> verifyBox'><textarea name="verify[$id]" id="verify$id" rows="1" class="form-control autosize"><?php echo empty($story)?$verify:$story->verify; ?></textarea></td>
+            <td class='text-left' style='overflow:visible'><?php echo html::select('category[$id]', $lang->story->categoryList, empty($story)?'feature':$story->category, "class='form-control chosen'");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'pri', ' hidden')?> priBox' style='overflow:visible'><?php echo html::select('pri[$id]', $priList, empty($story)?$pri:$story->pri, "class='form-control chosen'");?></td>
+            <td class='<?php echo zget($visibleFields, 'estimate', 'hidden')?> estimateBox'><?php echo html::input('estimate[$id]', empty($story)?$estimate:$story->estimate, "class='form-control'");?></td>
             <td class='<?php echo zget($visibleFields, 'review', 'hidden')?> reviewBox'>
               <div class='input-group'>
                 <?php echo html::select('reviewer[$id][]', $reviewers, '', "class='form-control chosen' multiple");?>
@@ -160,10 +161,10 @@
   </form>
 </div>
 <div>
-  <?php $i = '%i%';?>
+  <?php $i = '%i%'; ?>
   <table class='hidden'>
     <tr id='addRow' class='hidden'>
-      <td class='text-left<?php echo zget($visibleFields, $product->type, ' hidden')?> branchBox'><?php echo html::select("branch[$i]", $branches, $branch, "class='form-control chosen' onchange='setModuleAndPlan(this.value, $productID, $i)'");?></td>
+      <td class='text-left<?php echo zget($visibleFields, $product->type, ' hidden')?> branchBox'><?php echo html::select("branch[$i]", $branches, empty($story)?$branch:$story->branch, "class='form-control chosen' onchange='setModuleAndPlan(this.value, $productID, $i)'");?></td>
       <td class='text-left' style='overflow:visible'><?php echo html::select("module[$i]", $moduleOptionMenu, 'ditto', "class='form-control chosen'");?></td>
       <td class='text-left<?php echo zget($visibleFields, 'plan', ' hidden')?> planBox' style='overflow:visible'><?php echo html::select("plan[$i]", $plans, 'ditto', "class='form-control chosen'");?></td>
       <?php if(isset($execution) and $execution->type == 'kanban'):?>
@@ -171,9 +172,10 @@
       <td class='text-left'><?php echo html::select("lanes[$i]", $lanePairs, $laneID, "class='form-control chosen'");?>
       <?php endif;?>
       <td style='overflow:visible'>
+        <?php echo html::input('assignedTo[$i]', empty($story)?'':$story->assignedTo, "class='form-control hidden'");?>
         <div class="input-group">
           <div class="input-control has-icon-right">
-            <input type="text" name="title[<?php echo $i?>]" id="title<?php echo $i?>" value="" class="form-control title-import input-story-title" autocomplete="off">
+            <input type="text" name="title[<?php echo $i?>]" id="title<?php echo $i?>" value="<?php echo empty($story)?$storyTitle:$story->title;?>" class="form-control title-import input-story-title" autocomplete="off">
             <div class="colorpicker">
               <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"><span class="cp-title"></span><span class="color-bar"></span><i class="ic"></i></button>
               <ul class="dropdown-menu clearfix">
@@ -187,29 +189,28 @@
           </span>
         </div>
       </td>
-      <td class='text-left<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select("purchaser[$i]", $purchaserList, 'ditto', "class='form-control chosen'  id='purchaser_$i'");?></td>
-      <td class='text-left<?php echo zget($visibleFields, 'bizProject', ' hidden')?> bizProjectBox'><?php echo html::select("bizProject[$i]", $bizProjects, 'ditto', "class='form-control chosen' id='bizProject_$i'"); ?></td>
-      <td class='text-left<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input("uatDate[$i]", '', "class='form-control form-date' id='uatDate_$i'");?></td>      
-      <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select("bzCategory[$i]", $bzCategoryList, 'ditto', "class='form-control chosen' id='bzCategory_$i'");?></td>
-      <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select("prCategory[$i]", $prCategoryList, 'ditto', "class='form-control chosen' id='prCategory_$i'");?></td>
+      <td class='text-left<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select("purchaser[$i]", $purchaserList, empty($story)?'ditto':$story->purchaser, "class='form-control chosen'  id='purchaser_$i' ");?></td>
+      <td class='text-left<?php echo zget($visibleFields, 'bizProject', ' hidden')?> bizProjectBox'><?php echo html::select("bizProject[$i]", $bizProjects, empty($story)?'ditto':$story->bizProject, "class='form-control chosen' id='bizProject_$i'"); ?></td>
+      <td class='text-left<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input("uatDate[$i]", empty($story)?'':$story->uatDate, "class='form-control form-date' id='uatDate_$i'");?></td>      
+      <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select("bzCategory[$i]", $bzCategoryList, empty($story)?'ditto':$story->bzCategory, "class='form-control chosen' id='bzCategory_$i'");?></td>
+      <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select("prCategory[$i]", $prCategoryList, empty($story)?'ditto':$story->prCategory, "class='form-control chosen' id='prCategory_$i'");?></td>
       <?php if($type == 'requirement'):?>
-        <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select("responseResult[$i]", $responseResultList, 'ditto', "class='form-control chosen' id='responseResult_$i'");?></td>
+        <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select("responseResult[$i]", $responseResultList, empty($story)?'ditto':$story->responseResult, "class='form-control chosen' id='responseResult_$i'");?></td>
       <?php endif;?>
 
-      <td class='<?php echo zget($visibleFields, 'spec', 'hidden')?> specBox'><textarea name="spec[<?php echo $i?>]" id="spec<?php echo $i;?>" rows="1" class="form-control autosize"></textarea></td>
-      <td class='text-left<?php echo zget($visibleFields, 'source', ' hidden')?> sourceBox'><?php echo html::select("source[$i]", $sourceList, 'ditto', "class='form-control chosen' id='source_$i'");?></td>
+      <td class='<?php echo zget($visibleFields, 'spec', 'hidden')?> specBox'><textarea name="spec[<?php echo $i?>]" id="spec<?php echo $i;?>" rows="1" class="form-control autosize"><?php echo empty($story)?'':$story->spec;?></textarea></td>
+      <td class='text-left<?php echo zget($visibleFields, 'source', ' hidden')?> sourceBox'><?php echo html::select("source[$i]", $sourceList, empty($story)?'ditto':$story->source, "class='form-control chosen' id='source_$i'");?></td>
       <td class='<?php echo zget($visibleFields, 'source', 'hidden')?> sourceBox'><?php echo html::input("sourceNote[$i]", '', "class='form-control' id='sourceNote_$i'");?></td>
-      <td class='<?php echo zget($visibleFields, 'verify', 'hidden')?> verifyBox'><textarea name="verify[<?php echo $i?>]" id="verify<?php echo $i?>" rows="1" class="form-control autosize"></textarea></td>
-      <td class='text-left' style='overflow:visible'><?php echo html::select("category[$i]", $lang->story->categoryList, 'feature', "class='form-control chosen'");?></td>
-      <td class='text-left<?php echo zget($visibleFields, 'pri', ' hidden')?> priBox' style='overflow:visible'><?php echo html::select("pri[$i]", $priList, 'ditto', "class='form-control chosen'");?></td>
-      <td class='<?php echo zget($visibleFields, 'estimate', 'hidden')?> estimateBox'><?php echo html::input("estimate[$i]", $estimate, "class='form-control'");?></td>
+      <td class='<?php echo zget($visibleFields, 'verify', 'hidden')?> verifyBox'><textarea name="verify[<?php echo $i?>]" id="verify<?php echo $i?>" rows="1" class="form-control autosize"><?php echo empty($story)?'':$story->verify;?></textarea></td>
+      <td class='text-left<?php echo zget($visibleFields, 'pri', ' hidden')?> priBox' style='overflow:visible'><?php echo html::select("pri[$i]", $priList, empty($story)?'ditto':$story->pri, "class='form-control chosen'");?></td>
+      <td class='<?php echo zget($visibleFields, 'estimate', 'hidden')?> estimateBox'><?php echo html::input("estimate[$i]", empty($story)?$estimate:$story->estimate, "class='form-control'");?></td>
       <td class='<?php echo zget($visibleFields, 'review', 'hidden')?> reviewBox'>
         <div class='input-group'>
           <?php echo html::select("reviewer[$i][]", $reviewers, '', "class='form-control chosen' multiple");?>
           <span class='input-group-addon reviewerDitto'><input type='checkbox' name="reviewDitto[<?php echo $i?>]" value='ditto' checked='checked' id="dittocheck<?php echo $i?>"/> <?php echo $lang->story->ditto;?></span>
         </div>
       </td>
-      <td class='<?php echo zget($visibleFields, 'keywords', 'hidden')?> keywordsBox'><?php echo html::input("keywords[$i]", '', "class='form-control'");?></td>
+      <td class='<?php echo zget($visibleFields, 'keywords', 'hidden')?> keywordsBox'><?php echo html::input("keywords[$i]", empty($story)?'':$story->keywords, "class='form-control'");?></td>
       <?php
       $this->loadModel('flow');
       foreach($extendFields as $extendField) echo "<td" . (($extendField->control == 'select' or $extendField->control == 'multi-select') ? " style='overflow:visible'" : '') . ">" . $this->flow->getFieldControl($extendField, '', $extendField->field . "[$i]") . "</td>";
@@ -251,10 +252,16 @@ $(function()
             var storyTitle = storyTitles && storyTitles[index - 1];
             if (storyTitle !== undefined && storyTitle !== null)
             {
-                $row.find('.input-story-title').val(storyTitle).after('<input type="hidden" name="uploadImage[' + index + ']" id="uploadImage[' + index + ']" value="' + imageTitles[storyTitle] + '">');
+              $row.find('.input-story-title').val(storyTitle).after('<input type="hidden" name="uploadImage[' + index + ']" id="uploadImage[' + index + ']" value="' + imageTitles[storyTitle] + '">');
             }
 
-            if(index == 1) $row.find('td.c-actions > a:last').remove();
+            // 直接保存会全部保存
+            // $row.find('#title'+index).val("<?php echo $storyID ? $storyTitle . ' - ' . $this->lang->story->subdivide : $this->lang->story->batchCreate;?>");
+            
+            if(index == 1) {
+              $row.find('td.c-actions > a:last').remove();
+              $row.find('#title'+index).val("<?php echo $storyID ? $storyTitle . ' - ' . $this->lang->story->subdivide : $this->lang->story->batchCreate;?>");
+            }
 
             /* Implement a custom form without feeling refresh. */
             var fieldList = ',' + showFields + ',';
@@ -302,6 +309,7 @@ $(function()
 {
     parent.$('#triggerModal .modal-content .modal-header .close').hide();
 })
+
 </script>
 <?php endif;?>
 <?php include '../../../../../module/common/view/pastetext.html.php';?>

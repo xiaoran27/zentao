@@ -638,6 +638,7 @@ class bytenewStory extends StoryModel
         $now       = helper::now();
         $mails     = array();
         $stories   = fixer::input('post')->get();
+        // $this->loadModel('common')->log(json_encode($stories,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         $saveDraft = false;
         if(isset($stories->status))
@@ -648,6 +649,7 @@ class bytenewStory extends StoryModel
 
         $result  = $this->loadModel('common')->removeDuplicate('story', $stories, "product={$productID}");
         $stories = $result['data'];
+        // $this->loadModel('common')->log(json_encode($stories,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         $module = 0;
         $plan   = '';
@@ -655,7 +657,7 @@ class bytenewStory extends StoryModel
         $source = '';
         $bzCategory = '';
         $prCategory = '';
-        $responseResult = '0';
+        $responseResult = 'todo';
         $purchaser='';
         $bizProject='';
 
@@ -680,6 +682,7 @@ class bytenewStory extends StoryModel
 
             $purchaser = $stories->purchaser[$i] == 'ditto' ? $purchaser : $stories->purchaser[$i];
             $stories->purchaser[$i] = $purchaser;
+
 
             $bizProject = $stories->bizProject[$i] == 'ditto' ? $bizProject : $stories->bizProject[$i];
             $stories->bizProject[$i] = $bizProject;
@@ -709,7 +712,7 @@ class bytenewStory extends StoryModel
             $story->prCategory     = $stories->prCategory[$i];
             $story->responseResult     = $stories->responseResult[$i];
             $story->uatDate     = $stories->uatDate[$i];
-	        $story->purchaser     = implode(',',$stories->purchaser[$i]);
+	        $story->purchaser     = gettype($stories->purchaser[$i]) == 'array' ? implode(',',$stories->purchaser[$i]):$stories->purchaser[$i];
             $story->bizProject     = $stories->bizProject[$i];
             $story->source     = $stories->source[$i];
             $story->category   = $stories->category[$i];
@@ -724,6 +727,7 @@ class bytenewStory extends StoryModel
             $story->vision     = $this->config->vision;
             $story->openedDate = $now;
             $story->version    = 1;
+            $story->assignedTo   = $stories->assignedTo[$i];
 
             foreach($extendFields as $extendField)
             {
@@ -747,6 +751,8 @@ class bytenewStory extends StoryModel
                 return false;
             }
             $data[$i] = $story;
+
+            // $this->loadModel('common')->log(json_encode($story,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         }
 
         $link2Plans = array();

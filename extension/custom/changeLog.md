@@ -1,6 +1,20 @@
 [toc]
 
 
+#  rel221230
+
+## added:
+
+1. openedBy,assignedTo 支持多选查询
+2. 支持自加客户名称: http://127.0.0.1:81/zentao/story-addPurchaser-[客户名称]--[客户分层].json?tid=usb7jpuw
+3. 支持业务需求细分为产品需求的首行默认值
+
+## fixed:  
+
+1. 
+2. 
+
+
 #  rel221215
 
 ## added:
