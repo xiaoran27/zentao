@@ -1,4 +1,5 @@
 <?php
+include '../../../../../module/story/control.php';
 
 class myStory extends story
 {
@@ -11,9 +12,11 @@ class myStory extends story
      * @access public
      * @return void
      */
-    public function addPurchaser($name,$category='B100')
+    public function addPurchaser($name,$code='',$category='B100')
     {
-        $id = $this->story->addPurchaser($name,'',$category);
+        // $this->loadModel('common')->log('addPurchaser name=' . json_encode($name,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+        $id = $this->story->addPurchaser($name,$code,$category);
         return $this->send(array('result' => ($id>0?'success':'failure'), 'message' => 'name=' . $name, 'id' => $id));
         
     }
