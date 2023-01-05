@@ -86,7 +86,7 @@ public function syncStarlink()
         $code_pinyin = $this->pinyin($purchaser->name);
         if ( empty($purchaser->code) ) {
             $purchaser->code = $code_pinyin;
-            $this->log("to Pinyin: " . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            // $this->log("to Pinyin: " . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         }else{
             // 去除前面的0
             $purchaser->code = '' . ($purchaser->code+0) ;

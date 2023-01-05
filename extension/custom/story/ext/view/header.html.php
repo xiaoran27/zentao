@@ -13,7 +13,7 @@ $bizProjectList = $bizProjects ;
 js::set('bizProjects', $bizProjects);
 js::set('bizProjectList', $bizProjectList);
 
-echo $bizProjectList;
+// echo $bizProjectList;
 ?>
 
 <?php include '../../../../../module/common/view/header.html.php';?>
