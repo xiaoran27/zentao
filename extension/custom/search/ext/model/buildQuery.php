@@ -76,13 +76,16 @@
                 elseif($this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' )  
                 {
                     // openedBy,assignedTo 支持多选查询
-                    // $value    = $formSession[$valueName];
-                    $value    = Array_filter ( $this->post->$valueName ); 
-                    // $this->loadModel('common')->log(json_encode($value,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-                    if (empty($value)  or  ( count($value) == 1 and $value[0] == '' ) ) {
+                    // $values    = $formSession[$valueName];
+                    $values    = Array_filter ( $this->post->$valueName ); 
+                    if (empty($values)) {
                         continue;
                     }else{
-                        $condition = helper::dbIN($value);
+                        $keys = array_keys($values);
+                        foreach ( $values as $k=>$v) if ( 'null' == $v ) $values[$k]='';
+                        $this->loadModel('common')->log(json_encode($values,JSON_UNESCAPED_UNICODE) . ': count='. count($values) . ', $values[$keys[0]]=' . $values[$keys[0]], __FILE__, __LINE__);
+    
+                        $condition = helper::dbIN($values);
                     }
                 }
                 else
@@ -117,13 +120,16 @@
                 elseif($this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' )
                 {
                     // openedBy,assignedTo 支持多选查询
-                    // $value    = $formSession[$valueName];
-                    $value    = Array_filter ( $this->post->$valueName ); 
-                    // $this->loadModel('common')->log(json_encode($value,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-                    if (empty($value)  or  ( count($value) == 1 and $value[0] == '' ) ) {
+                    // $values    = $formSession[$valueName];
+                    $values    = Array_filter ( $this->post->$valueName ); 
+                    if (empty($values)) {
                         continue;
                     }else{
-                        $condition = helper::dbIN($value);
+                        $keys = array_keys($values);
+                        foreach ( $values as $k=>$v) if ( 'null' == $v ) $values[$k]='';
+                        $this->loadModel('common')->log(json_encode($values,JSON_UNESCAPED_UNICODE) . ': count='. count($values) . ', $values[$keys[0]]=' . $values[$keys[0]], __FILE__, __LINE__);
+    
+                        $condition = helper::dbIN($values);
                     }
                 }
                 else
@@ -147,13 +153,16 @@
                 }elseif($operator == '=' and ( $this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' ) )
                 {
                     // openedBy,assignedTo 支持多选查询
-                    // $value    = $formSession[$valueName];
-                    $value    = Array_filter ( $this->post->$valueName ); 
-                    // $this->loadModel('common')->log(json_encode($value,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-                    if (empty($value)  or  ( count($value) == 1 and $value[0] == '' ) ) {
+                    // $values    = $formSession[$valueName];
+                    $values    = Array_filter ( $this->post->$valueName ); 
+                    if (empty($values)) {
                         continue;
                     }else{
-                        $condition = helper::dbIN($value);
+                        $keys = array_keys($values);
+                        foreach ( $values as $k=>$v) if ( 'null' == $v ) $values[$k]='';
+                        $this->loadModel('common')->log(json_encode($values,JSON_UNESCAPED_UNICODE) . ': count='. count($values) . ', $values[$keys[0]]=' . $values[$keys[0]], __FILE__, __LINE__);
+    
+                        $condition = helper::dbIN($values);
                     }
                 }
             }
