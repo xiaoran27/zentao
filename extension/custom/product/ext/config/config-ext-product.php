@@ -25,11 +25,11 @@ $config->product->search['fields']['asort']     = $lang->story->asort;
 $config->product->search['params']['asort']     = array('operator' => 'include', 'control' => 'input');
 
 
-$config->product->search['fields']['rspRecievedTime']     = $lang->story->rspAcceptTime;
+$config->product->search['fields']['rspRecievedTime']     = $lang->story->rspRecievedTime;
 $config->product->search['params']['rspRecievedTime']     = array('operator' => '>=', 'control' => 'input', 'values' => '', 'class' => 'date');
-$config->product->search['fields']['rspRejectTime']     = $lang->story->rspAcceptTime;
+$config->product->search['fields']['rspRejectTime']     = $lang->story->rspRejectTime;
 $config->product->search['params']['rspRejectTime']     = array('operator' => '>=', 'control' => 'input', 'values' => '', 'class' => 'date');
-$config->product->search['fields']['rspResearchTime']     = $lang->story->rspAcceptTime;
+$config->product->search['fields']['rspResearchTime']     = $lang->story->rspResearchTime;
 $config->product->search['params']['rspResearchTime']     = array('operator' => '>=', 'control' => 'input', 'values' => '', 'class' => 'date');
 $config->product->search['fields']['rspAcceptTime']     = $lang->story->rspAcceptTime;
 $config->product->search['params']['rspAcceptTime']     = array('operator' => '>=', 'control' => 'input', 'values' => '', 'class' => 'date');
