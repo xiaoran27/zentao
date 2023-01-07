@@ -5064,6 +5064,24 @@ class bytenewStory extends StoryModel
                     echo zget($purchaserList, $purchaser, $purchaser) . ' &nbsp;';
                 }
                 break;
+            case 'prLevel':
+                echo zget($this->lang->story->prLevelList, $story->prLevel, $story->prLevel);
+                break;
+            case 'rspRecievedTime':
+                echo helper::isZeroDate($story->rspRecievedTime) ? '' : substr($story->rspRecievedTime, 5, 11);
+                break;
+            case 'rspResearchTime':
+                echo helper::isZeroDate($story->rspResearchTime) ? '' : substr($story->rspResearchTime, 5, 11);
+                break;
+            case 'rspAcceptTime':
+                echo helper::isZeroDate($story->rspAcceptTime) ? '' : substr($story->rspAcceptTime, 5, 11);
+                break;
+            case 'rspRejectTime':
+                echo helper::isZeroDate($story->rspRejectTime) ? '' : substr($story->rspRejectTime, 5, 11);
+                break;
+            case 'asort':
+                echo $story->asort;
+                break;
             case 'source':
                 echo zget($this->lang->story->sourceList, $story->source, $story->source);
                 break;

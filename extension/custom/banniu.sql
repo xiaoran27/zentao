@@ -952,3 +952,11 @@ update zt_purchaser set category='B500' where category like '%101%';
 update zt_story set bzCategory='B500' where bzCategory like '%101%';
 
 -- sql.end.banniu_rel230104
+
+
+-- sql.start.banniu_rel230107
+
+-- 2023-1-7 14:26:03
+ALTER TABLE zt_story ADD COLUMN  asort varchar(16) DEFAULT '' NOT NULL COMMENT '绝对序: YYmmNNN';
+
+-- sql.end.banniu_rel230107

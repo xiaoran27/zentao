@@ -1,5 +1,15 @@
 [toc]
 
+#  rel230107
+
+## added:
+
+1. 需求新增字段"绝对序"
+
+## fixed:  
+
+1. openedBy,assignedTo 修复选一项或空查询缺陷
+2. 
 
 #  rel230105
 
@@ -17,7 +27,7 @@
 ## added:
 
 1. openedBy,assignedTo 支持多选查询
-2. 支持自加客户名称: http://127.0.0.1:81/zentao/story-addPurchaser-[客户名称]--[客户分层].json?tid=usb7jpuw
+2. 支持自加客户名称: http://127.0.0.1:81/zentao/story-addPurchaser-[客户名称*]-[班牛ID]-[客户分层].json?tid=usb7jpuw
 3. 支持业务需求细分为产品需求的首行默认值
 
 ## fixed:  

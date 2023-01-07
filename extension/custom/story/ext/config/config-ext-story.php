@@ -40,15 +40,25 @@ $config->story->custom->batchEditFields   = 'purchaser,bzCategory,prCategory,uat
 $config->story->datatable->defaultField = array('id', 'title', 'pri', 'plan', 'status', 'openedBy', 'reviewedBy', 'stage', 'assignedTo', 'taskCount', 'actions');
 if($app->tab == 'execution')
 {
-    $config->story->datatable->defaultField = array('id','order', 'pri', 'title', 'purchaser', 'bzCategory', 'prCategory', 'uatDate', 'openedBy', 'assignedTo', 'status', 'stage', 'taskCount', 'actions');
+    $config->story->datatable->defaultField = array('id', 'order', 'pri', 'title', 'purchaser', 'uatDate', 'openedBy', 'assignedTo', 'status', 'stage', 'taskCount', 'actions');
 }
 else
 {
-    $config->story->datatable->defaultField = array('id', 'pri', 'title', 'purchaser', 'bzCategory','prCategory', 'uatDate', 'openedBy', 'assignedTo', 'status', 'stage', 'taskCount', 'actions');
+    $config->story->datatable->defaultField = array('id', 'asort', 'pri', 'title', 'purchaser', 'uatDate', 'openedBy', 'assignedTo', 'status', 'stage', 'taskCount', 'actions');
+
+    $config->story->datatable->fieldList['order']['title']    = 'order';
+    $config->story->datatable->fieldList['order']['fixed']    = 'left';
+    $config->story->datatable->fieldList['order']['width']    = '30';
+    $config->story->datatable->fieldList['order']['sort']     = 'no';
+    $config->story->datatable->fieldList['order']['required'] = 'no';
+    $config->story->datatable->fieldList['order']['name']     = $this->lang->story->order;
 }
 
+$config->story->datatable->fieldList['id']['width']    = '30';
+$config->story->datatable->fieldList['pri']['width']    = '20';
 $config->story->datatable->fieldList['title']['width']    = '90';
 $config->story->datatable->fieldList['module']['width']      = '50';
+
 
 $config->story->datatable->fieldList['bzCategory']['title']    = 'bzCategory';
 $config->story->datatable->fieldList['bzCategory']['fixed']    = 'left';
@@ -60,7 +70,7 @@ $config->story->datatable->fieldList['bzCategory']['dataSource'] = $config->stor
 $config->story->datatable->fieldList['prCategory']['title']    = 'prCategory';
 $config->story->datatable->fieldList['prCategory']['fixed']    = 'left';
 $config->story->datatable->fieldList['prCategory']['width']    = '50';
-$config->story->datatable->fieldList['prCategory']['required'] = 'yes';
+$config->story->datatable->fieldList['prCategory']['required'] = 'no';
 $config->story->datatable->fieldList['prCategory']['control']    = 'select';
 $config->story->datatable->fieldList['prCategory']['dataSource'] = $config->story->prCategories;
 
@@ -72,14 +82,14 @@ $config->story->datatable->fieldList['uatDate']['required'] = 'no';
 $config->story->datatable->fieldList['purchaser']['title']    = 'purchaser';
 $config->story->datatable->fieldList['purchaser']['fixed']    = 'left';
 $config->story->datatable->fieldList['purchaser']['width']    = '90';
-$config->story->datatable->fieldList['purchaser']['required'] = 'yes';
+$config->story->datatable->fieldList['purchaser']['required'] = 'no';
 $config->story->datatable->fieldList['purchaser']['control']    = 'select';
 $config->story->datatable->fieldList['purchaser']['dataSource'] = $config->story->purchasers;
 
 $config->story->datatable->fieldList['bizProject']['title']    = 'bizProject';
 $config->story->datatable->fieldList['bizProject']['fixed']    = 'left';
 $config->story->datatable->fieldList['bizProject']['width']    = '50';
-$config->story->datatable->fieldList['bizProject']['required'] = 'yes';
+$config->story->datatable->fieldList['bizProject']['required'] = 'no';
 $config->story->datatable->fieldList['bizProject']['control']    = 'select';
 $config->story->datatable->fieldList['bizProject']['dataSource'] = array('module' => 'project', 'method' => 'getPairsListForB100', 'params' => 'B100项目集&project');
 
@@ -116,3 +126,9 @@ $config->story->datatable->fieldList['rspRejectTime']['title']    = 'rspRejectTi
 $config->story->datatable->fieldList['rspRejectTime']['fixed']    = 'no';
 $config->story->datatable->fieldList['rspRejectTime']['width']    = '50';
 $config->story->datatable->fieldList['rspRejectTime']['required'] = 'no';
+
+
+$config->story->datatable->fieldList['asort']['title']    = 'asort';
+$config->story->datatable->fieldList['asort']['fixed']    = 'left';
+$config->story->datatable->fieldList['asort']['width']    = '40';
+$config->story->datatable->fieldList['asort']['required'] = 'no';

@@ -192,7 +192,11 @@
                   </div>
                 </td>
               </tr>
-              <?php endif;?>              
+              <?php endif;?>
+              <tr>
+                <th><?php echo $lang->story->asort;?></th>
+                <td><?php echo html::input('asort', $story->asort, "class='form-control'");?></td>
+              </tr>              
               <tr>
                 <th><?php echo $lang->story->purchaser;?></th>
                 <td><?php echo html::select('purchaser[]', $purchaserList, $story->purchaser, "class='form-control chosen' multiple");?></td>

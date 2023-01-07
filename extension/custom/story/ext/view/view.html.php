@@ -277,6 +277,10 @@ js::set('bizProjectList', $bizProjectList);
                   </td>
                 </tr>
                 <?php endif;?>
+                <tr id='asortBox'>
+                  <th><?php echo $lang->story->asort;?></th>
+                  <td><?php echo $story->asort;?></td>
+                </tr>
                 <tr>
                   <th><?php echo $lang->story->purchaser;?></th>
                   <td><?php 
@@ -382,6 +386,22 @@ js::set('bizProjectList', $bizProjectList);
                   }
                   ?>
                   </td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->story->rspAcceptTime;?></th>
+                  <td><?php echo helper::isZeroDate($story->rspAcceptTime) ? '' : $story->rspAcceptTime;?></td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->story->rspRecievedTime;?></th>
+                  <td><?php echo helper::isZeroDate($story->rspRecievedTime) ? '' : $story->rspRecievedTime;?></td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->story->rspResearchTime;?></th>
+                  <td><?php echo helper::isZeroDate($story->rspResearchTime) ? '' : $story->rspResearchTime;?></td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->story->rspRejectTime;?></th>
+                  <td><?php echo helper::isZeroDate($story->rspRejectTime) ? '' : $story->rspRejectTime;?></td>
                 </tr>
               </tbody>
             </table>

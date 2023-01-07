@@ -114,6 +114,8 @@ $lang->story->prLevelList['A']  = '新产品(A)';
 
 $lang->story->bizProject = '项目名称';
 
+$lang->story->asort = '绝对序';
+
 $lang->story->bizStage = '业务场景';
 $lang->story->bizNodus = '业务痛点';
 $lang->story->bizTarget = '达成目标';
