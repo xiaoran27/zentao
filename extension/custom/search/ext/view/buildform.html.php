@@ -84,8 +84,8 @@ html[lang^='zh-'] .operatorWidth {width: 90px !important;}
 foreach($fieldParams as $fieldName => $param)
 {
     echo "<div id='box$fieldName'>";
-    $multiSel = ($fieldName == 'openedBy' || $fieldName == 'assignedTo' )?" multiple ":"";
-    if($param['control'] == 'select') echo html::select('field' . $fieldName . ($multiSel == ""?"":"[]"), $param['values'], '', "class='form-control searchSelect' $multiSel");
+    $multiSel = ($fieldName == 'openedBy' || $fieldName == 'assignedTo' || $param['control'] == 'select' || $param['control'] == 'multi-select' )?" multiple ":"";
+    if($param['control'] == 'select' || $param['control'] == 'multi-select') echo html::select('field' . $fieldName . ($multiSel == ""?"":"[]"), $param['values'], '', "class='form-control searchSelect ' $multiSel");
     if($param['control'] == 'input')  echo html::input('field' . $fieldName, '', "class='form-control searchInput'");
     echo '</div>';
 }
@@ -136,10 +136,9 @@ foreach($fieldParams as $fieldName => $param)
                 echo "<td id='valueBox$fieldNO' style='overflow:visible'>";
                 if(isset($config->moreLinks["field{$currentField}"])) $config->moreLinks["value$fieldNO"] = $config->moreLinks["field{$currentField}"];
 
-
                 
-                $multiSel = ($currentField == 'openedBy' || $currentField == 'assignedTo' )?" multiple ":"";
-                if($param['control'] == 'select') echo html::select("value$fieldNO" . ($multiSel == ""?"":"[]"), $param['values'], $formSession["value$fieldNO"], "class='form-control searchSelect chosen' max_drop_width='400' $multiSel");
+                $multiSel = ($currentField == 'openedBy' || $currentField == 'assignedTo' || $param['control'] == 'select' || $param['control'] == 'multi-select' )?" multiple ":"";
+                if($param['control'] == 'select' || $param['control'] == 'multi-select' ) echo html::select("value$fieldNO" . ($multiSel == ""?"":"[]"), $param['values'], $formSession["value$fieldNO"], "class='form-control searchSelect chosen' max_drop_width='400' $multiSel");
                 if($param['control'] == 'input')
                 {
                     $fieldName  = $formSession["field$fieldNO"];
@@ -208,9 +207,9 @@ foreach($fieldParams as $fieldName => $param)
                     $selected = $formSession["value$fieldNO"];
                     if(!isset($param['values'][$selected])) $config->moreLinks["value$fieldNO"] = $config->moreLinks["field{$currentField}"];
                 }
-
-                $multiSel = ($currentField == 'openedBy' || $currentField == 'assignedTo' )?" multiple ":"";
-                if($param['control'] == 'select') echo html::select("value$fieldNO" . ($multiSel == ""?"":"[]"), $param['values'], $formSession["value$fieldNO"], "class='form-control searchSelect chosen' $multiSel");
+                
+                $multiSel = ($currentField == 'openedBy' || $currentField == 'assignedTo' || $param['control'] == 'select' || $param['control'] == 'multi-select' )?" multiple ":"";
+                if($param['control'] == 'select' || $param['control'] == 'multi-select' ) echo html::select("value$fieldNO" . ($multiSel == ""?"":"[]"), $param['values'], $formSession["value$fieldNO"], "class='form-control searchSelect chosen' $multiSel");
 
                 if($param['control'] == 'input')
                 {
@@ -281,8 +280,8 @@ foreach($fieldParams as $fieldName => $param)
                     if(!isset($param['values'][$selected])) $config->moreLinks["value$fieldNO"] = $config->moreLinks["field{$currentField}"];
                 }
 
-                $multiSel = ($currentField == 'openedBy' || $currentField == 'assignedTo' )?" multiple ":"";
-                if($param['control'] == 'select') echo html::select("value$fieldNO" . ($multiSel == ""?"":"[]"), $param['values'], $formSession["value$fieldNO"], "class='form-control searchSelect chosen' $multiSel");
+                $multiSel = ($currentField == 'openedBy' || $currentField == 'assignedTo' || $param['control'] == 'select' || $param['control'] == 'multi-select' )?" multiple ":"";
+                if($param['control'] == 'select' || $param['control'] == 'multi-select' ) echo html::select("value$fieldNO" . ($multiSel == ""?"":"[]"), $param['values'], $formSession["value$fieldNO"], "class='form-control searchSelect chosen' $multiSel");
 
                 if($param['control'] == 'input')
                 {
@@ -582,10 +581,10 @@ $(function()
                 $searchForm.find("#value" + nextNO).addClass('date');
             }
         }
-        else if(params[fieldName]['control'] == 'select')
+        else if(params[fieldName]['control'] == 'select' || params[fieldName]['control'] == 'multi-select')
         {
             // 多选的name属性值追加'[]'
-            var multiSel = ( fieldName == 'openedBy' || fieldName == 'assignedTo' ) ;
+            var multiSel = ( fieldName == 'openedBy' || fieldName == 'assignedTo' ) ||  params[fieldName]['control'] == 'select' || params[fieldName]['control'] == 'multi-select';
             $searchForm.find('#value' + fieldNO).attr({name : 'value' + fieldNO + (multiSel?"[]":""), id : 'value' + fieldNO });
         
 

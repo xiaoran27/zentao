@@ -73,7 +73,8 @@
                     $allModules = $this->loadModel('tree')->getAllChildId($value);
                     if($allModules) $condition = helper::dbIN($allModules);
                 }
-                elseif($this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' )  
+                elseif($this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' 
+                || $fieldParams->$field->control == 'select' || $fieldParams->$field->control == 'multi-select')  
                 {
                     // openedBy,assignedTo 支持多选查询
                     // $values    = $formSession[$valueName];
@@ -100,6 +101,22 @@
                     $allModules = $this->loadModel('tree')->getAllChildId($value);
                     if($allModules) $condition = " NOT " . helper::dbIN($allModules);
                 }
+                elseif($this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' 
+                || $fieldParams->$field->control == 'select' || $fieldParams->$field->control == 'multi-select')  
+                {
+                    // openedBy,assignedTo 支持多选查询
+                    // $values    = $formSession[$valueName];
+                    $values    = Array_filter ( $this->post->$valueName ); 
+                    if (empty($values)) {
+                        continue;
+                    }else{
+                        $keys = array_keys($values);
+                        foreach ( $values as $k=>$v) if ( 'null' == $v ) $values[$k]='';
+                        $this->loadModel('common')->log(json_encode($values,JSON_UNESCAPED_UNICODE) . ': count='. count($values) . ', $values[$keys[0]]=' . $values[$keys[0]], __FILE__, __LINE__);
+    
+                        $condition = " NOT " . helper::dbIN($values);
+                    }
+                }
                 else
                 {
                     $condition = ' NOT LIKE ' . $this->dbh->quote("%$value%");
@@ -117,7 +134,8 @@
                     $allDepts = $this->loadModel('dept')->getAllChildId($value);
                     $condition = helper::dbIN($allDepts);
                 }
-                elseif($this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' )
+                elseif($this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' 
+                || $fieldParams->$field->control == 'select' || $fieldParams->$field->control == 'multi-select')  
                 {
                     // openedBy,assignedTo 支持多选查询
                     // $values    = $formSession[$valueName];
@@ -150,7 +168,8 @@
                     $value     = implode(',', $values);
                     $operator  = 'IN';
                     $condition = $operator . ' (' . $value . ') ';
-                }elseif($operator == '=' and ( $this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' ) )
+                }elseif( ( $operator == '=' || $operator == '!=' ) and ( $this->post->$fieldName == 'openedBy' || $this->post->$fieldName == 'assignedTo' 
+                                                || $fieldParams->$field->control == 'select' || $fieldParams->$field->control == 'multi-select') )
                 {
                     // openedBy,assignedTo 支持多选查询
                     // $values    = $formSession[$valueName];
@@ -162,7 +181,7 @@
                         foreach ( $values as $k=>$v) if ( 'null' == $v ) $values[$k]='';
                         $this->loadModel('common')->log(json_encode($values,JSON_UNESCAPED_UNICODE) . ': count='. count($values) . ', $values[$keys[0]]=' . $values[$keys[0]], __FILE__, __LINE__);
     
-                        $condition = helper::dbIN($values);
+                        $condition = ($operator == '='?"":" NOT ") . helper::dbIN($values);
                     }
                 }
             }

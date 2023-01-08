@@ -1,5 +1,17 @@
 [toc]
 
+#  rel230108
+
+## added:
+
+1. 'control' => 'multi-select' 或 'select'  搜索都支持多选
+
+## fixed:  
+
+1. 
+2. 
+
+
 #  rel230107
 
 ## added:
