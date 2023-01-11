@@ -1,5 +1,9 @@
 <?php
 
+    public function buildQuery()
+    {
+        return $this->loadExtension('bytenew')->buildQuery( );
+    }
 
     /**
      * Build the query to execute.
@@ -7,7 +11,8 @@
      * @access public
      * @return void
      */
-    public function buildQuery()
+    public function deprecated_buildQuery()
+    // public function buildQuery()
     {
         /* Init vars. */
         $where        = '';

@@ -1,5 +1,9 @@
 <?php
 
+    public function conditionsBySelectValue($value, $operator='=')
+    {
+        return $this->loadExtension('bytenew')->conditionsBySelectValue($value, $operator='=');
+    }
 
     /**
      * 据select组件拼装sql条件
@@ -7,7 +11,8 @@
      * @access public
      * @return str
      */
-    public function conditionsBySelectValue($value, $operator='=')
+    public function deprecated_conditionsBySelectValue($value, $operator='=')
+    // public function conditionsBySelectValue($value, $operator='=')
     {
         $values    = Array_filter ( $value ); 
         foreach ( $values as $k=>$v) {

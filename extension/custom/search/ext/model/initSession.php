@@ -1,5 +1,10 @@
 <?php
 
+    public function initSession($module, $fields, $fieldParams)
+    {
+        return $this->loadExtension('bytenew')->initSession($module, $fields, $fieldParams);
+    }
+
     /**
      * Init the search session for the first time search.
      *
@@ -9,7 +14,8 @@
      * @access public
      * @return void
      */
-    public function initSession($module, $fields, $fieldParams)
+    public function deprecated_initSession($module, $fields, $fieldParams)
+    // public function initSession($module, $fields, $fieldParams)
     {
         $formSessionName  = $module . 'Form';
         if(isset($_SESSION[$formSessionName]) and $_SESSION[$formSessionName] != false) return;

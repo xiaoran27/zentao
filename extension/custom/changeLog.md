@@ -9,7 +9,7 @@
 
 ## fixed:  
 
-1. 修复搜索选择组件选择"all"查询不到数据的缺陷
+1. 修复搜索选择组件{project,execution,product,module,plan}选择"all"查询不到数据的缺陷
 
 
 #  rel230108
