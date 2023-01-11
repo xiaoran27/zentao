@@ -1,5 +1,17 @@
 [toc]
 
+
+#  rel230110
+
+## added:
+
+1. 优化：搜索选择组件组装条件封装为函数(conditionsBySelectValue)
+
+## fixed:  
+
+1. 修复搜索选择组件选择"all"查询不到数据的缺陷
+
+
 #  rel230108
 
 ## added:
