@@ -15,6 +15,6 @@ class myStory extends story
     public function syncStarlink()
     {
         $str = $this->loadModel('common')->syncStarlink();
-        // echo $str;
+        echo $str;
     }
 }

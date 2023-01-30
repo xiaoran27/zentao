@@ -4,6 +4,111 @@ class bytenewStory extends StoryModel
 {
 
     /**
+     * 据需求类型(requirement,story), 指派人为''重赋值
+     * 
+     * @param  string $type='requirement'  (all, requirement,story)
+     * @param  int $product=-1  <0==所有; 0==非SA; >0 某个产品。66=解决方案(SA专用)
+     * @param  int $sla=0  0==所有未响应记录; >0 SLA超时(hour)的记录
+     * @access public
+     * @return array
+     */
+    public function getTextForDing( $type='requirement', $product=-1, $sla=0)
+    {
+        $common = $this->loadModel('common');
+        $common->log(json_encode(array('type'=>$type,'product'=>$product,'sla'=>$sla),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+    
+        
+        
+        // // 获取产品-产品负责人 select id,po from zt_product where deleted = '0' ;
+        // $produectPoPairs = $this->dao->select("id, po")->from(TABLE_PRODUCT)
+        //     ->where('deleted')->eq(0)
+        //     ->fetchPairs('id', 'po');
+
+        // // 获取账号-钉钉    select account, if( ifnull( dingding, '') = '' , mobile , dingding  )  as dingding from zt_user ;
+        // $accountDingdingPairs = $this->dao->select("account, if( ifnull( dingding, '') = '' , mobile , dingding  )  as dingding")->from(TABLE_USER)
+        //     ->where('deleted')->eq(0)
+        //     ->fetchPairs('account', 'dingding');
+
+        // // 获取产品负责人-钉钉  select distinct zp.po as po, if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding from zt_product zp left join zt_user zu on zp.po = zu.account  where zp.po != '' and zp.deleted = '0' ;
+        // $poDingdingPairs = $this->dao->select("distinct zp.po as po, if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding ")->from(TABLE_PRODUCT)->alias('zp')
+        //     ->leftJoin(TABLE_USER)->alias('zu')->on('zp.po = zu.account')
+        //     ->where('zp.deleted')->eq(0)
+        //     ->andWhere('zp.po')->ne('')
+        //     ->fetchPairs('po', 'dingding');
+
+        // 获取需求指派人-钉钉-需求数量  
+        // select zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(zs.id) as total from zt_story zs left join zt_user zu on zs.assignedTo = zu.account  
+        //     where zs.assignedTo != '' and zs.responseResult ='todo' and zs.`type` in ('requirement','story') and zs.deleted = '0'
+        //       and timestampdiff(hour,ifnull(lastEditedDate,openedDate ),now()) > 0 and zs.status != 'closed'
+        //     group by zu.realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  );
+        
+
+        $dingdingDatas = $this->dao->select("zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(zs.id) as total ")->from(TABLE_STORY)->alias('zs')
+        ->leftJoin(TABLE_USER)->alias('zu')->on('zs.assignedTo = zu.account')
+        ->where('zs.deleted')->eq(0)
+        ->beginIF(empty($product) || $product < 0 )->andWhere("'1'")->eq(1)->fi()
+        ->beginIF($product == 0)->andWhere('zs.product')->ne(66)->fi()
+        ->beginIF($product > 0)->andWhere('zs.product')->eq($product)->fi()
+        ->andWhere('zs.assignedTo')->ne('')
+        // ->andWhere('zs.responseResult')->in("'todo','recieved','research','suspend'")
+        ->andWhere('zs.responseResult')->in("todo,recieved,research,suspend")
+        // ->andWhere('zs.`type`')->in($type == 'all'?"'requirement','story'":"'requirement'")
+        ->andWhere('zs.`type`')->in($type == 'all'?"requirement,story":"requirement")
+        ->andWhere('zs.status')->ne('closed')
+        ->beginIF($sla > 0)->andWhere('timestampdiff(hour,ifnull(lastEditedDate,openedDate ),now())')->gt($sla)->fi()
+        // ->groupby("zu.realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  )")
+        ->groupby("realname , dingding ")
+        ->fetchAll();
+        $common->log(json_encode($dingdingDatas,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        if (empty($dingdingDatas)) return array();
+
+        $text = '';
+        $mobiles = array();
+        foreach($dingdingDatas as $e ) {
+            $text .= "@$e->realname 有 $e->total 个待处理或须跟踪的需求\n";
+            $mobiles[] = $e->dingding;
+        }
+
+        return array('text'=>$text,'mobiles'=>$mobiles);
+    }
+    
+    /**
+     * 据需求类型(requirement,story), 指派人为''重赋值
+     * 
+     * @param  string $type='requirement'  (all, requirement,story)
+     * @param  int $product=0  <0==所有; 0==非SA; >0 某个产品。66=解决方案(SA专用)
+     * @access public
+     * @return int
+     */
+    public function resetAssignedTo( $type='requirement', $product=-1)
+    {
+        $common = $this->loadModel('common');
+        $common->log(json_encode(array('type'=>$type,'product'=>$product),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+        // 未响应处理(responseResult ='todo')的记录且未指派(assignedTo ='')的需求记录
+        //  update zt_story zs set assignedTo=(select po from zt_product where id=zs.product limit 1 ) where assignedTo ='' and responseResult ='todo' and `type` in ('requirement','story') and deleted = '0';
+        if ($type == 'all' ) {
+            $sql = "update zt_story zs set assignedTo=(select po from zt_product where id=zs.product limit 1 ) where assignedTo ='' and responseResult ='todo' and `type` in ('requirement','story') and deleted = '0'";
+        }else{
+            $sql = "update zt_story zs set assignedTo=(select po from zt_product where id=zs.product limit 1 ) where assignedTo ='' and responseResult ='todo' and `type` in ('requirement') and deleted = '0'";
+        }
+        if (empty($product) || $product < 0 ) {
+            $product=-1;
+        }else  if ($product > 0 ) {
+            $sql .= " and zs.product = $product";
+        }else{
+            $sql .= " and zs.product ！= 66";  
+        }
+
+
+        $rows = $this->dao->exec($sql);
+        
+        $common->log(json_encode(array('rows'=>$rows,'sql'=>$sql),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+        return $rows;
+    }
+
+    /**
      * Get report data of prLevel
      *
      * @access public

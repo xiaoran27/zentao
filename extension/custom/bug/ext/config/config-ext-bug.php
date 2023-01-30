@@ -7,7 +7,7 @@ $config->bug->purchasers   = array_keys($lang->bug->purchaserList);
 $config->bug->create->requiredFields  = 'title,openedBuild,purchaser,occursEnv';
 $config->bug->edit->requiredFields    = $config->bug->create->requiredFields . ',feedbackTime,collectTime,comment';
 $config->bug->resolve->requiredFields = 'resolution,comment';
-$config->bug->confirmbug->requiredFields = 'assignedTo,comment';
+// $config->bug->confirmbug->requiredFields = 'assignedTo,comment';
 $config->bug->list->defaultFields = 'id,severity,pri,title,purchaser,occursEnv,openedBy,assignedTo,resolvedBy,resolution';
 
 $config->bug->list->allFields = 'id, module, execution, story, task,
