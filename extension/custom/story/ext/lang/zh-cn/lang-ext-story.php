@@ -1,4 +1,5 @@
 <?php
+global $config;
 
 $lang->story->bzCategory = '客户分层';
 $lang->story->bzCategoryList = array();
@@ -85,10 +86,6 @@ $lang->story->purchaserList  = array();
 //https://www.qqxiuzi.cn/zh/pinyin/
 $lang->story->purchaserList['hzzmrjkjyxgs']  = '杭州正马软件科技有限公司0';
 $lang->story->purchaserList['shzmrjkjyxgs']  = '上海正马软件科技有限公司0';
-$lang->story->purchaserList['gzolybkwlkjyxgs']  = '广州欧莱雅百库网络科技有限公司';
-$lang->story->purchaserList['bxjydq(zg)yxgs']  = '博西家用电器（中国）有限公司';
-$lang->story->purchaserList['bjsfhwcyfzyxgs']  = '北京三夫户外产业发展有限公司';
-
 
 
 $lang->story->responseResult = '响应结果';

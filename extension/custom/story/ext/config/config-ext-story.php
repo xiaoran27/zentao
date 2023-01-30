@@ -46,12 +46,6 @@ else
 {
     $config->story->datatable->defaultField = array('id', 'asort', 'pri', 'title', 'purchaser', 'uatDate', 'openedBy', 'assignedTo', 'status', 'stage', 'taskCount', 'actions');
 
-    $config->story->datatable->fieldList['order']['title']    = 'order';
-    $config->story->datatable->fieldList['order']['fixed']    = 'left';
-    $config->story->datatable->fieldList['order']['width']    = '30';
-    $config->story->datatable->fieldList['order']['sort']     = 'no';
-    $config->story->datatable->fieldList['order']['required'] = 'no';
-    $config->story->datatable->fieldList['order']['name']     = $this->lang->story->order;
 }
 
 $config->story->datatable->fieldList['id']['width']    = '30';
