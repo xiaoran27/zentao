@@ -15,7 +15,7 @@ class myStory extends story
      * @access public
      * @return void
      */
-    public function dingRobotSend($url="https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27", $type='all', $product=-1, $sla=0)
+    public function dingRobotSend($url=null, $type='all', $product=-1, $sla=0)
     {
         $common = $this->loadModel('common'); 
         $common->log(json_encode(array('url'=>$url,'type'=>$type, 'product'=>$product,'sla'=>$sla),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
@@ -29,6 +29,11 @@ class myStory extends story
         // https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27
         // https%3A%2F%2Foapi.dingtalk.com%2Frobot%2Fsend%3Faccess_token%3D342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27
 
+        // 读取配置的url
+        if ( empty($url) ) {
+            $url = $this->config->story->dingRobotSend->url ;
+        }
+
         $url = str_replace("%3A", ":", $url);
         $url = str_replace("%2F", "/", $url);
         $url = str_replace("%3F", "?", $url);
@@ -40,6 +45,7 @@ class myStory extends story
         
         $common->log(json_encode(array('url' => $url, 'match' => $match) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if (empty($url) ||  $match < 1 ) {
+            echo "无效的url='$url'";
             return;
         }
         if (empty($sla) ) {
