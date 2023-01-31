@@ -17,6 +17,20 @@ class myStory extends story
      */
     public function dingRobotSend($url=null, $type='all', $product=-1, $sla=0)
     {
+        if (empty($type)){
+            $type = 'all';
+        }
+        if (empty($product)){
+            if ( "0" == $product) {
+                $product = 0;
+            }else{
+                $product = -1;
+            }
+        }
+        if (empty($sla)){
+            $sla = 0;
+        }-
+
         $common = $this->loadModel('common'); 
         $common->log(json_encode(array('url'=>$url,'type'=>$type, 'product'=>$product,'sla'=>$sla),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         

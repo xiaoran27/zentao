@@ -16,6 +16,16 @@ class myStory extends story
      */
     public function dingRobotSendForSA($url=null, $type='requirement', $product=66, $sla=0)
     {
+        if (empty($type)){
+            $type = 'requirement';
+        }
+        if (empty($product)){
+            $product = 66;
+        }
+        if (empty($sla)){
+            $sla = 0;
+        }
+
         $common = $this->loadModel('common'); 
         $common->log(json_encode(array('url'=>$url,'type'=>$type, 'product'=>$product,'sla'=>$sla),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         
@@ -61,8 +71,8 @@ class myStory extends story
         }
 
         $content = $dingDatas['content'] ;
-        if (!str_ends_with($content,"@SA")) {
-            $content .= "@SA" ;
+        if (strpos($content, '@PD') === false) {
+            $content .= "@PD" ;
         }
 
         $str = $common->dingRobotSend($content, $url, $dingDatas['atMobiles']);

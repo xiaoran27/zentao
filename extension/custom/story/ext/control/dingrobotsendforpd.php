@@ -16,6 +16,15 @@ class myStory extends story
      */
     public function dingRobotSendForPD($url=null, $type='requirement', $product=0, $sla=0)
     {
+        if (empty($type)){
+            $type = 'requirement';
+        }
+        if (empty($product)){
+            $product = 0;
+        }
+        if (empty($sla)){
+            $sla = 0;
+        }
     
         $common = $this->loadModel('common'); 
         $common->log(json_encode(array('url'=>$url,'type'=>$type, 'product'=>$product,'sla'=>$sla),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
@@ -63,7 +72,7 @@ class myStory extends story
         }
 
         $content = $dingDatas['content'] ;
-        if (!str_ends_with($content,"@PD")) {
+        if (strpos($content, '@PD') === false) {
             $content .= "@PD" ;
         }
 

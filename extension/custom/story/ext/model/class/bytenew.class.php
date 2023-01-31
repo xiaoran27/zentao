@@ -14,6 +14,16 @@ class bytenewStory extends StoryModel
      */
     public function getTextForDing( $type='requirement', $product=-1, $sla=0)
     {
+        if (empty($type)){
+            $type = 'requirement';
+        }
+        if (empty($product)){
+            $product = 0;
+        }
+        if (empty($sla)){
+            $sla = 0;
+        }
+
         $common = $this->loadModel('common');
         $common->log(json_encode(array('type'=>$type,'product'=>$product,'sla'=>$sla),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
     
@@ -46,7 +56,7 @@ class bytenewStory extends StoryModel
         $dingdingDatas = $this->dao->select("zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(zs.id) as total ")->from(TABLE_STORY)->alias('zs')
         ->leftJoin(TABLE_USER)->alias('zu')->on('zs.assignedTo = zu.account')
         ->where('zs.deleted')->eq(0)
-        ->beginIF(empty($product) || $product < 0 )->andWhere("'1'")->eq(1)->fi()
+        ->beginIF($product < 0 )->andWhere("'1'")->eq(1)->fi()
         ->beginIF($product == 0)->andWhere('zs.product')->ne(66)->fi()
         ->beginIF($product > 0)->andWhere('zs.product')->eq($product)->fi()
         ->andWhere('zs.assignedTo')->ne('')
@@ -71,12 +81,13 @@ class bytenewStory extends StoryModel
         }
 
         // +需求指派对象
-        if (empty($product) || $product < 0 ) {
+        if ( $product < 0 ) {
             $content .= "@PD+@SA";
         }else  if ($product >= 0 ) {
             $content .= ($product!=66?"@PD":"@SA");
         }
 
+        $common->log(json_encode(array('content'=>$content,'atMobiles'=>$atMobiles),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         return array('content'=>$content,'atMobiles'=>$atMobiles);
     }
     
@@ -90,6 +101,15 @@ class bytenewStory extends StoryModel
      */
     public function resetAssignedTo( $type='requirement', $product=-1)
     {
+        
+        if (empty($type)){
+            $type = 'requirement';
+        }
+        if (empty($product)){
+            $product = 0;
+        }
+        
+
         $common = $this->loadModel('common');
         $common->log(json_encode(array('type'=>$type,'product'=>$product),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
@@ -100,12 +120,12 @@ class bytenewStory extends StoryModel
         }else{
             $sql = "update zt_story zs set assignedTo=(select po from zt_product where id=zs.product limit 1 ) where assignedTo ='' and responseResult ='todo' and `type` in ('requirement') and deleted = '0'";
         }
-        if (empty($product) || $product < 0 ) {
+        if ($product < 0 ) {
             $product=-1;
         }else  if ($product > 0 ) {
             $sql .= " and zs.product = $product";
         }else{
-            $sql .= " and zs.product ！= 66";  
+            $sql .= " and zs.product != 66";  
         }
 
 
