@@ -73,10 +73,8 @@ class bytenewStory extends StoryModel
         // +需求指派对象
         if (empty($product) || $product < 0 ) {
             $content .= "@PD+@SA";
-        }else  if ($product > 0 ) {
+        }else  if ($product >= 0 ) {
             $content .= ($product!=66?"@PD":"@SA");
-        }else{
-            $content .= "@PD+@SA"; 
         }
 
         return array('content'=>$content,'atMobiles'=>$atMobiles);
