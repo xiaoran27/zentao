@@ -62,7 +62,12 @@ class myStory extends story
             return;
         }
 
-        $str = $common->dingRobotSend($dingDatas['content'] . ' @PD', $url, $dingDatas['atMobiles']);
+        $content = $dingDatas['content'] ;
+        if (!str_ends_with($content,"@PD")) {
+            $content .= "@PD" ;
+        }
+
+        $str = $common->dingRobotSend($content, $url, $dingDatas['atMobiles']);
         echo $str;
     }
 
