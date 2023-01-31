@@ -60,7 +60,7 @@ class myStory extends story
             return;
         }
 
-        $str = $common->dingRobotSend($dingDatas['text'], $url, $dingDatas['mobiles']);
+        $str = $common->dingRobotSend($dingDatas['content'], $url, $dingDatas['atMobiles']);
         echo $str;
     }
 }

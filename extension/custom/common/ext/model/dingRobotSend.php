@@ -44,9 +44,13 @@
         $resp = requests::post($url, $headers, $json_data, $options);
         $this->log(json_encode($resp,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         $err = "OK";
-        if ($resp->status_code != 200 
-            || ( $resp->status_code == 200 && $resp->body->errcode > 0 ) ){
+        if ($resp->status_code != 200 ){
             $err = json_encode($resp ,JSON_UNESCAPED_UNICODE) ;
+        }elseif ( $resp->status_code == 200  ) {
+            $body = json_decode($resp->body);
+            if ($body->errcode > 0 ) {
+                $err = $resp->body ;  //{"errcode":0,"errmsg":"ok"}
+            }
         }
     
         return $err ;
