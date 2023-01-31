@@ -62,14 +62,15 @@ class bytenewStory extends StoryModel
         $common->log(json_encode($dingdingDatas,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if (empty($dingdingDatas)) return array();
 
-        $text = '';
-        $mobiles = array();
+        $content = '';
+        $atMobiles = array();
         foreach($dingdingDatas as $e ) {
-            $text .= "@$e->realname 有 $e->total 个待处理或须跟踪的需求\n";
-            $mobiles[] = $e->dingding;
+            //消息内容content中要带上"@手机号"，跟atMobiles参数结合使用，才有@效果，如上示例。
+            $content .= "@$e->dingding ($e->realname) 有 $e->total 个待处理或须跟踪的需求\n";  
+            $atMobiles[] = $e->dingding;
         }
 
-        return array('text'=>$text,'mobiles'=>$mobiles);
+        return array('content'=>$content,'atMobiles'=>$atMobiles);
     }
     
     /**
