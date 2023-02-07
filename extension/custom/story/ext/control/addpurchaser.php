@@ -17,7 +17,8 @@ class myStory extends story
         // $this->loadModel('common')->log('addPurchaser name=' . json_encode($name,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         $id = $this->story->addPurchaser($name,$code,$category);
-        return $this->send(array('result' => ($id>0?'success':'failure'), 'message' => 'name=' . $name, 'id' => $id));
+        echo json_encode((array('result' => ($id>0?'success':'failure'), 'name' => $name, 'id' => $id, 'category' => $category)) ,JSON_UNESCAPED_UNICODE );
+        // return $this->send(array('result' => ($id>0?'success':'failure'), 'message' => 'name=' . $name, 'id' => $id));
         
     }
 
