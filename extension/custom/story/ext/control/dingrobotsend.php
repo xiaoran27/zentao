@@ -29,7 +29,7 @@ class myStory extends story
         }
         if (empty($sla)){
             $sla = 0;
-        }-
+        }
 
         $common = $this->loadModel('common'); 
         $common->log(json_encode(array('url'=>$url,'type'=>$type, 'product'=>$product,'sla'=>$sla),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
