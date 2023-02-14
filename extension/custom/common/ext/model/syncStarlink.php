@@ -89,6 +89,7 @@ public function syncStarlink()
         $purchaser->code = $data['companyId'];
         $purchaser->name = $data['customerName'];
         $purchaser->category = $data['type'];
+        $purchaser->category0 = $data['type'];
 
         $code_pinyin = $this->pinyin($purchaser->name);
         if ( empty($purchaser->code) ) {
@@ -117,10 +118,11 @@ public function syncStarlink()
         //     ->where("code")->eq($purchaser->code)
         //     ->orWhere("code")->eq($code_pinyin)
         //     ->fetch();
-        if (array_key_exists("$purchaser->code",$purchaserNows)) {
-            $purchaserNow = $purchaserNows["$purchaser->code"];
-        }elseif (array_key_exists("$code_pinyin",$purchaserNows)) {
-            $purchaserNow = $purchaserNows["$code_pinyin"];
+        $purchaserNow = null;
+        if (array_key_exists($purchaser->code,$purchaserNows)) {
+            $purchaserNow = $purchaserNows[$purchaser->code];
+        }elseif (array_key_exists($code_pinyin,$purchaserNows)) {
+            $purchaserNow = $purchaserNows[$code_pinyin];
         }
         // $this->log(json_encode($purchaserNow,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         
@@ -129,11 +131,11 @@ public function syncStarlink()
 
         if (empty($purchaserNow)){
             $this->log("INS:" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-            $this->dao->insert($TABLE_PURCHASER)->data($purchaser)->exec();
+            $this->dao->insert($TABLE_PURCHASER)->data($purchaser,"category0")->exec();
             $cnt_ins = $cnt_ins + 1;
         }elseif ( $purchaser->code != $purchaserNow->code || $purchaser->name != $purchaserNow->name || $purchaser->category != $purchaserNow->category) {
-            $this->log("UPD($purchaserNow->code):" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-            $this->dao->update($TABLE_PURCHASER)->data($purchaser)->where('code')->eq($purchaserNow->code)->exec();
+            $this->log("UPD($purchaser->code,$code_pinyin):" . json_encode($purchaserNow,JSON_UNESCAPED_UNICODE) ." => ". json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            $this->dao->update($TABLE_PURCHASER)->data($purchaser,"category0")->where('code')->eq($purchaserNow->code)->exec();
             $cnt_upd = $cnt_upd + 1;
         }else{
             $cnt_same = $cnt_same + 1;
