@@ -9,10 +9,12 @@ class bytenewStory extends StoryModel
      * @param  string $type='requirement'  (all, requirement,story)
      * @param  int $product=-1  <0==所有; 0==非SA; >0 某个产品。66=解决方案(SA专用)
      * @param  int $sla=0  0==所有未响应记录; >0 SLA超时(hour)的记录
+     * @param  int $program=223  <0==所有; 223=正马项目集
+     * @param  string $responseResult='todo' 多个用','分隔 (all, todo,recieved,research,suspend )
      * @access public
      * @return array
      */
-    public function getTextForDing( $type='requirement', $product=-1, $sla=0)
+    public function getTextForDing( $type='requirement', $product=-1, $sla=0, $program=223, $responseResult='todo')
     {
         if (empty($type)){
             $type = 'requirement';
@@ -23,9 +25,15 @@ class bytenewStory extends StoryModel
         if (empty($sla)){
             $sla = 0;
         }
+        if (empty($program)){
+            $program = 223;
+        }
+        if (empty($responseResult)){
+            $responseResult = 'todo';
+        }
 
         $common = $this->loadModel('common');
-        $common->log(json_encode(array('type'=>$type,'product'=>$product,'sla'=>$sla),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('type'=>$type,'product'=>$product,'sla'=>$sla,'program'=>$program),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
     
         
         
@@ -47,27 +55,33 @@ class bytenewStory extends StoryModel
         //     ->fetchPairs('po', 'dingding');
 
         // 获取需求指派人-钉钉-需求数量  
-        // select zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(zs.id) as total from zt_story zs left join zt_user zu on zs.assignedTo = zu.account  
+        // select zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(distinct zs.id) as total 
+        // from zt_story zs left join zt_user zu on zs.assignedTo = zu.account   left join zt_product zp  on zs.product = zp.id
         //     where zs.assignedTo != '' and zs.responseResult ='todo' and zs.`type` in ('requirement','story') and zs.deleted = '0'
-        //       and timestampdiff(hour,ifnull(lastEditedDate,openedDate ),now()) > 0 and zs.status != 'closed'
+        //       and timestampdiff(hour,ifnull(lastEditedDate,openedDate ),now()) > 0 and zs.status != 'closed' and zp.program = 223
         //     group by zu.realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  );
         
 
-        $dingdingDatas = $this->dao->select("zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(zs.id) as total ")->from(TABLE_STORY)->alias('zs')
+        $dingdingDatas = $this->dao->select("zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(distinct zs.id) as total ")->from(TABLE_STORY)->alias('zs')
         ->leftJoin(TABLE_USER)->alias('zu')->on('zs.assignedTo = zu.account')
+        ->leftJoin(TABLE_PRODUCT)->alias('zp')->on('zs.product = zp.id')
         ->where('zs.deleted')->eq(0)
         ->beginIF($product < 0 )->andWhere("'1'")->eq(1)->fi()
         ->beginIF($product == 0)->andWhere('zs.product')->ne(66)->fi()
         ->beginIF($product > 0)->andWhere('zs.product')->eq($product)->fi()
         ->andWhere('zs.assignedTo')->ne('')
         // ->andWhere('zs.responseResult')->in("'todo','recieved','research','suspend'")
-        ->andWhere('zs.responseResult')->in("todo,recieved,research,suspend")
-        // ->andWhere('zs.`type`')->in($type == 'all'?"'requirement','story'":"'requirement'")
-        ->andWhere('zs.`type`')->in($type == 'all'?"requirement,story":"requirement")
+        // ->andWhere('zs.responseResult')->in("todo,recieved,research,suspend")
+        ->andWhere('zs.responseResult')->in($responseResult == 'all'?"todo,recieved,research,suspend":$responseResult)
+        // ->andWhere('zs.`type`')->in($type == 'all'?"'requirement','story'":"'$type'")
+        ->andWhere('zs.`type`')->in($type == 'all'?"requirement,story":$type)
         ->andWhere('zs.status')->ne('closed')
+        ->beginIF($program < 0 )->andWhere("'1'")->eq(1)->fi()
+        ->beginIF($program >= 0)->andWhere('zp.program')->eq($program)->fi()
         ->beginIF($sla > 0)->andWhere('timestampdiff(hour,ifnull(lastEditedDate,openedDate ),now())')->gt($sla)->fi()
         // ->groupby("zu.realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  )")
         ->groupby("realname , dingding ")
+        ->orderby("total  DESC")
         ->fetchAll();
         $common->log(json_encode($dingdingDatas,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if (empty($dingdingDatas)) return array();
@@ -77,7 +91,7 @@ class bytenewStory extends StoryModel
         foreach($dingdingDatas as $e ) {
             //消息内容content中要带上"@手机号"，跟atMobiles参数结合使用，才有@效果，如上示例。
             $content .= "@$e->dingding ($e->realname) 有 $e->total 个待处理或须跟踪的需求\n";  
-            $atMobiles[] = $e->dingding;
+            if (!empty($e->dingding)) $atMobiles[] = $e->dingding;
         }
 
         // +需求指派对象
