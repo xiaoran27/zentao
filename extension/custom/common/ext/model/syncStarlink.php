@@ -23,7 +23,7 @@ public function syncStarlink()
     $diffm = $this->dao->select("timestampdiff(minute , max(mtime),now()) as diffm")->from($TABLE_PURCHASER)->fetch("diffm");
     $this->log("diffm=$diffm", __FILE__, __LINE__);
     if ( $diffm < $maxGapMinute ) {
-        return "NA: $diffm < $maxGapMinute";
+        return "NA(minutes): $diffm < $maxGapMinute";
     }
     
     
@@ -62,14 +62,21 @@ public function syncStarlink()
     $resp = requests::get($url, $headers, $options);
     if ($resp->status_code != 200 ){
         $this->log(json_encode($resp,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-        return "NA: $resp->status_code != 200";
+        return "NA(resp->status_code): $resp->status_code != 200";
     }
 
     $body = Json_decode($resp->body, true);
     if ($body['code'] != 0 ) {
         $bodycode = $body['code'];
-        return "NA: $bodycode != 0 ";
+        return "NA(bodycode): $bodycode != 0 ";
     }
+
+    //  所有客户数据
+    $purchaserRows = $this->dao->select("*")->from($TABLE_PURCHASER)->fetchAll();
+    foreach($purchaserRows as $row) {
+        $purchaserNows["$row->code"] = $row;
+    }
+    // $this->log(json_encode(array_keys($purchaserNows),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
     $bodyData = $body['data'];
     // $this->log(json_encode($bodyData[0],JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
@@ -106,24 +113,30 @@ public function syncStarlink()
             $purchaser->category = "SMB";
         }
 
-
-        $purchaserNow = $this->dao->select("*")->from($TABLE_PURCHASER)
-            ->where("code")->eq($purchaser->code)
-            ->orWhere("code")->eq($code_pinyin)
-            ->fetch();
+        // $purchaserNow = $this->dao->select("*")->from($TABLE_PURCHASER)
+        //     ->where("code")->eq($purchaser->code)
+        //     ->orWhere("code")->eq($code_pinyin)
+        //     ->fetch();
+        if (array_key_exists("$purchaser->code",$purchaserNows)) {
+            $purchaserNow = $purchaserNows["$purchaser->code"];
+        }elseif (array_key_exists("$code_pinyin",$purchaserNows)) {
+            $purchaserNow = $purchaserNows["$code_pinyin"];
+        }
+        // $this->log(json_encode($purchaserNow,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         
         // $this->log(json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         // $this->log(json_encode($purchaserNow,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         if (empty($purchaserNow)){
+            $this->log("INS:" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             $this->dao->insert($TABLE_PURCHASER)->data($purchaser)->exec();
             $cnt_ins = $cnt_ins + 1;
         }elseif ( $purchaser->code != $purchaserNow->code || $purchaser->name != $purchaserNow->name || $purchaser->category != $purchaserNow->category) {
+            $this->log("UPD($purchaserNow->code):" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             $this->dao->update($TABLE_PURCHASER)->data($purchaser)->where('code')->eq($purchaserNow->code)->exec();
             $cnt_upd = $cnt_upd + 1;
         }else{
             $cnt_same = $cnt_same + 1;
-            
         }
         if( dao::isError() )
         {

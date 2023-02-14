@@ -1,5 +1,7 @@
 <?php
 
+global $lang, $app;
+
 // 配置ding群配置的Robot的webhook
 $config->story->url['dingRobotSend']='https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27' ;
 $config->story->url['dingRobotSendPD']='https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27' ;
