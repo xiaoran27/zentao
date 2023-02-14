@@ -40,10 +40,10 @@ class myStory extends story
 
         // 读取配置的url
         if ( empty($url) ) {
-            $url = $this->config->story->dingRobotSendPD->url ;
+            $url = $this->config->story->url['dingRobotSendPD'] ;
         }
         if ( empty($url) ) {
-            $url = $this->config->story->dingRobotSend->url ;
+            $url = $this->config->story->url['dingRobotSend'] ;
         }
         $url = str_replace("%3A", ":", $url);
         $url = str_replace("%2F", "/", $url);

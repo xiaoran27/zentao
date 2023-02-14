@@ -1,9 +1,9 @@
 <?php
 
 // 配置ding群配置的Robot的webhook
-$config->story->dingRobotSend->url='https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27' ;
-$config->story->dingRobotSendPD->url='https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27' ;
-$config->story->dingRobotSendSA->url='https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27' ;
+$config->story->url['dingRobotSend']='https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27' ;
+$config->story->url['dingRobotSendPD']='https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27' ;
+$config->story->url['dingRobotSendSA']='https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27' ;
 
 // $config->story->bzCategories   = array('T10', 'B100', 'KA', 'SMB');
 // $config->story->prCategories   = array('project', 'product', 'myself', 'tech');
