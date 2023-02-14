@@ -1,4 +1,5 @@
 <?php
+global $lang, $app;
 
 $config->product->search['fields']['bzCategory']     = $lang->story->bzCategory;
 $config->product->search['fields']['prCategory']     = $lang->story->prCategory;

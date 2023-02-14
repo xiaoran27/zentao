@@ -1,5 +1,7 @@
 <?php
 
+global $lang, $app;
+
 // $config->bug->occursEnvs   = array('dev', 'test', 'pre', 'online', 'loreal', 'elc');
 $config->bug->occursEnvs   = array_keys($lang->bug->occursEnvList);
 $config->bug->purchasers   = array_keys($lang->bug->purchaserList);
