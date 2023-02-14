@@ -6,7 +6,7 @@ if( $type == 'requirement' || $story->type == 'requirement' ){
   $config->story->change->requiredFields .= ",purchaser,bzCategory"; 
 }
 
-$common->syncStarlink();
+// $common->syncStarlink();
 
 $bizProjects = $this->loadModel('project')->getPairsListForB100();
 $bizProjectList = $bizProjects ;

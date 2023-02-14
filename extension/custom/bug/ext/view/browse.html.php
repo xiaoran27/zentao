@@ -20,7 +20,7 @@ js::set('flow',          $config->global->flow);
 js::set('productID',     $productID);
 js::set('branch',        $branch);
 $currentBrowseType = isset($lang->bug->mySelects[$browseType]) && in_array($browseType, array_keys($lang->bug->mySelects)) ? $browseType : '';
-$common->syncStarlink();
+// $common->syncStarlink();
 ?>
 <?php if($config->global->flow == 'full'):?>
 <div id="mainMenu" class="clearfix">
