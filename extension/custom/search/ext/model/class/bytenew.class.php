@@ -184,14 +184,18 @@ class bytenewSearch extends searchModel
             if($this->post->$valueName == 'ZERO') $this->post->$valueName = 0;   // ZERO is special, stands to 0.
             if(isset($fieldParams->$field) and $fieldParams->$field->control == 'select' and $this->post->$valueName === 'null') $this->post->$valueName = '';   // Null is special, stands to empty if control is select. Fix bug #3279.
             
-            // 对 {null,all} 做特殊处理
+            // $this->loadModel('common')->log($this->post->$fieldName . ' '. $this->post->$operatorName .' '. json_encode($this->post->$valueName,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            
+            // 对 {null,all,ZERO} 做特殊处理
             if(isset($fieldParams->$field) and ( $fieldParams->$field->control == 'select' or  $fieldParams->$field->control == 'multi-select') )
             {
                 $values = $this->post->$valueName ;
                 foreach ( $values as $k=>$v) {
-                    if ( 'null' == $v ) { 
+                    if ( 'ZERO' == $v ) { 
+                        $values[$k]='0';
+                    }elseif ( 'null' == $v ) { 
                         $values[$k]='';
-                    }else if ('all' == $v ){
+                    }elseif ('all' == $v ){
                         $this->post->$valueName = "all";
                         break;
                     }
@@ -206,10 +210,11 @@ class bytenewSearch extends searchModel
             if($andOr != 'AND' and $andOr != 'OR') $andOr = 'AND';
 
             /* Set operator. */
-            // $this->loadModel('common')->log(json_encode($this->post->$valueName,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             $value    = addcslashes(trim($this->post->$valueName), '%');
             $operator = $this->post->$operatorName;
             if(!isset($this->lang->search->operators[$operator])) $operator = '=';
+            // $this->loadModel('common')->log($this->post->$fieldName . ' '. $operator .' '. json_encode($value,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            
 
             /* Set condition. */
             $condition = '';
@@ -260,6 +265,8 @@ class bytenewSearch extends searchModel
                 }
                 elseif($this->post->$fieldName == 'dept')
                 {
+                    if ( $value == 0) continue;
+
                     $allDepts = $this->loadModel('dept')->getAllChildId($value);
                     $condition = helper::dbIN($allDepts);
                 }
