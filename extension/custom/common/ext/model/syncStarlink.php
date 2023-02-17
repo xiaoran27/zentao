@@ -1,6 +1,6 @@
 <?php
 
-public function syncStarlink($timeout=10)
+public function syncStarlink($timeout=30)
 {
     static $maxGapMinute = 5;
 
