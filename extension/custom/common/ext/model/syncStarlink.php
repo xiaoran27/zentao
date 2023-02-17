@@ -1,6 +1,6 @@
 <?php
 
-public function syncStarlink()
+public function syncStarlink($timeout=10)
 {
     static $maxGapMinute = 5;
 
@@ -58,11 +58,15 @@ public function syncStarlink()
     
     $url = 'https://mstarlink.bytenew.com/api/starlinkApi/commonApi/listDealCustomers';
     $headers = array('Content-Type' => 'application/json','Accept' => 'application/json');
-    $options = array('timeout' => '10') ;
-    $resp = requests::get($url, $headers, $options);
-    if ($resp->status_code != 200 ){
-        $this->log(json_encode($resp,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-        return "NA(resp->status_code): $resp->status_code != 200";
+    $options = array('timeout' => $timeout) ;
+    try{
+        $resp = requests::get($url, $headers, $options);
+        if ($resp->status_code != 200 ){
+            $this->log(json_encode($resp,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            return "NA(resp->status_code): $resp->status_code != 200";
+        }
+    }catch (Exception $e) {
+        return "Exception: " . $e->getMessage();
     }
 
     $body = Json_decode($resp->body, true);
@@ -88,6 +92,7 @@ public function syncStarlink()
         $purchaser  = new stdclass();
         $purchaser->code = $data['companyId'];
         $purchaser->name = $data['customerName'];
+        if ( isset($data['scoreNum']) ) $purchaser->scoreNum = $data['scoreNum'] ;  //行为分
         $purchaser->category = $data['type'];
         $purchaser->category0 = $data['type'];
 
@@ -102,13 +107,25 @@ public function syncStarlink()
 
         if ( $purchaser->category == "普通商家" ) {
             $purchaser->category = "SMB";
-        }elseif ($purchaser->category == "B5商家" ) {
+        }else if ( strpos(strtoupper($purchaser->category), 'B5') !== false ) {
             $purchaser->category = "B5";
-        }elseif ($purchaser->category == "B100商家" ) {
+        }else if ( strpos(strtoupper($purchaser->category), 'B100') !== false ) {
             $purchaser->category = "B100";
-        }elseif ($purchaser->category == "B500商家" ) {
+        }else if ( strpos(strtoupper($purchaser->category), 'B500') !== false ) {
             $purchaser->category = "B500";
-        }elseif ($purchaser->category == "LKA商家" ) {
+        }else if ( strpos(strtoupper($purchaser->category), 'LKA') !== false ) {
+            $purchaser->category = "LKA";
+        }elseif ( strpos(strtoupper($purchaser->category), 'SMB') !== false ) {
+            $purchaser->category = "SMB";
+        }elseif ($purchaser->category == "B5商家" || $purchaser->category == "B5" ) {
+            $purchaser->category = "B5";
+        }elseif ($purchaser->category == "B100商家" || $purchaser->category == "B100" ) {
+            $purchaser->category = "B100";
+        }elseif ($purchaser->category == "B500商家"  || $purchaser->category == "B500") {
+            $purchaser->category = "B500";
+        }elseif ($purchaser->category == "LKA商家"  || $purchaser->category == "LKA") {
+            $purchaser->category = "LKA";
+        }elseif ($purchaser->category == "SMB商家"  || $purchaser->category == "SMB") {
             $purchaser->category = "LKA";
         }else {
             $purchaser->category = "SMB";
