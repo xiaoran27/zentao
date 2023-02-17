@@ -308,8 +308,16 @@ js::set('bizProjectList', $bizProjectList);
                   <td id='bzCategory'><?php echo zget($lang->story->bzCategoryList, $story->bzCategory, $story->bzCategory);?></td>
                 </tr>
                 <tr>
+                  <th><?php echo $lang->story->scoreNum;?></th>
+                  <td id='scoreNum'><?php echo $story->scoreNum;?></td>
+                </tr>
+                <tr>
                   <th><?php echo $lang->story->prCategory;?></th>
                   <td id='prCategory'><?php echo ($story->type == 'requirement'?$lang->story->prCategoryList0[$story->prCategory]:$lang->story->prCategoryList[$story->prCategory]);?></td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->story->prLevel;?></th>
+                  <td><?php echo html::select('prLevel', $lang->story->prLevelList, $story->prLevel);?></td>
                 </tr>
                 <?php if($story->type == 'requirement'):?>
                 <tr>

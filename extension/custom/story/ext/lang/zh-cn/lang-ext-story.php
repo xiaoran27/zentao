@@ -66,6 +66,7 @@ $lang->story->rspRejectTime = '拒绝时间';
 $lang->story->rspResearchTime = '调研时间';
 $lang->story->rspAcceptTime = '接受时间';
 
+
 $lang->story->prLevel = '需求等级';
 $lang->story->prLevelList = array();
 $lang->story->prLevelList['C']  = '小迭代(C)';
@@ -74,8 +75,8 @@ $lang->story->prLevelList['A']  = '新产品(A)';
 
 
 $lang->story->bizProject = '项目名称';
-
 $lang->story->asort = '绝对序';
+$lang->story->scoreNum = '行为分';
 
 $lang->story->bizStage = '业务场景';
 $lang->story->bizNodus = '业务痛点';

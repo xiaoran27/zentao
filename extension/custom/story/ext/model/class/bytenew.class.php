@@ -5229,6 +5229,9 @@ class bytenewStory extends StoryModel
             case 'asort':
                 echo $story->asort;
                 break;
+            case 'scoreNum':
+                echo $story->scoreNum;
+                break;
             case 'source':
                 echo zget($this->lang->story->sourceList, $story->source, $story->source);
                 break;

@@ -20,54 +20,39 @@ js::set('bizProjectList', $bizProjectList);
 <?php include '../../../../../module/common/view/kindeditor.html.php';?>
 <?php js::set('rawMethod', $this->app->rawMethod);?>
 <script>
+
 /**
- * Load product.
+ * 选择客户后同步赋值 客户分层/行为分.
  *
- * @param  int   $productID
+ * @param  int   $purchaserValue
  * @access public
  * @return void
  */
-function loadProduct(productID)
+function set_bzCategory_scoreNum(purchaserValue)
 {
-    if(typeof parentStory != 'undefined' && parentStory)
+    _purchaserValue = $('#purchaser').val();
+    list = (""+_purchaserValue).split(",");
+    selectedCode = list[list.length - 1];
+
+    $.get(createLink('story', 'getPurchaserList', "code="+selectedCode, "json"), function(data)
     {
-        confirmLoadProduct = confirm(moveChildrenTips);
-        if(!confirmLoadProduct)
-        {
-            $('#product').val(oldProductID);
-            $('#product').trigger("chosen:updated");
-            return false;
+        if(data)
+        {  
+            data = eval("(" + data + ")");
+            value = data[selectedCode];
+            valueList = value.split(",");
+
+            if (valueList.length>1) {
+                $("#bzCategory_chosen > a > span").html(valueList[1]);
+                $("#bzCategory_chosen > a > div.chosen-search > input[type=text]").attr('placeholder',valueList[1]);
+                $("#bzCategory").find("option[value='"+valueList[1]+"']").attr("selected",true);
+            }
+            if (valueList.length>2) $('#scoreNum').val(valueList[2]);
         }
-    }
+    })
 
-    if(typeof hasSR != 'undefined' && hasSR)
-    {
-        confirmLoadProduct = confirm(moveSRTips);//Set hasSR variable in pro and biz.
-        if(!confirmLoadProduct)
-        {
-            $('#product').val(oldProductID);
-            $('#product').trigger("chosen:updated");
-            return false;
-        }
-    }
-
-    oldProductID = $('#product').val();
-    loadProductBranches(productID);
-    loadProductReviewers(productID);
-    loadURS();
-
-    if(typeof(storyType) == 'string' && storyType == 'story')
-    {
-        var storyLink = createLink('story', 'ajaxGetParentStory', 'productID=' + productID + '&labelName=parent');
-        $.get(storyLink, function(data)
-        {
-            $('#parent').replaceWith(data);
-            $('#parent' + "_chosen").remove();
-            $('#parent').next('.picker').remove();
-            $('#parent').chosen();
-        });
-    }
 }
+
 
 /**
  * Load branch.

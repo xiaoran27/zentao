@@ -78,7 +78,7 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
           </tr>	  
           <tr>
             <th><?php echo $lang->story->purchaser;?></th>
-            <td colspan="2"><?php echo html::select('purchaser[]', $purchaserList, $purchaser, "class='form-control chosen' multiple");?></td>
+            <td colspan="2"><?php echo html::select('purchaser[]', $purchaserList, $purchaser, "onchange='set_bzCategory_scoreNum(this.value)' class='form-control chosen' multiple");?></td>
             <td>
               <div class="input-group">
                    <div class="input-group-addon" style="min-width: 77px;"><?php echo $lang->story->bizProject;?></div>
@@ -94,7 +94,13 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
           </tr>
           <tr>
             <th><?php echo $lang->story->bzCategory;?></th>
-            <td colspan="2"><?php echo html::select('bzCategory', $lang->story->bzCategoryList, $bzCategory, "class='form-control chosen'");?></td>
+            <td ><?php echo html::select('bzCategory', $lang->story->bzCategoryList, $bzCategory, "class='form-control' ");?></td>
+            <td >
+                <div class="input-group scoreNumBox">
+                  <div class="input-group-addon " style="min-width: 77px;"><?php echo $lang->story->scoreNum;?></div>
+                  <?php echo html::input('scoreNum',$scoreNum, "class='form-control' readonly required");?>
+                </div>
+            </td>
             <td >
                 <div class="input-group prCategoryIdBox">
                   <div class="input-group-addon " style="min-width: 77px;"><?php echo $lang->story->prCategory;?></div>

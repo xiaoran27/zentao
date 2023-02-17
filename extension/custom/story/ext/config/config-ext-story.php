@@ -33,7 +33,7 @@ $config->story->exportFields = '
     reviewedBy, reviewedDate,
     closedBy, closedDate, closedReason,
     lastEditedBy, lastEditedDate,
-    rspRecievedTime, rspResearchTime, rspAcceptTime, rspRejectTime,
+    rspRecievedTime, rspResearchTime, rspAcceptTime, rspRejectTime,scoreNum,
     childStories, linkStories, duplicateStory, files';
 
 $config->story->list->customCreateFields      = 'purchaser,bzCategory,prCategory,uatDate,source,verify,pri';
@@ -57,7 +57,7 @@ else
 
 $config->story->datatable->fieldList['id']['width']    = '30';
 $config->story->datatable->fieldList['pri']['width']    = '20';
-$config->story->datatable->fieldList['title']['width']    = '90';
+$config->story->datatable->fieldList['title']['width']    = 'auto';
 $config->story->datatable->fieldList['module']['width']      = '50';
 
 
@@ -133,3 +133,9 @@ $config->story->datatable->fieldList['asort']['title']    = 'asort';
 $config->story->datatable->fieldList['asort']['fixed']    = 'left';
 $config->story->datatable->fieldList['asort']['width']    = '40';
 $config->story->datatable->fieldList['asort']['required'] = 'no';
+
+
+$config->story->datatable->fieldList['scoreNum']['title']    = 'scoreNum';
+$config->story->datatable->fieldList['scoreNum']['fixed']    = 'left';
+$config->story->datatable->fieldList['scoreNum']['width']    = '40';
+$config->story->datatable->fieldList['scoreNum']['required'] = 'no';

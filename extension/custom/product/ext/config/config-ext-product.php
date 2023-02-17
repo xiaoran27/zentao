@@ -34,3 +34,6 @@ $config->product->search['fields']['rspResearchTime']     = $lang->story->rspRes
 $config->product->search['params']['rspResearchTime']     = array('operator' => '>=', 'control' => 'input', 'values' => '', 'class' => 'date');
 $config->product->search['fields']['rspAcceptTime']     = $lang->story->rspAcceptTime;
 $config->product->search['params']['rspAcceptTime']     = array('operator' => '>=', 'control' => 'input', 'values' => '', 'class' => 'date');
+
+$config->product->search['fields']['scoreNum']     = $lang->story->scoreNum;
+$config->product->search['params']['scoreNum']     = array('operator' => '>=', 'control' => 'input', 'values' => '');

@@ -960,3 +960,12 @@ update zt_story set bzCategory='B500' where bzCategory like '%101%';
 ALTER TABLE zt_story ADD COLUMN  asort varchar(16) DEFAULT '' NOT NULL COMMENT '绝对序: YYmmNNN';
 
 -- sql.end.banniu_rel230107
+
+-- sql.start.banniu_rel230220
+
+-- 2023-2-17 15:28:28
+ALTER TABLE zt_purchaser ADD scoreNum FLOAT DEFAULT 5 NOT NULL COMMENT '行为分.<3表示预警';
+ALTER TABLE zt_story ADD scoreNum FLOAT DEFAULT 5 NOT NULL COMMENT '行为分.<3表示预警';
+
+-- sql.end.banniu_rel230220
+

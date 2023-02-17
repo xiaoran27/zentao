@@ -199,7 +199,7 @@
               </tr>              
               <tr>
                 <th><?php echo $lang->story->purchaser;?></th>
-                <td><?php echo html::select('purchaser[]', $purchaserList, $story->purchaser, "class='form-control chosen' multiple");?></td>
+                <td><?php echo html::select('purchaser[]', $purchaserList, $story->purchaser, "onchange='set_bzCategory_scoreNum(this.value)' class='form-control chosen' multiple");?></td>
               </tr>
               <tr>
                 <th><?php echo $lang->story->bizProject;?></th>
@@ -212,6 +212,10 @@
               <tr>
                 <th><?php echo $lang->story->bzCategory;?></th>
                 <td><?php echo html::select('bzCategory', $lang->story->bzCategoryList, $story->bzCategory, "class='form-control chosen' ");?></td>
+              </tr>
+              <tr>
+                <th><?php echo $lang->story->scoreNum;?></th>
+                <td><?php echo html::input('scoreNum',$story->scoreNum, "class='form-control' readonly required");?></td>
               </tr>
               <tr>
                 <th><?php echo $lang->story->prCategory;?></th>
