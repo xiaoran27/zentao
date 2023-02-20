@@ -31,23 +31,29 @@ js::set('bizProjectList', $bizProjectList);
 function set_bzCategory_scoreNum(purchaserValue)
 {
     _purchaserValue = $('#purchaser').val();
-    list = (""+_purchaserValue).split(",");
-    selectedCode = list[list.length - 1];
+    if ( ! _purchaserValue ) return;
+    // list = (""+_purchaserValue).split(",");
+    // selectedCode = list[list.length - 1];   //  可能不是最后选择的值
+    selectedCode = $("#purchaser").next().find('div.picker-selections > div:last').attr("title");  //最后选择的客户名称
 
-    $.get(createLink('story', 'getPurchaserList', "code="+selectedCode, "json"), function(data)
+    // console.log("当前传递客户="+purchaserValue+"; 全部客户="+list+"; 最后一个客户="+selectedCode);
+
+    $.get(createLink('story', 'getPurchaserList', "codeOrName="+selectedCode, "json"), function(data)
     {
         if(data)
         {  
-            data = eval("(" + data + ")");
+            data = eval("(" + data + ")");  //code,name,category,scoreNum
+            // console.log("get返回的客户="+JSON.stringify(data));
             value = data[selectedCode];
             valueList = value.split(",");
+            
 
-            if (valueList.length>1) {
-                $("#bzCategory_chosen > a > span").html(valueList[1]);
-                $("#bzCategory_chosen > a > div.chosen-search > input[type=text]").attr('placeholder',valueList[1]);
-                $("#bzCategory").find("option[value='"+valueList[1]+"']").attr("selected",true);
+            if (valueList.length > 1 ) {
+                // $("#bzCategory_chosen > a > span").html(valueList[2]);
+                // $("#bzCategory_chosen > a > div.chosen-search > input[type=text]").attr('placeholder',valueList[2]);
+                $("#bzCategory").find("option[value='"+valueList[2]+"']").attr("selected",true);
             }
-            if (valueList.length>2) $('#scoreNum').val(valueList[2]);
+            if (valueList.length>2) $('#scoreNum').val(valueList[3]);
         }
     })
 
