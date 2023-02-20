@@ -91,7 +91,7 @@ class myCron extends cron
                     if($cron['command'])
                     {
                         $common = $this->loadModel('common'); 
-                        $common->log(json_encode(array('cron.command' => $cron['command']) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                        // $common->log(json_encode(array('cron.command' => $cron['command']) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
                         if(isset($crons[$id]) and $crons[$id]->type == 'zentao')
                         {
