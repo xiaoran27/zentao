@@ -211,7 +211,7 @@
               </tr> 
               <tr>
                 <th><?php echo $lang->story->bzCategory;?></th>
-                <td><?php echo html::select('bzCategory', $lang->story->bzCategoryList, $story->bzCategory, "class='form-control chosen' ");?></td>
+                <td><?php echo html::select('bzCategory', $lang->story->bzCategoryList, $story->bzCategory, "class='form-control' ");?></td>
               </tr>
               <tr>
                 <th><?php echo $lang->story->scoreNum;?></th>
