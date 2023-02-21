@@ -39,6 +39,12 @@ function set_bzCategory_scoreNum(purchaserValue)
 
     $.get(createLink('story', 'getPurchaserList', "codeOrName="+selectedCode, "json"), function(data)
     {
+        // console.log("返回的data="+data);
+        i=data.indexOf('{"":"",');  //防止返回: {"status":"success",...}{"":"",...
+        if (i>0){
+            data=data.substring(i);
+        }
+        // console.log("处理后的data="+data);
         if(data)
         {  
             data = eval("(" + data + ")");  //code,name,category,scoreNum
