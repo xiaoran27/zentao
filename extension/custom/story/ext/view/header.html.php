@@ -32,9 +32,8 @@ function set_bzCategory_scoreNum(purchaserValue)
 {
     _purchaserValue = $('#purchaser').val();
     if ( ! _purchaserValue ) return;
-    // list = (""+_purchaserValue).split(",");
-    // selectedCode = list[list.length - 1];   //  可能不是最后选择的值
-    selectedCode = $("#purchaser").next().find('div.picker-selections > div:last').attr("title");  //最后选择的客户名称
+    // selectedCode = $("#purchaser").next().find('div.picker-selections > div:last').attr("title");  //最后选择的客户名称
+    selectedCode = $("#purchaser").next().find('div.picker-selections > div:first').attr("title");  //第一个选择的客户名称
 
     // console.log("当前传递客户="+purchaserValue+"; 全部客户="+list+"; 最后一个客户="+selectedCode);
 
