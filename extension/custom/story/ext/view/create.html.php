@@ -98,7 +98,7 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
             <td >
                 <div class="input-group scoreNumBox">
                   <div class="input-group-addon " style="min-width: 77px;"><?php echo $lang->story->scoreNum;?></div>
-                  <?php echo html::input('scoreNum',$scoreNum, "class='form-control' readonly required");?>
+                  <?php echo html::input('scoreNum',empty($scoreNum)?0:$scoreNum, "class='form-control' readonly");?>
                 </div>
             </td>
             <td >
