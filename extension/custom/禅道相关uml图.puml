@@ -1,0 +1,149 @@
+
+@startuml
+
+scale 1.0
+title 产品业务需求-响应结果对应时间
+
+[*] --> 创建时间: 新建
+[*] --> 各时间为null: 新建
+
+各时间为null --> 已收到时间: 已收到
+各时间为null --> 已收到时间: 挂起
+
+各时间为null --> 已收到时间: 调研
+各时间为null  --> 调研时间: 调研
+
+各时间为null --> 拒绝时间: 拒绝
+各时间为null --> 已收到时间: 拒绝
+各时间为null --> 调研时间: 拒绝
+
+各时间为null --> 接受时间: 接受
+各时间为null --> 已收到时间: 接受
+各时间为null --> 调研时间: 接受
+
+创建时间 --> 已收到时间: <color:red>响应时长</color>
+
+调研时间 <-- 已收到时间: <color:red>等待时长</color>
+接受时间 <-- 已收到时间: <color:red>等待时长</color>
+拒绝时间 <-- 已收到时间: <color:red>等待时长</color>
+
+调研时间 --> 接受时间: <color:red>调研时长</color>
+调研时间 --> 拒绝时间: <color:red>调研时长</color>
+
+创建时间 --> 接受时间: <color:red>处理时长</color>
+创建时间 --> 拒绝时间: <color:red>处理时长</color>
+
+
+
+已收到时间 --> [*]
+调研时间 --> [*]
+拒绝时间 --> [*]
+接受时间 --> [*]
+
+@enduml
+
+@startuml
+
+scale 1.0
+title 产品需求-需求状态[无评审]
+
+
+[*] --> 草稿draft: 新建
+草稿draft --> 激活active: 提交评审
+[*] --> 激活active: 新建
+
+草稿draft --> 关闭closed: 关闭
+
+激活active --> 变更中changing: 变更
+激活active --> 关闭closed: 关闭
+
+变更中changing --> 激活active: 撤销变更
+变更中changing --> 关闭closed: 关闭
+
+关闭closed --> [*]
+
+@enduml
+
+@startuml
+
+scale 1.0
+title 产品需求-需求状态
+
+
+[*] --> 草稿draft: 新建&需评审
+[*] --> 激活active: 新建&无评审
+
+草稿draft --> 评审中reviewing: 提交评审
+草稿draft --> 关闭closed: 关闭
+
+评审中reviewing --> 草稿draft: 撤销评审
+评审中reviewing --> 草稿draft: 评审[有待明确]
+评审中reviewing --> 激活active: 评审[确认通过]
+评审中reviewing --> 关闭closed: 评审[拒绝]
+评审中reviewing --> 关闭closed: 关闭
+
+激活active --> 变更中changing: 变更
+激活active --> 关闭closed: 关闭
+
+变更中changing --> 激活active: 撤销变更
+变更中changing --> 评审中reviewing: 提交评审
+变更中changing --> 关闭closed: 关闭
+
+关闭closed --> [*]
+
+@enduml
+
+@startuml
+scale 1.0
+title 产品需求-所处阶段
+
+[*] --> 未开始wait: 无关联计划
+[*] --> 已计划planned: 关联计划
+已计划planned: 需求已设置产品计划或计划中关联了需求
+
+未开始wait --> 已计划planned: 关联计划
+未开始wait --> 已立项projected: 关联项目
+已立项projected: 项目或迭代已关联产品需求[产品需求状态=激活]
+未开始wait --> 已关闭closed: 关闭
+
+已计划planned --> 已立项projected: 关联项目
+已计划planned --> 已关闭closed: 关闭
+已立项projected --> 已立项projected: 关联迭代
+已立项projected --> 研发中developing: 任一开发任务开始&无测试任务开始
+研发中developing: 任一开发任务[任务类型=开发]开始&无测试任务[任务类型=测试]开始
+已立项projected --> 测试中testing: 任一测试任务开始
+测试中testing: 任一测试任务开始
+已立项projected --> 已关闭closed: 关闭
+
+研发中developing --> 研发中developing: 任一开发任务开始&无测试任务开始
+研发中developing --> 测试中testing: 任一测试任务开始
+研发中developing --> 研发完毕developed: 所有开发任务完成&无测试任务开始
+研发完毕developed: 所有开发任务完成&无测试任务开始
+研发中developing --> 已关闭closed: 关闭
+
+研发完毕developed --> 研发中developing: 新建开发任务
+研发完毕developed --> 测试中testing: 任一测试任务开始
+研发完毕developed --> 测试完毕tested: 所有测试任务完成
+测试完毕tested: 所有测试任务完成&所有开发任务完成
+研发完毕developed --> 已关闭closed: 关闭
+
+测试中testing --> 测试中testing: 任一测试任务开始
+测试中testing --> 测试完毕tested: 所有测试任务完成&所有开发任务完成
+测试中testing --> 已关闭closed: 关闭
+
+测试完毕tested --> 测试中testing: 新建开发任务
+测试完毕tested --> 测试中testing: 新建测试任务
+测试完毕tested --> 已验收verified: 手工验收
+已验收verified: 需求验收通过
+测试完毕tested --> 已发布released: 关联发布
+已发布released: 发布关联迭代中已关联的产品需求
+测试完毕tested --> 已关闭closed: 关闭
+
+已验收verified --> 已关闭closed: 关闭
+已发布released --> 已关闭closed: 关闭
+
+已关闭closed --> [*] 
+
+@enduml
+
+
