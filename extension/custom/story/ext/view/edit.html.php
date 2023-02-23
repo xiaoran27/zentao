@@ -215,7 +215,7 @@
               </tr>
               <tr>
                 <th><?php echo $lang->story->scoreNum;?></th>
-                <td><?php echo html::input('scoreNum',$story->scoreNum, "class='form-control' readonly required");?></td>
+                <td><?php echo html::input('scoreNum',empty($story->scoreNum)?0:$story->scoreNum , "class='form-control' readonly");?></td>
               </tr>
               <tr>
                 <th><?php echo $lang->story->prCategory;?></th>
