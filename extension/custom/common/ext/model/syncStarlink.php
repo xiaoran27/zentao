@@ -79,6 +79,7 @@ public function syncStarlink($timeout=30)
     $purchaserRows = $this->dao->select("*")->from($TABLE_PURCHASER)->fetchAll();
     foreach($purchaserRows as $row) {
         $purchaserNows["$row->code"] = $row;
+        $purchaserNows["$row->name"] = $row;
     }
     // $this->log(json_encode(array_keys($purchaserNows),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
@@ -107,12 +108,12 @@ public function syncStarlink($timeout=30)
 
         if ( $purchaser->category == "普通商家" ) {
             $purchaser->category = "SMB";
+        }else if ( strpos(strtoupper($purchaser->category), 'B500') !== false ) {
+            $purchaser->category = "B500";
         }else if ( strpos(strtoupper($purchaser->category), 'B5') !== false ) {
             $purchaser->category = "B5";
         }else if ( strpos(strtoupper($purchaser->category), 'B100') !== false ) {
             $purchaser->category = "B100";
-        }else if ( strpos(strtoupper($purchaser->category), 'B500') !== false ) {
-            $purchaser->category = "B500";
         }else if ( strpos(strtoupper($purchaser->category), 'LKA') !== false ) {
             $purchaser->category = "LKA";
         }elseif ( strpos(strtoupper($purchaser->category), 'SMB') !== false ) {
@@ -126,7 +127,7 @@ public function syncStarlink($timeout=30)
         }elseif ($purchaser->category == "LKA商家"  || $purchaser->category == "LKA") {
             $purchaser->category = "LKA";
         }elseif ($purchaser->category == "SMB商家"  || $purchaser->category == "SMB") {
-            $purchaser->category = "LKA";
+            $purchaser->category = "SMB";
         }else {
             $purchaser->category = "SMB";
         }
@@ -140,6 +141,8 @@ public function syncStarlink($timeout=30)
             $purchaserNow = $purchaserNows[$purchaser->code];
         }elseif (array_key_exists($code_pinyin,$purchaserNows)) {
             $purchaserNow = $purchaserNows[$code_pinyin];
+        }elseif (array_key_exists($purchaser->name,$purchaserNows)) {
+            $purchaserNow = $purchaserNows[$purchaser->name];
         }
         // $this->log(json_encode($purchaserNow,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         
