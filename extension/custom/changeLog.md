@@ -1,6 +1,22 @@
 [toc]
 
 
+#  rel230303
+
+## changed:
+
+1.
+2. 
+
+## fixed:  
+
+1. 客户名称唯一和category判断准确性
+2. scoreNum默认0且去required
+3. 解决正式禅道的需求页面布局问题
+4. 禅道返回值格式差异性的特殊判别处理
+
+
+
 #  rel230220
 
 ## changed:
