@@ -45,10 +45,12 @@ class myStory extends story
         if ( empty($url) ) {
             $url = $this->config->story->url['dingRobotSend'] ;
         }
+
         $url = str_replace("%3A", ":", $url);
         $url = str_replace("%2F", "/", $url);
         $url = str_replace("%3F", "?", $url);
         $url = str_replace("%3D", "=", $url);
+        $url = str_replace("%26", "&", $url);
 
         $pattern = "/^https:\/\/oapi[.]dingtalk[.]com\/robot\/send\?access_token=[a-z0-9]{64}$/i";
         $match = preg_match($pattern, $url);

@@ -102,13 +102,14 @@ class myCron extends cron
                                 
                                 // 支持输入参数params={encodeURIComponent编码后的参数值}
                                 $fetch_param = $params['params'] ;
+
                                 $fetch_param = str_replace("%3A", ":", $fetch_param);
                                 $fetch_param = str_replace("%2F", "/", $fetch_param);
                                 $fetch_param = str_replace("%3F", "?", $fetch_param);
                                 $fetch_param = str_replace("%3D", "=", $fetch_param);
                                 $fetch_param = str_replace("%24", "$", $fetch_param);
                                 $fetch_param = str_replace("%26", "&", $fetch_param);
-                                $fetch_param = str_replace("$$", "&", $fetch_param);
+
                                 parse_str($fetch_param, $fetch_params);
                                 $common->log(json_encode(array('fetch_param' => $fetch_param, 'fetch_params' => $fetch_params) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
