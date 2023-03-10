@@ -83,7 +83,7 @@ class bytenewStory extends StoryModel
         ->groupby("realname , dingding ")
         ->orderby("total  DESC")
         ->fetchAll();
-        $common->log(json_encode($dingdingDatas,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('dingdingDatas'=>$dingdingDatas),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if (empty($dingdingDatas)) return array();
 
         $content = '';
