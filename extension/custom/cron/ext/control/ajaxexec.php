@@ -1,7 +1,7 @@
 
 <?php
-
 include '../../../../../module/cron/control.php';
+
 
 class myCron extends cron
 {
@@ -90,19 +90,34 @@ class myCron extends cron
                     $return = '';
                     if($cron['command'])
                     {
-                        $common = $this->loadModel('common'); 
-                        // $common->log(json_encode(array('cron.command' => $cron['command']) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-
                         if(isset($crons[$id]) and $crons[$id]->type == 'zentao')
                         {
                             parse_str($cron['command'], $params);
+                            // $this->common->log(json_encode(array('cron' => $cron) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+                            //加载为cron整合的扩展文件cronmethod.php
+                            if(isset($params['moduleName']) and isset($params['methodName']) ){
+                                $actionExtPath     = $this->app->getModuleExtPath( $this->appName, $params['moduleName'], 'control');
+                                if(!empty($actionExtPath) and isset($actionExtPath['custom']))
+                                {
+                                    $file2Included = $actionExtPath['custom'] . 'cronmethod.php';
+                                    $classNameToFetch = "my{$params['moduleName']}";
+                                    $cls_exists = class_exists($classNameToFetch);
+                                    $this->common->log(json_encode(array('appName' => $this->appName, 'classNameToFetch' => $classNameToFetch, 'cls_exists' => $cls_exists, 'file2Included' => $file2Included, 'params' => $params) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                                    if(!$cls_exists)
+                                    {
+                                        if (!class_exists($params['moduleName'])) helper::importControl($params['moduleName']);
+                                        helper::import($file2Included);
+                                    }
+                                }
+                            }
+                            
+
                             if(isset($params['moduleName']) and isset($params['methodName']) and isset($params['params']))
                             {
-                                $this->app->loadConfig($params['moduleName']);
                                 
                                 // 支持输入参数params={encodeURIComponent编码后的参数值}
                                 $fetch_param = $params['params'] ;
-
                                 $fetch_param = str_replace("%3A", ":", $fetch_param);
                                 $fetch_param = str_replace("%2F", "/", $fetch_param);
                                 $fetch_param = str_replace("%3F", "?", $fetch_param);
@@ -111,8 +126,9 @@ class myCron extends cron
                                 $fetch_param = str_replace("%26", "&", $fetch_param);
 
                                 parse_str($fetch_param, $fetch_params);
-                                $common->log(json_encode(array('fetch_param' => $fetch_param, 'fetch_params' => $fetch_params) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                                $this->common->log(json_encode(array('params' => $params, 'fetch_params' => $fetch_params) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
+                                $this->app->loadConfig($params['moduleName']);
                                 $output = $this->fetch($params['moduleName'], $params['methodName'], $fetch_params);
                             }elseif(isset($params['moduleName']) and isset($params['methodName']) )
                             {

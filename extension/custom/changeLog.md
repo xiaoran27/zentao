@@ -1,6 +1,21 @@
 [toc]
 
 
+#  rel230310
+
+## changed:
+
+1.
+2. 
+
+## fixed:  
+
+1. 定时任务加载同模块(story)的control扩展方法文件仅支持一个，使用cronmethod.php进行整合
+2. 
+
+
+
+
 #  rel230303
 
 ## changed:
