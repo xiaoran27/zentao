@@ -185,7 +185,7 @@ class myStory extends story
         $this->view->title             = $this->lang->story->batchEdit;
         $this->view->bzCategoryList    = array('' => '') + $this->lang->story->bzCategoryList;
         $this->view->prCategoryList    = array('' => '') + ($storyType == 'requirement'?$this->lang->story->prCategoryList0:$this->lang->story->prCategoryList);
-        $this->view->responseResultList  = array('' => '') + $this->lang->story->responseResultList;
+        $this->view->responseResultList  = array('' => '') + ($storyType == 'requirement'?$this->lang->story->responseResultList:$this->lang->story->responseResultList0);
         $this->view->purchaserList       = array('' => '') + $this->loadModel('common')->getPurchaserList();
         $this->view->users             = $users;
         $this->view->priList           = array('0' => '', 'ditto' => $this->lang->story->ditto) + $this->lang->story->priList;

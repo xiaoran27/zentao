@@ -196,7 +196,14 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
             <td colspan='2' >
               <div class='input-group' id='responseResultIdBox'>
                 <div class="input-group-addon responseResult"><?php echo $lang->story->responseResult;?></div>
-                <?php echo html::select('responseResult', $lang->story->responseResultList, $responseResult, "class='form-control chosen'");?>
+                <?php echo html::select('responseResult', $responseResultList, $responseResult, "class='form-control chosen'");?>
+              </div>
+            </td>
+            <?php else:?>
+            <td colspan='2' >
+              <div class='input-group' id='responseResultIdBox'>
+                <div class="input-group-addon responseResult"><?php echo $lang->story->responseResult0;?></div>
+                <?php echo html::select('responseResult', $responseResultList, $responseResult, "class='form-control chosen'");?>
               </div>
             </td>
             <?php endif;?>

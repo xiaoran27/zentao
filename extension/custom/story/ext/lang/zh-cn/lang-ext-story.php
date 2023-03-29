@@ -14,7 +14,7 @@ $lang->story->bzCategoryList['OKR'] = 'OKR专用';
 //$lang->story->bzCategoryList['KA']  = '重要客户';
 //$lang->story->bzCategoryList['SMB'] = '腰部客户';
 $lang->story->prCategory = '需求分类';
-$lang->story->prCategoryList = array();
+$lang->story->prCategoryList = array();   // for业务需求
 $lang->story->prCategoryList['']  = '';
 $lang->story->prCategoryList['project']  = '共创需求';
 $lang->story->prCategoryList['product'] = '功能迭代';
@@ -30,7 +30,7 @@ $lang->story->prCategoryList['it_support']  = '技术支持';
 $lang->story->prCategoryList['other'] = '其他';
 $lang->story->prCategoryList['OKR'] = 'OKR专用';
 
-$lang->story->prCategoryList0 = array();
+$lang->story->prCategoryList0 = array();   // for产品需求
 $lang->story->prCategoryList0['']  = '';
 $lang->story->prCategoryList0['product'] = '标品需求';
 $lang->story->prCategoryList0['project']  = '共创需求';
@@ -53,19 +53,32 @@ $lang->story->purchaserList['shzmrjkjyxgs']  = '上海正马软件科技有限�
 
 
 $lang->story->responseResult = '响应结果';
-$lang->story->responseResultList = array();
+$lang->story->responseResultList = array();   // for业务需求
 $lang->story->responseResultList['todo']  = '未处理';
-$lang->story->responseResultList['recieved']  = '已接到';
+$lang->story->responseResultList['recieved']  = '已收到';
 $lang->story->responseResultList['research']  = '调研';
 $lang->story->responseResultList['accept']  = '接受';
 $lang->story->responseResultList['reject']  = '拒绝';
 $lang->story->responseResultList['suspend']  = '挂起';
 
-$lang->story->rspRecievedTime = '接收时间';
+$lang->story->rspRecievedTime = '收到时间';
 $lang->story->rspRejectTime = '拒绝时间';
 $lang->story->rspResearchTime = '调研时间';
 $lang->story->rspAcceptTime = '接受时间';
 
+$lang->story->responseResult0 = '处理结果';
+$lang->story->responseResultList0 = array();   // for产品需求
+$lang->story->responseResultList0['todo']  = '未处理';
+$lang->story->responseResultList0['recieved']  = '已收到';
+$lang->story->responseResultList0['research']  = '调研完成';
+$lang->story->responseResultList0['prd']  = 'PRD完成';
+$lang->story->responseResultList0['reject']  = '拒绝';
+$lang->story->responseResultList0['suspend']  = '挂起';
+
+$lang->story->rspRecievedTime0 = '收到时间';
+$lang->story->rspRejectTime0 = '拒绝时间';
+$lang->story->rspResearchTime0 = '调研时间';
+$lang->story->rspAcceptTime0 = 'PRD时间';
 
 $lang->story->prLevel = '需求等级';
 $lang->story->prLevelList = array();
@@ -80,7 +93,7 @@ $lang->story->scoreNum = '行为分';
 
 $lang->story->bizStage = '业务场景';
 $lang->story->bizNodus = '业务痛点';
-$lang->story->bizTarget = '达成目标';
+$lang->story->bizTarget = '预期目标';
 $lang->story->bizValue = '萃取价值';
 
 

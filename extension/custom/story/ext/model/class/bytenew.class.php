@@ -214,7 +214,15 @@ class bytenewStory extends StoryModel
             ->where($this->reportCondition())
             ->groupBy('prCategory')->orderBy('value DESC')->fetchAll('name');
         if(!$datas) return array();
-        foreach($datas as $prCategory => $data) $data->name = $this->lang->story->prCategoryList[$prCategory] != '' ? $this->lang->story->prCategoryList[$prCategory] : $prCategory;
+
+        $where = $this->reportCondition();
+        if (strpos( $where, 'requirement') >0 ){
+            foreach($datas as $prCategory => $data) $data->name = $this->lang->story->prCategoryList[$prCategory] != '' ? $this->lang->story->prCategoryList[$prCategory] : $prCategory;
+        }else{
+            foreach($datas as $prCategory => $data) $data->name = $this->lang->story->prCategoryList0[$prCategory] != '' ? $this->lang->story->prCategoryList0[$prCategory] : $prCategory;
+        }
+
+        
         return $datas;
     }
 
@@ -283,11 +291,18 @@ class bytenewStory extends StoryModel
      */
     public function getDataOfResponseResult()
     {
+        
         $datas = $this->dao->select('responseResult as name, count(1) as value')->from(TABLE_STORY)
             ->where($this->reportCondition())
             ->groupBy('name')->orderBy('value DESC')->fetchAll('name');
         if(!$datas) return array();
-        foreach($datas as $name => $data) $data->name = $this->lang->story->responseResultList[$name] != '' ? $this->lang->story->responseResultList[$name] : $name;
+
+        $where = $this->reportCondition();
+        if (strpos( $where, 'requirement') >0 ){
+            foreach($datas as $name => $data) $data->name = $this->lang->story->responseResultList[$name] != '' ? $this->lang->story->responseResultList[$name] : $name;
+        }else{
+            foreach($datas as $name => $data) $data->name = $this->lang->story->responseResultList0[$name] != '' ? $this->lang->story->responseResultList0[$name] : $name;
+        }
         return $datas;
     }
 
@@ -5187,10 +5202,10 @@ class bytenewStory extends StoryModel
                 echo zget($this->lang->story->bzCategoryList, $story->bzCategory, $story->bzCategory);
                 break;
             case 'prCategory':
-                echo zget($this->lang->story->prCategoryList, $story->prCategory, $story->prCategory);
+                echo zget($story->type == 'requirement'?$this->lang->story->prCategoryList:$this->lang->story->prCategoryList0, $story->prCategory, $story->prCategory);
                 break;
             case 'responseResult':
-                echo zget($this->lang->story->responseResultList, $story->responseResult, $story->responseResult);
+                echo zget($story->type == 'requirement'?$this->lang->story->responseResultList:$this->lang->story->responseResultList0, $story->responseResult, $story->responseResult);
                 break;
             case 'uatDate':
                 echo helper::isZeroDate($story->uatDate) ? '' : $story->uatDate;

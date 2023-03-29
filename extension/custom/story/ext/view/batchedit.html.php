@@ -126,6 +126,8 @@ foreach(explode(',', $config->story->edit->requiredFields) as $field)
           <td><?php echo html::select("prCategories[$storyID]",  $prCategoryList, $story->prCategory, "class='form-control picker-select' data-drop-width='auto' id='prCategory_$storyID'");?></td>
           <?php if($storyType == 'requirement'):?>
             <td><?php echo html::select("responseResultes[$storyID]",  $responseResultList, $story->responseResult, "class='form-control picker-select' data-drop-width='auto' id='responseResult_$storyID'");?></td>
+          <?php else:?>
+            <td><?php echo html::select("responseResultes[$storyID]",  $responseResultList, $story->responseResult, "class='form-control picker-select' data-drop-width='auto' id='responseResult_$storyID'");?></td>
           <?php endif;?>
 
           <td <?php echo zget($visibleFields, 'estimate', "class='hidden'")?>><?php echo html::input("estimates[$storyID]", $story->estimate, "class='form-control'"); ?></td>

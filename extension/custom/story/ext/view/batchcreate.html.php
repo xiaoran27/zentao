@@ -122,6 +122,8 @@
             <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select('prCategory[$id]', $prCategoryList, empty($story)?'':$story->prCategory, "class='form-control chosen' id='prCategory_\$id'"); ?></td>
             <?php if($type == 'requirement'):?>
               <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select('responseResult[$id]', $responseResultList, 'todo', "class='form-control chosen' id='responseResult_\$id'");?></td>
+            <?php else:?>
+              <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select('responseResult[$id]', $responseResultList, 'todo', "class='form-control chosen' id='responseResult_\$id'");?></td>
             <?php endif;?>
 
             <td class='<?php echo zget($visibleFields, 'spec', 'hidden')?> specBox'><textarea name="spec[$id]" id="spec$id" rows="1" class="form-control autosize"><?php echo empty($story)?$spec:$story->spec; ?></textarea></td>
@@ -196,6 +198,8 @@
       <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select("bzCategory[$i]", $bzCategoryList, empty($story)?'ditto':$story->bzCategory, "class='form-control chosen' id='bzCategory_$i'");?></td>
       <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select("prCategory[$i]", $prCategoryList, empty($story)?'ditto':$story->prCategory, "class='form-control chosen' id='prCategory_$i'");?></td>
       <?php if($type == 'requirement'):?>
+        <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select("responseResult[$i]", $responseResultList, empty($story)?'ditto':$story->responseResult, "class='form-control chosen' id='responseResult_$i'");?></td>
+      <?php else:?>
         <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select("responseResult[$i]", $responseResultList, empty($story)?'ditto':$story->responseResult, "class='form-control chosen' id='responseResult_$i'");?></td>
       <?php endif;?>
 

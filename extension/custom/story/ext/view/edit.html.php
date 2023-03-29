@@ -230,7 +230,12 @@
                   <th><?php echo $lang->story->responseResult;?></th>
                   <td><?php echo html::select('responseResult', $lang->story->responseResultList, $story->responseResult, "class='form-control chosen' ");?></td>
                 </tr>
-                <?php endif;?>         
+                <?php else:?>
+                <tr>
+                  <th><?php echo $lang->story->responseResult0;?></th>
+                  <td><?php echo html::select('responseResult', $lang->story->responseResultList0, $story->responseResult, "class='form-control chosen' ");?></td>
+                </tr>
+              <?php endif;?>         
               <tr>
                 <th><?php echo $lang->story->source;?></th>
                 <td><?php echo html::select('source', $lang->story->sourceList, $story->source, "class='form-control chosen'");?></td>

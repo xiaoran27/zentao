@@ -324,6 +324,11 @@ js::set('bizProjectList', $bizProjectList);
                   <th><?php echo $lang->story->responseResult;?></th>
                   <td><?php echo zget($lang->story->responseResultList, $story->responseResult, $story->responseResult)?></td>
                 </tr>
+                <?php else:?>
+                <tr>
+                  <th><?php echo $lang->story->responseResult0;?></th>
+                  <td><?php echo zget($lang->story->responseResultList0, $story->responseResult, $story->responseResult)?></td>
+                </tr>
                 <?php endif;?>
                 <tr>
                   <th><?php echo $lang->story->source;?></th>

@@ -214,7 +214,8 @@ class myStory extends story
         $prCategoryList          = $storyType == 'requirement'?$this->lang->story->prCategoryList0:$this->lang->story->prCategoryList;
         $prCategoryList['ditto'] = $this->lang->story->ditto;
 
-        $responseResultList          = (array)$this->lang->story->responseResultList;
+        
+        $responseResultList = $storyType == 'requirement' ? (array)$this->lang->story->responseResultList : (array)$this->lang->story->responseResultList0;
         $responseResultList['ditto'] = $this->lang->story->ditto;
 
         
