@@ -20,9 +20,7 @@ js::set('flow',          $config->global->flow);
 js::set('productID',     $productID);
 js::set('branch',        $branch);
 $currentBrowseType = isset($lang->bug->mySelects[$browseType]) && in_array($browseType, array_keys($lang->bug->mySelects)) ? $browseType : '';
-// $common->syncStarlink();
 ?>
-<?php if($config->global->flow == 'full'):?>
 <div id="mainMenu" class="clearfix">
   <div id="sidebarHeader">
     <div class="title">
@@ -68,18 +66,19 @@ $currentBrowseType = isset($lang->bug->mySelects[$browseType]) && in_array($brow
         }
         elseif($menuItem->name == 'more')
         {
-            if(!empty($lang->bug->moreSelects))
+            $moreSelects = isset($lang->bug->moreSelects[$app->rawMethod]['more']) ? $lang->bug->moreSelects[$app->rawMethod]['more'] : array();
+            if(!empty($moreSelects))
             {
                 $moreLabel       = $lang->more;
                 $moreLabelActive = '';
-                if(isset($lang->bug->moreSelects[$this->session->bugBrowseType]))
+                if(isset($moreSelects[$this->session->bugBrowseType]))
                 {
-                    $moreLabel       = "<span class='text'>{$lang->bug->moreSelects[$this->session->bugBrowseType]}</span> <span class='label label-light label-badge'>{$pager->recTotal}</span>";
+                    $moreLabel       = "<span class='text'>{$moreSelects[$this->session->bugBrowseType]}</span> <span class='label label-light label-badge'>{$pager->recTotal}</span>";
                     $moreLabelActive = 'btn-active-text';
                 }
                 echo "<div class='btn-group'><a href='javascript:;' data-toggle='dropdown' class='btn btn-link {$moreLabelActive}'>{$moreLabel} <span class='caret'></span></a>";
                 echo "<ul class='dropdown-menu'>";
-                foreach($lang->bug->moreSelects as $menuBrowseType => $label)
+                foreach($moreSelects as $menuBrowseType => $label)
                 {
                     $active = $menuBrowseType == $this->session->bugBrowseType ? 'btn-active-text' : '';
                     echo '<li>' . html::a($this->createLink('bug', 'browse', "productid=$productID&branch=$branch&browseType=$menuBrowseType"), "<span class='text'>{$label}</span>", '', "class='btn btn-link $active'") . '</li>';
@@ -155,7 +154,6 @@ $currentBrowseType = isset($lang->bug->mySelects[$browseType]) && in_array($brow
   </div>
   <?php endif;?>
 </div>
-<?php endif;?>
 <?php if($this->app->getViewType() == 'xhtml'):?>
 <div id="xx-title">
   <strong>
@@ -329,7 +327,7 @@ $currentBrowseType = isset($lang->bug->mySelects[$browseType]) && in_array($brow
                           {
                               $actionLink = $this->createLink('bug', 'batchResolve', "resolution=fixed&resolvedBuild=$key");
                               echo "<li class='option' data-key='$key'>";
-                              echo html::a('javascript:;', $build, '', "onclick=\"setFormAction('$actionLink', 'hiddenwin', '#bugList')\"");
+                              echo html::a('javascript:;', $build . (in_array($key, $releasedBuilds) ? " <span class='label label-primary label-outline'>{$lang->build->released}</span> " : ''), '', "onclick=\"setFormAction('$actionLink', 'hiddenwin', '#bugList')\"");
                               echo "</li>";
                           }
                           echo "</ul>";

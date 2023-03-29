@@ -14,7 +14,6 @@
 <?php include '../../../../../module/common/view/kindeditor.html.php';?>
 <?php js::set('sysurl', common::getSysUrl());?>
 <?php js::set('confrimToStory', $lang->bug->confirmToStory);?>
-<?php js::set('systemMode', $config->systemMode);?>
 <?php js::set('tab', $app->tab);?>
 <?php js::set('bugID', $bug->id);?>
 <?php js::set('branchID', $bug->branch);?>
@@ -107,24 +106,26 @@
       <div class='tabs'>
         <ul class='nav nav-tabs'>
           <li class='active'><a href='#legendBasicInfo' data-toggle='tab'><?php echo $lang->bug->legendBasicInfo;?></a></li>
-          <li><a href='#legendExecStoryTask' data-toggle='tab'><?php echo $config->systemMode == 'new' ? $lang->bug->legendPRJExecStoryTask : $lang->bug->legendExecStoryTask;?></a></li>
+          <li><a href='#legendExecStoryTask' data-toggle='tab'><?php echo !empty($project->multiple) ? $lang->bug->legendPRJExecStoryTask : $lang->bug->legendExecStoryTask;?></a></li>
         </ul>
         <div class='tab-content'>
           <div class='tab-pane active' id='legendBasicInfo'>
             <table class="table table-data">
               <tbody>
+                <?php if(empty($product->shadow)):?>
                 <tr valign='middle'>
                   <th class='thWidth'><?php echo $lang->bug->product;?></th>
                   <td><?php if(!common::printLink('product', 'view', "productID=$bug->product", $product->name, '', "data-app='product'")) echo $product->name;?></td>
                 </tr>
+                <?php endif;?>
                 <?php if($product->type != 'normal'):?>
                 <tr>
-                  <th><?php echo sprintf($lang->product->branch, $lang->product->branchName[$product->type]);?></th>
+                  <th class='thWidth'><?php echo sprintf($lang->product->branch, $lang->product->branchName[$product->type]);?></th>
                   <td><?php if(!common::printLink('bug', 'browse', "productID=$bug->product&branch=$bug->branch", $branchName)) echo $branchName;?></td>
                 </tr>
                 <?php endif;?>
                 <tr>
-                  <th><?php echo $lang->bug->module;?></th>
+                  <th class='thWidth'><?php echo $lang->bug->module;?></th>
                   <?php
                   $moduleTitle = '';
                   ob_start();
@@ -161,7 +162,7 @@
                   <th><?php echo $lang->bug->fromCase;?></th>
                   <td><?php if($bug->case) echo html::a(helper::createLink('testcase', 'view', "caseID=$bug->case&version=$bug->caseVersion", '', true), "<i class='icon icon-sitemap'></i> {$lang->bug->fromCase}$lang->colon$bug->case", '', isonlybody() ? '' : "data-toggle='modal' data-type='iframe' data-width='80%'");?></td>
                 </tr>
-                <tr valign='middle'>
+                <tr valign='middle' class='<?php if($product->shadow and isset($project) and empty($project->multiple)) echo 'hide'?>'>
                   <th><?php echo $lang->bug->productplan;?></th>
                   <td><?php if(!$bug->plan or !common::printLink('productplan', 'view', "planID=$bug->plan&type=bug", $bug->planName)) echo $bug->planName;?></td>
                 </tr>
@@ -192,7 +193,11 @@
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->pri;?></th>
-                  <td><span class='label-pri <?php echo 'label-pri-' . $bug->pri;?>' title='<?php echo zget($lang->bug->priList, $bug->pri);?>'><?php echo zget($lang->bug->priList, $bug->pri)?></span></td>
+                  <td>
+                    <?php if($bug->pri):?>
+                    <span class='label-pri <?php echo 'label-pri-' . $bug->pri;?>' title='<?php echo zget($lang->bug->priList, $bug->pri);?>'><?php echo zget($lang->bug->priList, $bug->pri)?></span>
+                    <?php endif;?>
+                  </td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->status;?></th>
@@ -208,7 +213,7 @@
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->confirmed;?></th>
-                  <td><?php echo $lang->bug->confirmedList[$bug->confirmed];?></td>
+                  <td class='confirm<?php echo $bug->confirmed;?>'><?php echo $lang->bug->confirmedList[$bug->confirmed];?></td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->bug->lblAssignedTo;?></th>
@@ -286,7 +291,7 @@
                   <?php if($browserList):?>
                   <p class='browserContent'>
                     <?php foreach($browserList as $browser):?>
-                    <?php if($os) echo "<span class='label label-outline'>" .  zget($lang->bug->browserList, $browser) . "</span>";?>
+                    <?php if($browser) echo "<span class='label label-outline'>" .  zget($lang->bug->browserList, $browser) . "</span>";?>
                     <?php endforeach;?>
                   </p>
                   <?php endif;?>
@@ -313,16 +318,16 @@
           <div class='tab-pane' id='legendExecStoryTask'>
             <table class='table table-data'>
               <tbody>
-                <?php if($config->systemMode == 'new'):?>
                 <tr>
                   <th class='w-70px'><?php echo $lang->bug->project;?></th>
                   <td><?php if($bug->project) echo html::a($this->createLink('project', 'view', "projectID=$bug->project"), $bug->projectName);?></td>
                 </tr>
-                <?php endif;?>
+                <?php if(!empty($project->multiple)):?>
                 <tr>
                   <th class='w-70px'><?php echo (isset($project->model) and $project->model == 'kanban') ? $lang->bug->kanban : $lang->bug->execution;?></th>
                   <td><?php if($bug->execution) echo html::a($this->createLink('execution', 'browse', "executionID=$bug->execution"), $bug->executionName);?></td>
                 </tr>
+                <?php endif;?>
                 <tr class='nofixed'>
                   <th><?php echo $lang->bug->story;?></th>
                   <td>
@@ -457,6 +462,7 @@
                   <td><?php echo html::a($this->createLink('task', 'view', "taskID=$bug->toTask", '', true), "#$bug->toTask $bug->toTaskTitle", '', "class='iframe' data-width='80%'");?></td>
                 </tr>
                 <?php endif;?>
+                <?php if(helper::hasFeature('devops')):?>
                 <tr>
                   <th><?php echo $lang->bug->linkMR;?></th>
                   <td>
@@ -469,6 +475,21 @@
                     ?>
                   </td>
                 </tr>
+                <tr>
+                  <th><?php echo $lang->bug->linkCommit;?></th>
+                  <td>
+                    <?php
+                    $canViewRevision = common::hasPriv('repo', 'revision');
+                    foreach($linkCommits as $commit)
+                    {
+                        $revision    = substr($commit->revision, 0, 10);
+                        $commitTitle = $revision . ' ' . $commit->comment;
+                        echo "<div class='link-commit' title='$commitTitle'>" . ($canViewRevision ? html::a($this->createLink('repo', 'revision', "repoID={$commit->repo}&objectID=0&revision={$commit->revision}"), $revision) . " $commit->comment" : $commitTitle) . '</div>';
+                    }
+                    ?>
+                  </td>
+                </tr>
+                <?php endif;?>
               </tbody>
             </table>
           </div>
@@ -493,7 +514,6 @@
       </div>
       <div class="modal-body">
         <table class='table table-form'>
-          <?php if($this->config->systemMode == 'new'):?>
           <tr>
             <th><?php echo $lang->bug->project;?></th>
             <td class='required'><?php echo html::select('taskProjects', $projects, '', "class='form-control chosen' onchange='loadProductExecutions({$productID}, this.value)'");?></td>
@@ -502,12 +522,6 @@
             <th id='executionHead'><?php echo $lang->bug->execution;?></th>
             <td id='executionBox' class='required'><?php echo html::select('execution', '', '', "class='form-control chosen'");?></td>
           </tr>
-          <?php else:?>
-          <tr>
-            <th><?php echo $lang->execution->common;?></th>
-            <td><?php echo html::select('execution', $projects, '', "class='form-control chosen'");?></td>
-          </tr>
-          <?php endif;?>
           <tr>
             <td colspan='2' class='text-center'>
               <?php echo html::commonButton($lang->bug->nextStep, "id='toTaskButton'", 'btn btn-primary btn-wide');?>

@@ -29,7 +29,6 @@
   <div class='alert alert-info'><?php echo $suhosinInfo;?></div>
   <?php else:?>
   <?php
-  var_dump($showFields);
   $visibleFields  = array();
   $requiredFields = array();
   foreach(explode(',', $showFields) as $field)
@@ -52,7 +51,6 @@
         <thead>
           <tr>
             <th class='c-id'><?php echo $lang->idAB;?></th>
-            <th class='c-feedbackBy<?php echo zget($visibleFields, 'feedbackBy', ' hidden') . zget($requiredFields, 'feedbackBy', '', ' required');?>'><?php echo $lang->bug->feedbackBy;?></th>
             <th class='c-type<?php echo zget($visibleFields, 'type', ' hidden') . zget($requiredFields, 'type', '', ' required');?>'><?php echo $lang->bug->type;?></th>
             <th class='c-severity<?php echo zget($visibleFields, 'severity', ' hidden') . zget($requiredFields, 'severity', '', ' required');?>'><?php echo $lang->bug->severity;?></th>
             <th class='c-pri<?php echo zget($visibleFields, 'pri', ' hidden') . zget($requiredFields, 'pri', '', ' required');?>'><?php echo $lang->bug->pri;?></th>
@@ -81,12 +79,8 @@
         </thead>
         <tbody>
           <?php foreach($bugs as $bugID => $bug):?>
-          <?php
-          if(!empty($this->config->user->moreLink)) $this->config->moreLinks["assignedTos[$bugID]"] = $this->config->user->moreLink;
-          ?>
           <tr>
             <td><?php echo $bugID . html::hidden("bugIDList[$bugID]", $bugID);?></td>
-            <td <?php echo zget($visibleFields, 'feedbackBy', "class='hidden'")?>><?php echo html::input("feedbackBy[$bugID]", $bug->feedbackBy, 'class=form-control');?></td>
             <td <?php echo zget($visibleFields, 'type', "class='hidden'")?>><?php echo html::select("types[$bugID]", $typeList, $bug->type, 'class=form-control');?></td>
             <td <?php echo zget($visibleFields, 'severity', "class='hidden'")?>><?php echo html::select("severities[$bugID]", $severityList, $bug->severity, 'class=form-control');?></td>
             <td <?php echo zget($visibleFields, 'pri', "class='hidden'")?>><?php echo html::select("pris[$bugID]", $priList, $bug->pri, 'class=form-control');?></td>
@@ -116,7 +110,7 @@
             </td>
             <?php endif;?>
             <td><?php echo html::select("modules[$bugID]", isset($modules[$bug->product][$bug->branch]) ? $modules[$bug->product][$bug->branch] : array(0 => '/'), $bug->module, "class='form-control picker-select' data-drop-width='auto'");?></td>
-            <td class='<?php echo zget($visibleFields, 'productplan', ' hidden')?>' style='overflow:visible'><?php echo html::select("plans[$bugID]", $plans, $bug->plan, "class='form-control picker-select' data-drop-width='auto'");?></td>
+            <td class='<?php echo zget($visibleFields, 'productplan', ' hidden')?>' style='overflow:visible'><?php echo html::select("plans[$bugID]", $bug->plans, $bug->plan, "class='form-control picker-select' data-drop-width='auto'");?></td>
             <?php
             $assignedToList = array();
             if($app->tab == 'project' or $app->tab == 'execution')

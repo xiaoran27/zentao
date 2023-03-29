@@ -77,7 +77,7 @@ class myBug extends bug
         /* If executionID is setted, get builds and stories of this execution. */
         if($executionID)
         {
-            $builds    = $this->loadModel('build')->getBuildPairs($productID, $branch, 'noempty', $executionID, 'execution');
+            $builds    = $this->loadModel('build')->getBuildPairs($productID, $branch, 'noempty,noreleased', $executionID, 'execution');
             $stories   = $this->story->getExecutionStoryPairs($executionID);
             $execution = $this->loadModel('execution')->getById($executionID);
             if($execution->type == 'kanban')
@@ -97,7 +97,7 @@ class myBug extends bug
         }
         else
         {
-            $builds  = $this->loadModel('build')->getBuildPairs($productID, $branch, 'noempty');
+            $builds  = $this->loadModel('build')->getBuildPairs($productID, $branch, 'noempty,noreleased');
             $stories = $this->story->getProductStoryPairs($productID, $branch);
         }
 
@@ -137,6 +137,8 @@ class myBug extends bug
         }
 
         $projectID = $this->lang->navGroup->bug == 'project' ? $this->session->project : (isset($execution) ? $execution->project : 0);
+        $project   = $this->loadModel('project')->getByID($projectID);
+        if(isset($project->model) && $project->model == 'kanban') $customFields['execution'] = $this->lang->bug->kanban;
 
         /* Get branches. */
         if($executionID)
@@ -160,7 +162,7 @@ class myBug extends bug
         $this->view->position[] = html::a($this->createLink('bug', 'browse', "productID=$productID&branch=$branch"), $this->products[$productID]);
         $this->view->position[] = $this->lang->bug->batchCreate;
 
-        $this->view->project          = $this->loadModel('project')->getByID($projectID);
+        $this->view->project          = $project;
         $this->view->product          = $product;
         $this->view->productID        = $productID;
         $this->view->stories          = $stories;
@@ -168,7 +170,7 @@ class myBug extends bug
         $this->view->users            = $this->user->getPairs('devfirst|noclosed');
         $this->view->projects         = array('' => '') + $this->product->getProjectPairsByProduct($productID, $branch ? "0,$branch" : 0, 'id_desc', $projectID);
         $this->view->projectID        = $projectID;
-        $this->view->executions       = array('' => '') + $this->product->getExecutionPairsByProduct($productID, $branch ? "0,$branch" : 0, 'id_desc', $projectID);
+        $this->view->executions       = array('' => '') + $this->product->getExecutionPairsByProduct($productID, $branch ? "0,$branch" : 0, 'id_desc', $projectID, 'multiple,stagefilter');
         $this->view->executionID      = $executionID;
         $this->view->moduleOptionMenu = $this->tree->getOptionMenu($productID, $viewType = 'bug', $startModuleID = 0, $branch === 'all' ? 0 : $branch);
         $this->view->moduleID         = $moduleID;
