@@ -27,5 +27,8 @@
 /extension/custom/banniu_rel*.sql
 /extension/custom/客户名称转拼音*.*
 /extension/custom/已成交班牛企业版老客户*.*
-/extension/custom/banniu_rel*.sql
 /*pid*.log
+/extension/custom/星链客户*.*
+/extension/custom/json2csv.py
+/extension/custom/demo
+/extension/custom/port
