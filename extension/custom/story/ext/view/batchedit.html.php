@@ -58,7 +58,9 @@ foreach(explode(',', $config->story->edit->requiredFields) as $field)
           <th class='c-branch<?php echo zget($visibleFields, 'branch', ' hidden')?>'><?php echo $lang->story->branch;?></th>
           <?php endif;?>
           <th class='c-module'><?php echo $lang->story->module;?></th>
+          <?php if(!$hiddenPlan):?>
           <th class='c-plan<?php echo zget($visibleFields, 'plan', ' hidden')?> col-plan'><?php echo $lang->story->planAB;?></th>
+          <?php endif;?>
           <th class='c-title required'><?php echo $lang->story->title;?></th>
           <th class='c-purchaser'><?php echo $lang->story->purchaser;?></th>
           <th class='c-bizProject'><?php echo $lang->story->bizProject;?></th>
@@ -100,9 +102,12 @@ foreach(explode(',', $config->story->edit->requiredFields) as $field)
           <td class='text-left<?php echo zget($visibleFields, 'module')?>'>
             <?php echo html::select("modules[$storyID]", zget($moduleList, $story->id, array(0 => '/')), $story->module, "class='form-control picker-select' data-drop-width='auto'");?>
           </td>
+          <?php if(!$hiddenPlan):?>
           <td class='text-left<?php echo zget($visibleFields, 'plan', ' hidden')?>'>
-            <?php echo html::select("plans[$storyID]", isset($plans[$story->product][$story->branch]) ? array('' => '') + $plans[$story->product][$story->branch] : '', $story->plan, "class='form-control picker-select' data-drop-width='auto'");?>
+            <?php $planDisabled = $story->parent < 0 ? "disabled='disabled'" : '';?>
+            <?php echo html::select("plans[$storyID]", isset($plans[$story->product][$story->branch]) ? array('' => '') + $plans[$story->product][$story->branch] : array(), $story->plan, "class='form-control picker-select' data-drop-width='auto' $planDisabled");?>
           </td>
+          <?php endif;?>
           <td title='<?php echo $story->title?>'>
             <div class="input-group">
               <div class="input-control has-icon-right story-input">

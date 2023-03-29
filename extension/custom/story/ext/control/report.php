@@ -14,10 +14,11 @@ class myStory extends story
      * @param  string $browseType
      * @param  int    $moduleID
      * @param  string $chartType
+     * @param  int    $projectID
      * @access public
      * @return void
      */
-    public function report($productID, $branchID, $storyType = 'story', $browseType = 'unclosed', $moduleID = 0, $chartType = 'pie')
+    public function report($productID, $branchID, $storyType = 'story', $browseType = 'unclosed', $moduleID = 0, $chartType = 'pie', $projectID = 0)
     {
         $this->loadModel('report');
         $this->view->charts = array();
@@ -37,12 +38,35 @@ class myStory extends story
             }
         }
 
-        if($storyType == 'story' ) unset($this->lang->story->report->charts['responseResult']);
-
-
         $this->story->replaceURLang($storyType);
-        $this->products = $this->product->getPairs();
-        $this->product->setMenu($productID, $branchID);
+
+        $this->products = $this->product->getPairs('', 0, '', 'all');
+        if(strpos('project,execution', $this->app->tab) !== false)
+        {
+            $project = $this->dao->findByID($projectID)->from(TABLE_PROJECT)->fetch();
+            if($project->type == 'project')
+            {
+                $this->loadModel('project')->setMenu($projectID);
+                if($project and $project->model == 'waterfall') unset($this->lang->story->report->charts['storysPerPlan']);
+            }
+            else
+            {
+                $this->loadModel('execution')->setMenu($projectID);
+            }
+
+            if(!$project->hasProduct)
+            {
+                unset($this->lang->story->report->charts['storysPerProduct']);
+
+                if(!$project->multiple) unset($this->lang->story->report->charts['storysPerPlan']);
+            }
+        }
+        else
+        {
+            $this->product->setMenu($productID, $branchID);
+        }
+
+        if($storyType != 'story') unset($this->lang->story->report->charts['storysPerStage']);
 
         $this->view->title         = $this->products[$productID] . $this->lang->colon . $this->lang->story->reportChart;
         $this->view->position[]    = $this->products[$productID];
@@ -53,6 +77,7 @@ class myStory extends story
         $this->view->storyType     = $storyType;
         $this->view->moduleID      = $moduleID;
         $this->view->chartType     = $chartType;
+        $this->view->projectID     = $projectID;
         $this->view->checkedCharts = $this->post->charts ? join(',', $this->post->charts) : '';
         $this->display();
     }

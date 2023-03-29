@@ -21,9 +21,9 @@ class myStory extends story
         /* format the fields of every story in order to export data. */
         if($_POST)
         {
-            $this->session->set('storyPortParams', array('productID' => $productID, 'executionID' => $executionID));
+            $this->session->set('storyTransferParams', array('productID' => $productID, 'executionID' => $executionID));
             /* Create field lists. */
-            if(!$productID)
+            if(!$productID or $browseType == 'bysearch')
             {
                 $this->config->story->datatable->fieldList['branch']['dataSource']           = array('module' => 'branch', 'method' => 'getAllPairs', 'params' => 1);
                 $this->config->story->datatable->fieldList['module']['dataSource']['method'] = 'getAllModulePairs';
@@ -37,19 +37,29 @@ class myStory extends story
                 $this->config->story->datatable->fieldList['plan']['dataSource'] = array('module' => 'productplan', 'method' => 'getPairs', 'params' => $productIdList);
             }
 
-            $this->post->set('rows', $this->story->getExportStorys($executionID, $orderBy));
-            $this->fetch('port', 'export', 'model=story');
+            $this->post->set('rows', $this->story->getExportStories($executionID, $orderBy, $storyType));
+            $this->fetch('transfer', 'export', 'model=story');
         }
 
         $fileName = $storyType == 'requirement' ? $this->lang->URCommon : $this->lang->SRCommon;
+        $project  = null;
         if($executionID)
         {
-            $executionName = $this->dao->findById($executionID)->from(TABLE_PROJECT)->fetch('name');
-            $fileName      = $executionName . $this->lang->dash . $fileName;
+            $execution = $this->loadModel('execution')->getByID($executionID);
+            $fileName  = $execution->name . $this->lang->dash . $fileName;
+            $project   = $execution;
+            if($execution->type == 'execution') $project = $this->project->getById($execution->project);
         }
         else
         {
-            $productName = $productID ? $this->dao->findById($productID)->from(TABLE_PRODUCT)->fetch('name') : $this->lang->product->all;
+            $productName = $this->lang->product->all;
+            if($productID)
+            {
+                $product     = $this->product->getById($productID);
+                $productName = $product->name;
+
+                if($product->shadow) $project = $this->project->getByShadowProduct($productID);
+            }
             if(isset($this->lang->product->featureBar['browse'][$browseType]))
             {
                 $browseType = $this->lang->product->featureBar['browse'][$browseType];
@@ -62,7 +72,13 @@ class myStory extends story
             $fileName = $productName . $this->lang->dash . $browseType . $fileName;
         }
 
-        if($storyType == 'story' ) $this->config->story->exportFields = str_replace("responseResult,","",$this->config->story->exportFields.',');
+        /* Unset product field when in single project.  */
+        if(isset($project->hasProduct) && !$project->hasProduct)
+        {
+            $filterFields = array(', product,', ', branch,');
+            if($project->model != 'scrum') $filterFields[] = ', plan,';
+            $this->config->story->exportFields = str_replace($filterFields, ',', $this->config->story->exportFields);
+        }
 
         $this->view->fileName        = $fileName;
         $this->view->allExportFields = $this->config->story->exportFields;

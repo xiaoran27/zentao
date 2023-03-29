@@ -21,16 +21,19 @@ class myStory extends story
      */
     public function batchCreate($productID = 0, $branch = 0, $moduleID = 0, $storyID = 0, $executionID = 0, $plan = 0, $storyType = 'story', $extra = '')
     {
+        $this->view->hiddenProduct = false;
+        $this->view->hiddenPlan    = false;
         /* Set menu. */
         if($executionID)
         {
             $execution = $this->dao->findById((int)$executionID)->from(TABLE_EXECUTION)->fetch();
             if($execution->type == 'project')
             {
+                $model = $execution->model == 'waterfallplus' ? 'waterfall' : $execution->model;
+                $model = $execution->model == 'agileplus' ? 'scrum' : $model;
                 $this->project->setMenu($executionID);
-                $this->app->rawModule = 'projectstory';
                 $this->lang->navGroup->story = 'project';
-                $this->lang->product->menu = $this->lang->{$execution->model}->menu;
+                $this->lang->product->menu   = $this->lang->{$model}->menu;
             }
             else
             {
@@ -52,10 +55,24 @@ class myStory extends story
                 }
 
                 $this->execution->setMenu($executionID);
-                $this->app->rawModule = 'execution';
                 $this->lang->navGroup->story = 'execution';
             }
             $this->view->execution = $execution;
+
+            /* Hidden some fields of projects without products. */
+            if($this->app->tab == 'project' or $this->app->tab == 'execution')
+            {
+                $project = $this->dao->findById((int)$executionID)->from(TABLE_PROJECT)->fetch();
+                if(!empty($project->project)) $project = $this->dao->findById((int)$project->project)->from(TABLE_PROJECT)->fetch();
+
+                if(empty($project->hasProduct))
+                {
+                    $this->view->hiddenProduct = true;
+
+                    if($project->model !== 'scrum') $this->view->hiddenPlan = true;
+                    if(!$project->multiple)         $this->view->hiddenPlan = true;
+                }
+            }
         }
         else
         {
@@ -69,16 +86,17 @@ class myStory extends story
         $this->story->replaceURLang($storyType);
 
         /* Check can subdivide or not. */
+        $product = $this->product->getById($productID);
         if($storyID)
         {
             $story = $this->story->getById($storyID);
-            if(($story->status != 'active' or $story->stage != 'wait' or $story->parent > 0) and $this->config->vision != 'lite') return print(js::alert($this->lang->story->errorNotSubdivide) . js::locate('back'));
+            if(($story->status != 'active' or (empty($product->shadow) && $story->stage != 'wait') or (!empty($product->shadow) && $story->stage != 'projected') or $story->parent > 0) and $this->config->vision != 'lite') return print(js::alert($this->lang->story->errorNotSubdivide) . js::locate('back'));
         }
 
         if(!empty($_POST))
         {
             $mails = $this->story->batchCreate($productID, $branch, $storyType);
-            if(dao::isError()) return print(js::error(dao::getError()));
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             $stories = array();
             foreach($mails as $mail) $stories[] = $mail->storyID;
@@ -102,7 +120,7 @@ class myStory extends story
             if($storyID and !empty($mails))
             {
                 $this->story->subdivide($storyID, $stories);
-                if(dao::isError()) return print(js::error(dao::getError()));
+                if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
             }
 
             if($this->viewType == 'json') return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'idList' => $stories));
@@ -121,7 +139,7 @@ class myStory extends story
                         $rdSearchValue = $this->session->rdSearchValue ? $this->session->rdSearchValue : '';
                         $kanbanData    = $this->loadModel('kanban')->getRDKanban($executionID, $execLaneType, 'id_desc', 0, $execGroupBy, $rdSearchValue);
                         $kanbanData    = json_encode($kanbanData);
-                        return print(js::closeModal('parent.parent', '', "parent.parent.updateKanban($kanbanData)"));
+                        return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'closeModal' => true, 'callback' => "parent.parent.updateKanban($kanbanData)"));
                     }
                     else
                     {
@@ -130,37 +148,43 @@ class myStory extends story
                         $kanbanType      = $execLaneType == 'all' ? 'story' : key($kanbanData);
                         $kanbanData      = $kanbanData[$kanbanType];
                         $kanbanData      = json_encode($kanbanData);
-                        return print(js::closeModal('parent.parent', '', "parent.parent.updateKanban(\"story\", $kanbanData)"));
+                        return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'closeModal' => true, 'callback' => "parent.parent.updateKanban(\"story\", $kanbanData)"));
                     }
                 }
                 else
                 {
-                    return print(js::reload('parent.parent'));
+                    return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'closeModal' => true, 'callback' => 'reloadByAjaxForm()'));
                 }
             }
 
             if($storyID)
             {
-                return print(js::locate(inlink('view', "storyID=$storyID&version=0&param=0&storyType=$storyType"), 'parent'));
+                if($this->app->tab == 'product')
+                {
+                    $locateLink = $this->inlink('view', "storyID=$storyID&version=0&param=0&storyType=$storyType");
+                    return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => $locateLink));
+                }
+                else
+                {
+                    /* Lite. */
+                    $locateLink = $this->session->storyList ? $this->session->storyList : $this->createLink('projectstory', 'view', "storyID=$storyID");
+                    return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => $locateLink));
+                }
             }
             elseif($executionID)
             {
                 setcookie('storyModuleParam', 0, 0, $this->config->webRoot, '', $this->config->cookieSecure, false);
-                $moduleName = $execution->type == 'project' ? 'projectstory' : 'execution';
-                $param      = $execution->type == 'project' ? "projectID=$executionID&productID=$productID" : "executionID=$executionID&orderBy=id_desc&browseType=unclosed";
-                $link       = $this->createLink($moduleName, 'story', $param);
-                return print(js::locate($link, 'parent'));
+                return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => $this->session->storyList));
             }
             else
             {
                 setcookie('storyModule', 0, 0, $this->config->webRoot, '', $this->config->cookieSecure, false);
                 $locateLink = $this->session->storyList ? $this->session->storyList : $this->createLink('product', 'browse', "productID=$productID&branch=$branch&browseType=unclosed&queryID=0&storyType=$storyType");
-                return print(js::locate($locateLink, 'parent'));
+                return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => $locateLink));
             }
         }
 
         /* Set branch and module. */
-        $product  = $this->product->getById($productID);
         $products = $this->product->getPairs();
         if($product) $this->lang->product->branch = sprintf($this->lang->product->branch, $this->lang->product->branchName[$product->type]);
 
@@ -175,7 +199,10 @@ class myStory extends story
             $branches = $product->type != 'normal' ? $this->loadModel('branch')->getPairs($productID, 'active') : array();
         }
 
-        $moduleOptionMenu = $this->tree->getOptionMenu($productID, $viewType = 'story', 0, $branch === 'all' ? 0 : $branch);
+        $branchData = explode(',', $branch);
+        $branch     = current($branchData);
+
+        $moduleOptionMenu          = $this->tree->getOptionMenu($productID, $viewType = 'story', 0, $branch === 'all' ? 0 : $branch);
         $moduleOptionMenu['ditto'] = $this->lang->story->ditto;
 
         /* Get reviewers. */
@@ -184,12 +211,10 @@ class myStory extends story
 
         /* Init vars. */
         $planID   = $plan;
-        $pri      = isset($story)?$story->pri:3;
-        $estimate = isset($story)?$story->estimate:'';
-        $title    = isset($story)?$story->title:'';
-        $spec     = isset($story)?$story->spec:'';
-        $uatDate    = isset($story)?$story->uatDate:'';
-	    $purchaser   = isset($story)?$story->purchaser:'';
+        $pri      = 3;
+        $estimate = '';
+        $title    = '';
+        $spec     = '';
 
         /* Process upload images. */
         if($this->session->storyImagesFile)
@@ -202,7 +227,7 @@ class myStory extends story
             }
             $this->view->titles = $titles;
         }
-        $plans          = $this->loadModel('productplan')->getPairsForStory($productID, ($branch === 'all' or !in_array($branch, array_keys($branches))) ? 0 : $branch, 'skipParent|unexpired|noclosed');
+        $plans          = $this->loadModel('productplan')->getPairsForStory($productID, ($branch === 'all' or empty($branch)) ? '' : $branch, 'skipParent|unexpired|noclosed');
         $plans['ditto'] = $this->lang->story->ditto;
 
         $priList          = (array)$this->lang->story->priList;
@@ -230,6 +255,8 @@ class myStory extends story
             $customFields[$field] = $this->lang->story->$field;
         }
 
+        if($this->view->hiddenPlan) unset($customFields['plan']);
+
         if($product->type != 'normal')
         {
             $this->config->story->custom->batchCreateFields = sprintf($this->config->story->custom->batchCreateFields, $product->type);
@@ -253,7 +280,6 @@ class myStory extends story
 
         $this->view->customFields = $customFields;
         $this->view->showFields   = $showFields;
-
 
         $this->view->title            = $product->name . $this->lang->colon . ($storyID ? $this->lang->story->subdivide : $this->lang->story->batchCreate);
         $this->view->productName      = $product->name;

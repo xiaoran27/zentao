@@ -27,6 +27,8 @@ class myProduct extends product
         $productID = $this->app->tab != 'project' ? $this->product->saveState($productID, $this->products) : $productID;
         $product   = $this->product->getById($productID);
 
+        if($product && !isset($this->products[$product->id])) $this->products[$product->id] = $product->name;
+
         if($product and $product->type != 'normal')
         {
             $branchPairs = $this->loadModel('branch')->getPairs($productID, 'all');
@@ -95,8 +97,10 @@ class myProduct extends product
             $branch = $this->cookie->treeBranch;
         }
 
+        $isProjectStory = $this->app->rawModule == 'projectstory';
+
         /* If in project story and not chose product, get project story mdoules. */
-        if($this->app->rawModule == 'projectstory' and empty($productID))
+        if($isProjectStory and empty($productID))
         {
             $moduleTree = $this->tree->getProjectStoryTreeMenu($projectID, 0, array('treeModel', $createModuleLink));
         }
@@ -125,7 +129,8 @@ class myProduct extends product
         $showBranch = $this->loadModel('branch')->showBranch($productID);
 
         /* Get stories. */
-        if($this->app->rawModule == 'projectstory')
+        $projectProducts = array();
+        if($isProjectStory and $storyType == 'story')
         {
             $showBranch = $this->loadModel('branch')->showBranch($productID, 0, $projectID);
 
@@ -133,10 +138,10 @@ class myProduct extends product
 
             $this->products  = $this->product->getProducts($projectID, 'all', '', false);
             $projectProducts = $this->product->getProducts($projectID);
-            $productPlans    = $this->execution->getPlans($projectProducts, 'skipParent');
+            $productPlans    = $this->execution->getPlans($projectProducts, 'skipParent,unexpired,noclosed', $projectID);
 
             if($browseType == 'bybranch') $param = $branchID;
-            $stories = $this->story->getExecutionStories($projectID, $productID, $branchID, $sort, $browseType, $param, 'story', '', $pager);
+            $stories = $this->story->getExecutionStories($projectID, $productID, $branchID, $sort, $browseType, $param, $storyType, '', $pager);
         }
         else
         {
@@ -147,18 +152,36 @@ class myProduct extends product
         /* Display status of branch. */
         $branchOption    = array();
         $branchTagOption = array();
-        if($product and $product->type != 'normal')
+        if(!$product and $isProjectStory)
         {
-            $branches = $this->loadModel('branch')->getList($productID, $projectID, 'all');
-            foreach($branches as $branchInfo)
+            /* Get branch display under multiple products. */
+            $branchOptions = array();
+            foreach($projectProducts as $projectProduct)
             {
-                $branchOption[$branchInfo->id]    = $branchInfo->name;
-                $branchTagOption[$branchInfo->id] = $branchInfo->name . ($branchInfo->status == 'closed' ? ' (' . $this->lang->branch->statusList['closed'] . ')' : '');
+                if($projectProduct and $projectProduct->type != 'normal')
+                {
+                    $branches = $this->loadModel('branch')->getList($projectProduct->id, $projectID, 'all');
+                    foreach($branches as $branchInfo) $branchOptions[$projectProduct->id][$branchInfo->id] = $branchInfo->name;
+                }
+            }
+
+            $this->view->branchOptions = $branchOptions;
+        }
+        else
+        {
+            if($product and $product->type != 'normal')
+            {
+                $branches = $this->loadModel('branch')->getList($productID, $projectID, 'all');
+                foreach($branches as $branchInfo)
+                {
+                    $branchOption[$branchInfo->id]    = $branchInfo->name;
+                    $branchTagOption[$branchInfo->id] = $branchInfo->name . ($branchInfo->status == 'closed' ? ' (' . $this->lang->branch->statusList['closed'] . ')' : '');
+                }
             }
         }
 
         /* Process the sql, get the conditon partion, save it to session. */
-        $this->loadModel('common')->saveQueryCondition($queryCondition, 'story', ($browseType != 'bysearch' and $browseType != 'reviewbyme' and $this->app->rawModule != 'projectstory'));
+        $this->loadModel('common')->saveQueryCondition($queryCondition, 'story', (strpos('bysearch,reviewbyme,bymodule', $browseType) === false and !$isProjectStory));
 
         if(!empty($stories)) $stories = $this->story->mergeReviewer($stories);
 
@@ -181,10 +204,10 @@ class myProduct extends product
         {
             $this->lang->story->title  = str_replace($this->lang->SRCommon, $this->lang->URCommon, $this->lang->story->title);
             $this->lang->story->create = str_replace($this->lang->SRCommon, $this->lang->URCommon, $this->lang->story->create);
-            $this->config->product->search['fields']['title'] = $this->lang->story->title ;
+            $this->config->product->search['fields']['title'] = $this->lang->story->title;
             unset($this->config->product->search['fields']['plan']);
             unset($this->config->product->search['fields']['stage']);
-
+        
             $this->config->product->search['params']['prCategory']         = array('operator' => '=',       'control' => 'select', 'values' => $this->lang->story->prCategoryList0);
         }else{
             unset($this->config->product->search['fields']['responseResult']);
@@ -193,6 +216,7 @@ class myProduct extends product
             unset($this->config->story->datatable->fieldList['responseResult']);
         }
 
+        
         $purchaserList    = $this->loadModel('common')->getPurchaserList();
         $this->config->product->search['params']['purchaser']     = array('operator' => 'include', 'control' => 'select', 'values' => $purchaserList);
         $this->view->purchaserList     = $purchaserList;
@@ -202,22 +226,27 @@ class myProduct extends product
         if ( !$bizProjects ) $bizProjects = array();
         $this->view->bizProjects      = $bizProjects;
 
-        /* Build search form. */
-        $rawModule = $this->app->rawModule;
-        $rawMethod = $this->app->rawMethod;
+        $project = $this->loadModel('project')->getByID($projectID);
+        if(isset($project->hasProduct) && empty($project->hasProduct))
+        {
+            if($isProjectStory && !$productID && !empty($this->products)) $productID = key($this->products);    // If toggle a project by the #swapper component on the story page of the projectstory module, the $productID may be empty. Make sure it has value.
+            unset($this->config->product->search['fields']['product']);                                         // The none-product project don't need display the product in the search form.
+            if($project->model != 'scrum') unset($this->config->product->search['fields']['plan']);             // The none-product and none-scrum project don't need display the plan in the search form.
+        }
 
-        $params    = $rawModule == 'projectstory' ? "projectID=$projectID&" : '';
-        $actionURL = $this->createLink($rawModule, $rawMethod, $params . "productID=$productID&branch=$branch&browseType=bySearch&queryID=myQueryID&storyType=$storyType");
+        /* Build search form. */
+        $params    = $isProjectStory ? "projectID=$projectID&" : '';
+        $actionURL = $this->createLink($this->app->rawModule, $this->app->rawMethod, $params . "productID=$productID&branch=$branch&browseType=bySearch&queryID=myQueryID&storyType=$storyType");
 
         $this->config->product->search['onMenuBar'] = 'yes';
         $this->product->buildSearchForm($productID, $this->products, $queryID, $actionURL, $branch, $projectID);
 
         $showModule = !empty($this->config->datatable->productBrowse->showModule) ? $this->config->datatable->productBrowse->showModule : '';
 
-        $productName = ($this->app->rawModule == 'projectstory' and empty($productID)) ? $this->lang->product->all : $this->products[$productID];
+        $productName = ($isProjectStory and empty($productID)) ? $this->lang->product->all : $this->products[$productID];
 
         /* Assign. */
-        $this->view->title           = $productName . $this->lang->colon . $this->lang->product->browse;
+        $this->view->title           = $productName . $this->lang->colon . ($storyType === 'story' ? $this->lang->product->browse : $this->lang->product->requirement);
         $this->view->position[]      = $productName;
         $this->view->position[]      = $this->lang->product->browse;
         $this->view->productID       = $productID;
@@ -225,7 +254,7 @@ class myProduct extends product
         $this->view->productName     = $productName;
         $this->view->moduleID        = $moduleID;
         $this->view->stories         = $stories;
-        $this->view->plans           = $this->loadModel('productplan')->getPairs($productID, $branch === 'all' ? '' : $branch, '', true);
+        $this->view->plans           = $this->loadModel('productplan')->getPairs($productID, ($branch === 'all' or empty($branch)) ? '' : $branch, 'unexpired,noclosed', true);
         $this->view->productPlans    = isset($productPlans) ? array(0 => '') + $productPlans : array();
         $this->view->summary         = $this->product->summary($stories, $storyType);
         $this->view->moduleTree      = $moduleTree;
@@ -254,6 +283,7 @@ class myProduct extends product
         $this->view->storyType       = $storyType;
         $this->view->from            = $this->app->tab;
         $this->view->modulePairs     = $showModule ? $this->tree->getModulePairs($productID, 'story', $showModule) : array();
+        $this->view->project         = $project;
         $this->display();
     }
 

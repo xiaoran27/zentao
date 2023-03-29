@@ -19,6 +19,7 @@ js::set('bizProjectList', $bizProjectList);
 <?php include '../../../../../module/common/view/header.html.php';?>
 <?php include '../../../../../module/common/view/kindeditor.html.php';?>
 <?php js::set('rawMethod', $this->app->rawMethod);?>
+<?php js::set('hiddenProduct', isset($hiddenProduct) ? $hiddenProduct : false);?>
 <script>
 
 /**
@@ -61,8 +62,69 @@ function set_bzCategory_scoreNum(purchaserValue)
             if (valueList.length>2) $('#scoreNum').val(valueList[3]);
         }
     })
+}    
+    
+/**
+ * Load product.
+ *
+ * @param  int   $productID
+ * @access public
+ * @return void
+ */
+function loadProduct(productID)
+{
+    if(page == 'edit' && twins && productID != oldProductID)
+    {
+        confirmRelievedTwins = confirm(relievedTwinsTip);
+        if(!confirmRelievedTwins)
+        {
+            $('#product').val(oldProductID);
+            $('#product').trigger("chosen:updated");
+            return false;
+        }
+    }
 
+    if(typeof parentStory != 'undefined' && parentStory)
+    {
+        confirmLoadProduct = confirm(moveChildrenTips);
+        if(!confirmLoadProduct)
+        {
+            $('#product').val(oldProductID);
+            $('#product').trigger("chosen:updated");
+            return false;
+        }
+    }
+
+    if(typeof hasSR != 'undefined' && hasSR)
+    {
+        confirmLoadProduct = confirm(moveSRTips);//Set hasSR variable in pro and biz.
+        if(!confirmLoadProduct)
+        {
+            $('#product').val(oldProductID);
+            $('#product').trigger("chosen:updated");
+            return false;
+        }
+    }
+
+    oldProductID = $('#product').val();
+    loadProductBranches(productID);
+    loadProductReviewers(productID);
+    loadURS();
+
+    if(typeof(storyType) == 'string' && storyType == 'story')
+    {
+        var storyLink = createLink('story', 'ajaxGetParentStory', 'productID=' + productID + '&labelName=parent');
+        $.get(storyLink, function(data)
+        {
+            $('#parent').replaceWith(data);
+            $('#parent' + "_chosen").remove();
+            $('#parent').next('.picker').remove();
+            $('#parent').chosen();
+        });
+    }
 }
+
+
 
 
 /**
@@ -95,7 +157,59 @@ function loadProductBranches(productID)
     if(page == 'create') param = 'active';
     $('#branch').remove();
     $('#branch_chosen').remove();
-    $.get(createLink('branch', 'ajaxGetBranches', "productID=" + productID + "&oldBranch=0&param=" + param + "&projectID=" + executionID), function(data)
+    var isTwins = storyType == 'story' && page == 'create' ? 'yes' : 'no';
+    $.get(createLink('branch', 'ajaxGetBranches', "productID=" + productID + "&oldBranch=0&param=" + param + "&projectID=" + executionID + "&withMainBranch=1&isTwins=" + isTwins), function(data)
+    {
+        if(storyType == 'story' && page == 'create')
+        {
+            var newProductType = data ? 'normal' : 'branch';
+            if(originProductType != newProductType)
+            {
+                $('.switchBranch').toggleClass('hidden');
+                $('.switchBranch').toggleClass('disable');
+            }
+            $('#storyNoticeBranch').closest('tr').addClass('hidden');
+            originProductType = newProductType;
+            $('tr[class^="addBranchesBox"]').remove();
+            if(data)
+            {
+                $.ajaxSettings.async = false;
+                $.get(createLink('product', 'ajaxGetProductById', "productID=" + productID), function(data)
+                {
+                    $.cookie('branchSourceName', data.branchSourceName)
+                    $.cookie('branchName', data.branchName)
+                }, 'json')
+                $.ajaxSettings.async = true;
+                gap = $('#product').closest('td').next().width();
+                $('#planIdBox').css('flex', '0 0 ' + gap + 'px')
+                $('.switchBranch #branchBox .input-group .input-group-addon').html($.cookie('branchSourceName'))
+                $('.switchBranch #branchBox').closest('td').prev().html($.cookie('branchName'))
+                /* reload branch */
+                $('#branches0').replaceWith(data);
+                $('#branches0' + "_chosen").remove();
+                $('#branches0').next('.picker').remove();
+                $('#branches0').chosen();
+                loadModuleForTwins(productID, 0, 0)
+                loadPlanForTwins(productID, 0, 0)
+                /* Init multi branch icon-plus. */
+                if($(".table-form select[id^='branches']").length == $('.switchBranch #branchBox option').length)
+                {
+                    $('.table-col .icon-plus').parent().css('pointer-events', 'none')
+                    $('.table-col .icon-plus').parent().addClass('disabled')
+                }
+                else
+                {
+                    $('.table-col .icon-plus').parent().css('pointer-events', 'auto')
+                    $('.table-col .icon-plus').parent().removeClass('disabled')
+                }
+            }
+            else
+            {
+                loadProductModules(productID, 0);
+                loadProductPlans(productID, 0);
+            }
+        }
+        else
     {
         var $product = $('#product');
         var $inputGroup = $product.closest('.input-group');
@@ -109,6 +223,7 @@ function loadProductBranches(productID)
 
         loadProductModules(productID, $('#branch').val());
         loadProductPlans(productID, $('#branch').val());
+        }
     })
 }
 
@@ -131,12 +246,12 @@ function loadProductModules(productID, branch)
         currentModule = $('#module').val();
     }
 
-    var moduleLink = createLink('tree', 'ajaxGetOptionMenu', 'productID=' + productID + '&viewtype=story&branch=' + branch + '&rootModuleID=0&returnType=html&fieldID=&needManage=true&extra=&currentModuleID=' + currentModule);
+    var moduleLink = createLink('tree', 'ajaxGetOptionMenu', 'productID=' + productID + '&viewtype=story&branch=' + branch + '&rootModuleID=0&returnType=html&fieldID=&needManage=true&extra=nodeleted&currentModuleID=' + currentModule);
     var $moduleIDBox = $('#moduleIdBox');
     $moduleIDBox.load(moduleLink, function()
     {
         $moduleIDBox.find('#module').chosen();
-        if(typeof(storyModule) == 'string' && config.currentMethod != 'edit') $moduleIDBox.prepend("<span class='input-group-addon'>" + storyModule + "</span>");
+        if(typeof(storyModule) == 'string' && config.currentMethod != 'edit' && !hiddenProduct) $moduleIDBox.prepend("<span class='input-group-addon'>" + storyModule + "</span>");
         $moduleIDBox.fixInputGroup();
     });
 }
@@ -153,9 +268,10 @@ function loadProductPlans(productID, branch)
 {
     if(typeof(branch) == 'undefined') branch = 0;
     if(!branch) branch = 0;
+    var param      = rawMethod == 'edit' ? 'skipParent|forStory' : 'skipParent';
     var expired = config.currentMethod == 'create' ? 'unexpired' : '';
-    planLink = createLink('product', 'ajaxGetPlans', 'productID=' + productID + '&branch=' + branch + '&planID=' + $('#plan').val() + '&fieldID=&needCreate=true&expired='+ expired +'&param=skipParent,' + config.currentMethod);
-    var $planIdBox = $('#planIdBox');
+    var planLink   = createLink('product', 'ajaxGetPlans', 'productID=' + productID + '&branch=' + branch + '&planID=' + $('#plan').val() + '&fieldID=&needCreate=true&expired='+ expired +'&param=skipParent,forStory,' + config.currentMethod);
+    var $planIdBox = rawMethod == 'create' ? $('.switchBranch #planIdBox') : $('#planIdBox');
     $planIdBox.load(planLink, function()
     {
         $planIdBox.find('#plan').chosen();

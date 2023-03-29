@@ -63,6 +63,7 @@ class bytenewSearch extends searchModel
         {
             $flowModule = $module;
             if($module == 'projectStory' || $module == 'executionStory') $flowModule = 'story';
+            if($module == 'projectBuild' || $module == 'executionBuild') $flowModule = 'build';
             if($module == 'projectBug') $flowModule = 'bug';
 
             $buildin = false;
@@ -342,7 +343,15 @@ class bytenewSearch extends searchModel
         if($scoreNum > 2 && !dao::isError()) $this->loadModel('score')->create('search', 'saveQueryAdvanced');
     }
 
-
+    /**
+     * Init the search session for the first time search.
+     *
+     * @param  string   $module
+     * @param  array    $fields
+     * @param  array    $fieldParams
+     * @access public
+     * @return void
+     */
     public function initSession($module, $fields, $fieldParams)
     {
         $formSessionName  = $module . 'Form';
@@ -724,6 +733,8 @@ class bytenewSearch extends searchModel
         }
         else
         {
+            if($this->config->systemMode == 'light') unset($this->config->search->fields->program);
+
             foreach($this->config->search->fields as $objectType => $fields)
             {
                 $module = $objectType;
@@ -750,10 +761,23 @@ class bytenewSearch extends searchModel
     {
         list($words, $againstCond, $likeCondition, $allowedObject) = $this->getSqlParams($keywords, $type);
 
+        $filterObject = array();
+        foreach($allowedObject as $index => $object)
+        {
+            if(strpos(',feedback,ticket,', ",$object,") !== false)
+            {
+                unset($allowedObject[$index]);
+                $filterObject[] = $object;
+            }
+        }
+
         $typeCount = $this->dao->select("objectType, count(*) as objectCount")
             ->from(TABLE_SEARCHINDEX)
-            ->where('vision')->eq($this->config->vision)
+            ->where('((vision')->eq($this->config->vision)
             ->andWhere('objectType')->in($allowedObject)
+            ->markRight(1)
+            ->orWhere('(objectType')->in($filterObject)
+            ->markRight(2)
             ->andWhere('addedDate')->le(helper::now())
             ->groupBy('objectType')
             ->fetchPairs('objectType', 'objectCount');
@@ -774,12 +798,25 @@ class bytenewSearch extends searchModel
     {
         list($words, $againstCond, $likeCondition, $allowedObject) = $this->getSqlParams($keywords, $type);
 
+        $filterObject = array();
+        foreach($allowedObject as $index => $object)
+        {
+            if(strpos(',feedback,ticket,', ",$object,") !== false)
+            {
+                unset($allowedObject[$index]);
+                $filterObject[] = $object;
+            }
+        }
+
         $scoreColumn = "(MATCH(title, content) AGAINST('{$againstCond}' IN BOOLEAN MODE))";
         $stmt = $this->dao->select("*, {$scoreColumn} as score")
             ->from(TABLE_SEARCHINDEX)
             ->where("(MATCH(title,content) AGAINST('{$againstCond}' IN BOOLEAN MODE) >= 1 {$likeCondition})")
-            ->andWhere('vision')->eq($this->config->vision)
+            ->andWhere('((vision')->eq($this->config->vision)
             ->andWhere('objectType')->in($allowedObject)
+            ->markRight(1)
+            ->orWhere('(objectType')->in($filterObject)
+            ->markRight(2)
             ->andWhere('addedDate')->le(helper::now())
             ->orderBy('score_desc, editedDate_desc')
             ->query();
@@ -877,7 +914,8 @@ class bytenewSearch extends searchModel
             }
             elseif($module == 'story' or $module == 'requirement')
             {
-                $story = $objectList[$module][$record->objectID];
+                $story  = $objectList[$module][$record->objectID];
+                $module = 'story';
                 if(!empty($story->lib))
                 {
                     $module = 'assetlib';
@@ -1060,10 +1098,11 @@ class bytenewSearch extends searchModel
         if($this->app->user->admin) return $results;
 
         $this->loadModel('doc');
-        $products   = $this->app->user->view->products;
-        $programs   = $this->app->user->view->programs;
-        $projects   = $this->app->user->view->projects;
-        $executions = $this->app->user->view->sprints;
+        $products       = $this->app->user->view->products;
+        $shadowProducts = $this->dao->select('id')->from(TABLE_PRODUCT)->where('shadow')->eq(1)->fetchPairs('id');
+        $programs       = $this->app->user->view->programs;
+        $projects       = $this->app->user->view->projects;
+        $executions     = $this->app->user->view->sprints;
 
         $objectPairs = array();
         $total       = count($results);
@@ -1101,6 +1140,7 @@ class bytenewSearch extends searchModel
                 foreach($objectIdList as $productID => $recordID)
                 {
                     if(strpos(",$products,", ",$productID,") === false) unset($results[$recordID]);
+                    if(in_array($productID, $shadowProducts)) unset($results[$recordID]);
                 }
             }
             elseif($objectType == 'program')
@@ -1180,6 +1220,21 @@ class bytenewSearch extends searchModel
                     if(isset($objectIdList[$suiteID]))
                     {
                         $recordID = $objectIdList[$suiteID];
+                        unset($results[$recordID]);
+                    }
+                }
+            }
+            elseif(strpos(',feedback,ticket,', ",$objectType,") !== false)
+            {
+                $grantProducts = $this->loadModel('feedback')->getGrantProducts();
+                $objects       = $this->dao->select('*')->from($table)->where('id')->in(array_keys($objectIdList))->fetchAll('id');
+                foreach($objects as $objectID => $object)
+                {
+                    if($objectType == 'feedback' and $object->openedBy == $this->app->user->account) continue;
+                    if(isset($grantProducts[$object->product])) continue;
+                    if(isset($objectIdList[$objectID]))
+                    {
+                        $recordID = $objectIdList[$objectID];
                         unset($results[$recordID]);
                     }
                 }

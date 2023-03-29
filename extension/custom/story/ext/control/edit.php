@@ -36,8 +36,6 @@ class myStory extends story
             $this->story->update($storyID);
             if(dao::isError()) return print(js::error(dao::getError()));
 
-            $this->loadModel('common')->log("_POST=$_POST, storyID=$storyID", __FILE__, __LINE__);
-
             $this->executeHooks($storyID);
 
             if(isonlybody())
@@ -103,6 +101,29 @@ class myStory extends story
             $this->view->objectID = $objectID;
         }
 
+        /* Hidden some fields of projects without products. */
+        $this->view->hiddenProduct = false;
+        $this->view->hiddenParent  = false;
+        $this->view->hiddenPlan    = false;
+        $this->view->hiddenURS     = false;
+        $this->view->teamUsers     = array();
+
+        if($product->shadow)
+        {
+            $project = $this->project->getByShadowProduct($product->id);
+            $this->view->teamUsers     = $this->project->getTeamMemberPairs($project->id);
+            $this->view->hiddenProduct = true;
+            $this->view->hiddenParent  = true;
+
+            if($project->model !== 'scrum')  $this->view->hiddenPlan = true;
+            if(!$project->multiple)
+            {
+                $this->view->hiddenPlan = true;
+                unset($this->lang->story->stageList[''], $this->lang->story->stageList['wait'], $this->lang->story->stageList['planned']);
+            }
+            if($project->model === 'kanban') $this->view->hiddenURS  = true;
+        }
+
         /* Display status of branch. */
         $branches = $this->loadModel('branch')->getList($product->id, isset($objectID) ? $objectID : 0, 'all');
         $branchOption    = array();
@@ -129,9 +150,12 @@ class myStory extends story
         $branch         = $product->type == 'branch' ? ($story->branch > 0 ? $story->branch : '0') : 'all';
         $productStories = $this->story->getProductStoryPairs($story->product, $branch, 0, 'all', 'id_desc', 0, '', $story->type);
 
+        if($story->type == 'requirement') $this->lang->story->notice->reviewerNotEmpty = str_replace($this->lang->SRCommon, $this->lang->URCommon, $this->lang->story->notice->reviewerNotEmpty);
+
         $this->view->title            = $this->lang->story->edit . "STORY" . $this->lang->colon . $this->view->story->title;
         $this->view->position[]       = $this->lang->story->edit;
         $this->view->story            = $story;
+        $this->view->twins            = empty($story->twins) ? array() : $this->story->getByList($story->twins);
         $this->view->stories          = $stories;
         $this->view->purchaserList    = $this->loadModel('common')->getPurchaserList();
         $this->view->purchasers       = array_keys($this->view->purchaserList);
@@ -142,6 +166,7 @@ class myStory extends story
         $this->view->productStories   = $productStories;
         $this->view->branchOption     = $branchOption;
         $this->view->branchTagOption  = $branchTagOption;
+        $this->view->branches         = $product->type == 'normal' ? array() : $this->loadModel('branch')->getPairs($product->id);
         $this->view->reviewers        = array_keys($reviewerList);
         $this->view->reviewedReviewer = $reviewedReviewer;
         $this->view->lastReviewer     = $this->story->getLastReviewer($story->id);

@@ -24,6 +24,8 @@
 <?php js::set('feedbackSource', $config->story->feedbackSource); ?>
 <?php js::set('storyStatus', $story->status);?>
 <?php js::set('lastReviewer', explode(',', $lastReviewer))?>
+<?php js::set('twins', $story->twins)?>
+<?php js::Set('relievedTwinsTip', $lang->story->relievedTwinsTip)?>
 <?php js::set('bzCategory', $lang->story->bzCategory);?>
 <?php js::set('prCategory', $lang->story->prCategory);?>
 <?php js::set('responseResult', $lang->story->responseResult);?>
@@ -60,7 +62,7 @@
               <div class="table-row">
                 <?php if(!$this->story->checkForceReview()):?>
                 <div class="table-col">
-                  <?php echo html::select('reviewer[]', $productReviewers, $reviewers, 'class="form-control picker-select" multiple')?>
+                  <?php echo html::select('reviewer[]', $hiddenProduct ? $teamUsers : $productReviewers, $reviewers, 'class="form-control picker-select" multiple')?>
                 </div>
                 <div class="table-col needNotReviewBox">
                   <span class="input-group-addon" style="border: 1px solid #dcdcdc; border-left-width: 0px;">
@@ -72,7 +74,7 @@
                 </div>
                 <?php else:?>
                 <div class="table-col">
-                  <?php echo html::select('reviewer[]', $productReviewers, $reviewers, 'class="form-control picker-select" multiple required')?>
+                  <?php echo html::select('reviewer[]', $hiddenProduct ? $teamUsers : $productReviewers, $reviewers, 'class="form-control picker-select" multiple required')?>
                 </div>
                 <?php endif;?>
               </div>
@@ -103,6 +105,21 @@
           </div>
           <?php endif;?>
           <?php $this->printExtendFields($story, 'div', 'position=left');?>
+          <?php if(!empty($twins)):?>
+          <div class='detail' id='legendTwins'>
+            <div class='detail-title'>
+              <?php echo $lang->story->changeSyncTip;?>
+              <span data-toggle='tooltip' data-placement='right' title='<?php echo $lang->story->syncTip;?>'><i class='icon-help'></i></span>
+            </div>
+            <div class='form-group'>
+              <div>
+                <ul class='list-unstyled'>
+                  <?php include './blocktwins.html.php';?>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <?php endif;?>
           <div class='detail'>
             <div class='detail-title'><?php echo $lang->story->comment;?></div>
             <div class='form-group'>
@@ -134,7 +151,7 @@
             <div class='detail-title'><?php echo $lang->story->legendBasicInfo;?></div>
             <table class='table table-form'>
               <?php if($story->parent <= 0):?>
-              <tr>
+              <tr class="<?php if($hiddenProduct) echo 'hidden';?>">
                 <th class='thWidth'><?php echo $lang->story->product;?></th>
                 <td>
                   <div class='input-group'>
@@ -171,16 +188,17 @@
                 </td>
               </tr>
               <?php if($story->parent >= 0 and $story->type == 'story'):?>
-              <tr>
+              <tr class="<?php if($hiddenParent) echo 'hidden';?>">
                 <th><?php echo $lang->story->parent;?></th>
                 <td><?php echo html::select('parent', $stories, $story->parent, "class='form-control chosen'");?></td>
               </tr>
-              <tr>
+              <tr class="<?php if($hiddenPlan) echo 'hidden';?>">
                 <th><?php echo $lang->story->plan;?></th>
                 <td>
                   <div class='input-group' id='planIdBox'>
-                  <?php $multiple = ($this->session->currentProductType != 'normal' and empty($story->branch)) ? true : false;?>
-                  <?php echo html::select($multiple ? 'plan[]' : 'plan', $plans, $story->plan, "class='form-control chosen'" . ($multiple ? ' multiple' : ''));
+                  <?php $planCount = !empty($story->planTitle) ? count($story->planTitle) : 0?>
+                  <?php $multiple  = ($this->session->currentProductType != 'normal' and empty($story->branch) and $planCount > 1) ? 'multiple' : '';?>
+                  <?php echo html::select(!empty($multiple) ? 'plan[]' : 'plan', $plans, $story->plan, "class='form-control chosen' " . $multiple);
                   if(count($plans) == 1)
                   {
                       echo "<span class='input-group-addon'>";
@@ -257,17 +275,21 @@
                 <th><?php echo $lang->story->stage;?></th>
                 <td>
                 <?php
+                $maxStage    = $story->stage;
+                $stageList   = join(',', array_keys($this->lang->story->stageList));
+                $maxStagePos = strpos($stageList, $maxStage);
                 if($story->stages and $branchTagOption)
                 {
                     foreach($story->stages as $branch => $stage)
                     {
-                        if(isset($branchTagOption[$branch])) echo '<p>' . $branchTagOption[$branch] . html::select("stages[$branch]", $lang->story->stageList, $stage, "class='form-control chosen'") . '</p>';
+                        if(strpos($stageList, $stage) !== false and strpos($stageList, $stage) > $maxStagePos)
+                        {
+                            $maxStage    = $stage;
+                            $maxStagePos = strpos($stageList, $stage);
                     }
                 }
-                else
-                {
-                    echo html::select('stage', $lang->story->stageList, $story->stage, "class='form-control chosen'");
                 }
+                echo html::select('stage', $lang->story->stageList, $maxStage, "class='form-control chosen'");
                 ?>
                 </td>
               </tr>
@@ -280,7 +302,7 @@
                 <th><?php echo $lang->story->pri;?></th>
                 <td><?php echo html::select('pri', $lang->story->priList, $story->pri, "class='form-control chosen'");?></td>
               </tr>
-              <tr class='hidden' >
+              <tr>
                 <th><?php echo $lang->story->estimate;?></th>
                 <td><?php echo $story->parent >= 0 ? html::input('estimate', $story->estimate, "class='form-control'") : $story->estimate;?></td>
               </tr>
@@ -317,12 +339,12 @@
               <tr>
                 <th><?php echo $lang->story->assignedTo;?></th>
                 <?php $assignedToList = $story->status == 'closed' ? $users + array('closed' => 'Closed') : $users;?>
-                <td><?php echo html::select('assignedTo', $assignedToList, $story->assignedTo, 'class="form-control chosen"');?></td>
+                <td><?php echo html::select('assignedTo', $hiddenProduct ? $teamUsers : $assignedToList, $story->assignedTo, 'class="form-control chosen"');?></td>
               </tr>
               <?php if($story->status == 'reviewing'):?>
               <tr>
                 <th><?php echo $lang->story->reviewers;?></th>
-                <td><?php echo html::select('reviewer[]', $productReviewers, $reviewers, 'class="form-control picker-select" multiple')?></td>
+                <td><?php echo html::select('reviewer[]', $hiddenProduct ? $teamUsers : $productReviewers, $reviewers, 'class="form-control picker-select" multiple')?></td>
               </tr>
               <?php endif;?>
               <?php if($story->status == 'closed'):?>

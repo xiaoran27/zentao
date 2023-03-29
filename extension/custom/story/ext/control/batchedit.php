@@ -20,13 +20,24 @@ class myStory extends story
     {
         $this->story->replaceURLang($storyType);
 
+        $this->view->hiddenPlan = false;
         if($this->app->tab == 'product')
         {
             $this->product->setMenu($productID);
         }
         else if($this->app->tab == 'project')
         {
-            $this->project->setMenu($executionID);
+            $project = $this->dao->findByID($executionID)->from(TABLE_PROJECT)->fetch();
+            if($project->type == 'project')
+            {
+                if(!($project->model == 'scrum' and !$project->hasProduct and $project->multiple)) $this->view->hiddenPlan = true;
+                $this->project->setMenu($executionID);
+            }
+            else
+            {
+                if(!$project->hasProduct and !$project->multiple) $this->view->hiddenPlan = true;
+                $this->execution->setMenu($executionID);
+            }
         }
         else if($this->app->tab == 'execution')
         {
@@ -70,6 +81,17 @@ class myStory extends story
         /* Get edited stories. */
         $stories = $this->story->getByList($storyIdList);
 
+        /* Filter twins. */
+        $twins = '';
+        foreach($stories as $id => $story)
+        {
+            if(empty($story->twins)) continue;
+            $twins .= "#$id ";
+            unset($stories[$id]);
+        }
+        if(!empty($twins)) echo js::alert(sprintf($this->lang->story->batchEditTip, $twins));
+        if(empty($stories)) return print(js::locate($this->session->storyList));
+
         $this->loadModel('branch');
         if($productID and !$executionID)
         {
@@ -89,7 +111,7 @@ class myStory extends story
             $moduleList  = $branchProduct ? $modulePairs : array(0 => $modulePairs);
 
             $modules         = array($productID => $moduleList);
-            $plans           = array($productID => $this->productplan->getBranchPlanPairs($productID, '', true));
+            $plans           = array($productID => $this->productplan->getBranchPlanPairs($productID, '', 'unexpired', true));
             $products        = array($productID => $product);
             $branchTagOption = array($productID => $branchTagOption);
         }
@@ -99,20 +121,12 @@ class myStory extends story
             $modules         = array();
             $branchTagOption = array();
             $products        = array();
+            $plans           = array();
 
-            if($executionID)
-            {
-                /* The stories of project or execution. */
-                $execution = $this->execution->getByID($executionID);
-                $products  = $this->loadModel('product')->getProducts($executionID);
-            }
-            else
-            {
-                /* The stories of my. */
-                $productIdList = array();
-                foreach($stories as $story) $productIdList[$story->product] = $story->product;
-                $products = $this->product->getByIdList($productIdList);
-            }
+            /* Get product id list by the stories. */
+            $productIdList = array();
+            foreach($stories as $story) $productIdList[$story->product] = $story->product;
+            $products = $this->product->getByIdList($productIdList);
 
             foreach($products as $storyProduct)
             {
@@ -129,7 +143,7 @@ class myStory extends story
                 $modulePairs = $this->tree->getOptionMenu($storyProduct->id, 'story', 0, $branches);
                 $modules[$storyProduct->id] = $storyProduct->type != 'normal' ? $modulePairs : array(0 => $modulePairs);
 
-                $plans[$storyProduct->id] = $this->productplan->getBranchPlanPairs($storyProduct->id, $branches, true);
+                $plans[$storyProduct->id] = $this->productplan->getBranchPlanPairs($storyProduct->id, $branches, 'unexpired', true);
                 if(empty($plans[$storyProduct->id])) $plans[$storyProduct->id][0] = $plans[$storyProduct->id];
 
                 if($storyProduct->type != 'normal') $branchProduct = true;
@@ -137,7 +151,7 @@ class myStory extends story
         }
 
         /* Set ditto option for users. */
-        $users = $this->loadModel('user')->getPairs('nodeleted');
+        $users = $this->loadModel('user')->getPairs('nodeleted|noclosed');
         $users = array('' => '', 'ditto' => $this->lang->story->ditto) + $users;
 
         /* Set Custom*/
@@ -178,10 +192,14 @@ class myStory extends story
                 $branch       = $storyProduct->type == 'branch' ? ($story->branch > 0 ? $story->branch : '0') : 'all';
                 if(!isset($productStoryList[$story->product][$story->branch])) $productStoryList[$story->product][$story->branch] = $this->story->getProductStoryPairs($story->product, $branch, 0, 'all', 'id_desc', 0, '', $story->type);
             }
+
+            if(!empty($story->plan) and !isset($plans[$story->product][$story->branch][$story->plan]))
+            {
+                $plan = $this->dao->select('id,title,begin,end')->from(TABLE_PRODUCTPLAN)->where('id')->eq($story->plan)->fetch();
+                $plans[$story->product][$story->branch][$story->plan] = $plan->title . ' [' . $plan->begin . '~' . $plan->end . ']';
+            }
         }
 
-        $this->view->position[]        = $this->lang->story->common;
-        $this->view->position[]        = $this->lang->story->batchEdit;
         $this->view->title             = $this->lang->story->batchEdit;
         $this->view->bzCategoryList    = array('' => '') + $this->lang->story->bzCategoryList;
         $this->view->prCategoryList    = array('' => '') + ($storyType == 'requirement'?$this->lang->story->prCategoryList0:$this->lang->story->prCategoryList);
@@ -197,7 +215,7 @@ class myStory extends story
         $this->view->branchProduct     = $branchProduct;
         $this->view->storyIdList       = $storyIdList;
         $this->view->branch            = $branch;
-        $this->view->plans             = array('' => '') + $plans;
+        $this->view->plans             = $plans;
         $this->view->storyType         = $storyType;
         $this->view->stories           = $stories;
         $this->view->executionID       = $executionID;

@@ -14,6 +14,7 @@
 <?php if($forceReview) $config->story->create->requiredFields .= ',review';?>
 <?php js::set('showFields', $showFields);?>
 <?php js::set('requiredFields', $config->story->create->requiredFields);?>
+<?php js::set('storyType', $type);?>
 <div id="mainContent" class="main-content">
   <div class="main-header">
     <h2><?php echo $storyID ? $storyTitle . ' - ' . $this->lang->story->subdivide : $this->lang->story->batchCreate;?></h2>
@@ -46,14 +47,16 @@
   unset($visibleFields['module']);
 
   ?>
-  <form method='post' class='load-indicator main-form' enctype='multipart/form-data' target='hiddenwin' id="batchCreateForm">
+  <form method='post' class='load-indicator main-form form-ajax' enctype='multipart/form-data' id="batchCreateForm">
     <div class="table-responsive">
       <table class="table table-form">
         <thead>
           <tr>
             <th class='c-branch<?php echo zget($visibleFields, $product->type, ' hidden')?> branchBox'><?php echo $lang->product->branch;?></th>
             <th class='c-module<?php echo zget($requiredFields, 'module', '', ' required');?>'><?php echo $lang->story->module;?></th>
+            <?php if(!$hiddenPlan):?>
             <th class='c-plan<?php echo zget($visibleFields, 'plan', ' hidden') . zget($requiredFields, 'plan', '', ' required');?> planBox'><?php echo $lang->story->plan;?></th>
+            <?php endif;?>
             <?php if(isset($execution) and $execution->type == 'kanban'):?>
             <th class='c-branch'><?php echo $lang->kanbancard->region;?></th>
             <th class='c-branch'><?php echo $lang->kanbancard->lane;?></th>
@@ -92,13 +95,14 @@
           <tr class="template">
             <td class='text-left<?php echo zget($visibleFields, $product->type, ' hidden')?> branchBox'><?php echo html::select('branch[$id]', $branches, $branch, "class='form-control chosen' onchange='setModuleAndPlan(this.value, $productID, \$id)'");?></td>
             <td class='text-left' style='overflow:visible'><?php echo html::select('module[$id]', $moduleOptionMenu, $moduleID, "class='form-control chosen'");?></td>
+            <?php if(!$hiddenPlan):?>
             <td class='text-left<?php echo zget($visibleFields, 'plan', ' hidden')?> planBox' style='overflow:visible'><?php echo html::select('plan[$id]', $plans, $planID, "class='form-control chosen'");?></td>
+            <?php endif;?>
             <?php if(isset($execution) and $execution->type == 'kanban'):?>
             <td class='text-left'><?php echo html::select('regions[$id]', $regionPairs, $regionID, "class='form-control chosen' onchange='setLane(this.value, \$id)'");?>
             <td class='text-left'><?php echo html::select('lanes[$id]', $lanePairs, $laneID, "class='form-control chosen'");?>
             <?php endif;?>
             <td style='overflow:visible'>
-            <?php echo html::input('assignedTo[$id]', empty($story)?'':$story->assignedTo, "class='form-control hidden'");?>
               <div class="input-group">
                 <div class="input-control has-icon-right">
                 <input type="text" name="title[$id]" id="title$id" value="<?php echo empty($story)?$storyTitle:$story->title;?>" class="form-control title-import input-story-title" autocomplete="off">
@@ -175,7 +179,6 @@
       <td class='text-left'><?php echo html::select("lanes[$i]", $lanePairs, $laneID, "class='form-control chosen'");?>
       <?php endif;?>
       <td style='overflow:visible'>
-        <?php echo html::input('assignedTo[$i]', empty($story)?'':$story->assignedTo, "class='form-control hidden'");?>
         <div class="input-group">
           <div class="input-control has-icon-right">
             <input type="text" name="title[<?php echo $i?>]" id="title<?php echo $i?>" value="<?php echo empty($story)?$storyTitle:$story->title;?>" class="form-control title-import input-story-title" autocomplete="off">
@@ -261,13 +264,8 @@ $(function()
               $row.find('.input-story-title').val(storyTitle).after('<input type="hidden" name="uploadImage[' + index + ']" id="uploadImage[' + index + ']" value="' + imageTitles[storyTitle] + '">');
             }
 
-            // 直接保存会全部保存
-            // $row.find('#title'+index).val("<?php echo $storyID ? $storyTitle . ' - ' . $this->lang->story->subdivide : $this->lang->story->batchCreate;?>");
             
-            if(index == 1) {
-              $row.find('td.c-actions > a:last').remove();
-              $row.find('#title'+index).val("<?php echo $storyID ? $storyTitle . ' - ' . $this->lang->story->subdivide : $this->lang->story->batchCreate;?>");
-            }
+            if(index == 1) $row.find('td.c-actions > a:last').remove();
 
             /* Implement a custom form without feeling refresh. */
             var fieldList = ',' + showFields + ',';
