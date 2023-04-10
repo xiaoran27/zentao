@@ -69,6 +69,8 @@
             <th class='c-prCategory <?php echo zget($visibleFields, 'prCategory', ' hidden') . zget($requiredFields, 'prCategory', '', ' required');?> prCategoryBox'><?php echo $lang->story->prCategory;?></th>
             <?php if($type == 'requirement'):?>
               <th class='c-responseResult <?php echo zget($visibleFields, 'responseResult', ' hidden') . zget($requiredFields, 'responseResult', '', ' required');?> responseResultBox'><?php echo $lang->story->responseResult;?></th>
+            <?php else:?>
+              <th class='c-responseResult <?php echo zget($visibleFields, 'responseResult', ' hidden') . zget($requiredFields, 'responseResult', '', ' required');?> responseResultBox'><?php echo $lang->story->responseResult0;?></th>
             <?php endif;?>
             
             <th class='c-spec<?php echo zget($visibleFields, 'spec', ' hidden') . zget($requiredFields, 'spec', '', ' required');?> specBox'><?php echo $lang->story->spec;?></th>
@@ -103,9 +105,10 @@
             <td class='text-left'><?php echo html::select('lanes[$id]', $lanePairs, $laneID, "class='form-control chosen'");?>
             <?php endif;?>
             <td style='overflow:visible'>
+              <?php echo html::input('assignedTo[$id]', empty($story)?'':$story->assignedTo, "class='form-control hidden'");?>
               <div class="input-group">
                 <div class="input-control has-icon-right">
-                <input type="text" name="title[$id]" id="title$id" value="<?php echo empty($story)?$storyTitle:$story->title;?>" class="form-control title-import input-story-title" autocomplete="off">
+                <input type="text" name="title[$id]" id="title$id" value="" class="form-control title-import input-story-title" autocomplete="off">
                   <div class="colorpicker">
                     <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"><span class="cp-title"></span><span class="color-bar"></span><i class="ic"></i></button>
                     <ul class="dropdown-menu clearfix">
@@ -179,9 +182,10 @@
       <td class='text-left'><?php echo html::select("lanes[$i]", $lanePairs, $laneID, "class='form-control chosen'");?>
       <?php endif;?>
       <td style='overflow:visible'>
+        <?php echo html::input('assignedTo[$i]', empty($story)?'':$story->assignedTo, "class='form-control hidden'");?>
         <div class="input-group">
           <div class="input-control has-icon-right">
-            <input type="text" name="title[<?php echo $i?>]" id="title<?php echo $i?>" value="<?php echo empty($story)?$storyTitle:$story->title;?>" class="form-control title-import input-story-title" autocomplete="off">
+            <input type="text" name="title[<?php echo $i?>]" id="title<?php echo $i?>" value="" class="form-control title-import input-story-title" autocomplete="off">
             <div class="colorpicker">
               <button type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown"><span class="cp-title"></span><span class="color-bar"></span><i class="ic"></i></button>
               <ul class="dropdown-menu clearfix">
@@ -265,7 +269,11 @@ $(function()
             }
 
             
-            if(index == 1) $row.find('td.c-actions > a:last').remove();
+            // if(index == 1) $row.find('td.c-actions > a:last').remove();
+	         if(index == 1) {
+              $row.find('td.c-actions > a:last').remove();
+              $row.find('#title'+index).val("<?php echo $storyID ? $storyTitle . ' - ' . $this->lang->story->subdivide : $this->lang->story->batchCreate;?>");
+            }
 
             /* Implement a custom form without feeling refresh. */
             var fieldList = ',' + showFields + ',';
