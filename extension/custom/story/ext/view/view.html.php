@@ -313,7 +313,13 @@ js::set('bizProjectList', $bizProjectList);
                 </tr>
                 <tr>
                   <th><?php echo $lang->story->bizProject;?></th>
-                  <td id='bzCategory'><?php echo zget($bizProjects, $story->bizProject, $story->bizProject);?></td>
+                  <td id='bizProject'>
+                    <?php if($story->bizProject):?>
+                    <?php // echo zget($bizProjects, $story->bizProject, $story->bizProject); ?> 
+                    <?php echo html::a($this->createLink('project', 'index', "projectID=$story->bizProject"), zget($bizProjects, $story->bizProject, $story->bizProject),"_blank"); ?> 
+                    <?php // echo html::a($this->createLink('project', 'execution', "projectID=$story->bizProject"), zget($bizProjects, $story->bizProject, $story->bizProject),"_blank"); ?> 
+                    <?php endif;?>
+                  </td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->story->uatDate;?></th>
@@ -428,19 +434,19 @@ js::set('bizProjectList', $bizProjectList);
                   </td>
                 </tr>
                 <tr>
-                  <th><?php echo $lang->story->rspAcceptTime;?></th>
+                  <th><?php echo ($story->type == 'requirement'?$lang->story->rspAcceptTime:$lang->story->rspAcceptTime0);?></th>
                   <td><?php echo helper::isZeroDate($story->rspAcceptTime) ? '' : $story->rspAcceptTime;?></td>
                 </tr>
                 <tr>
-                  <th><?php echo $lang->story->rspRecievedTime;?></th>
+                  <th><?php echo ($story->type == 'requirement'?$lang->story->rspRecievedTime:$lang->story->rspRecievedTime0);?></th>
                   <td><?php echo helper::isZeroDate($story->rspRecievedTime) ? '' : $story->rspRecievedTime;?></td>
                 </tr>
                 <tr>
-                  <th><?php echo $lang->story->rspResearchTime;?></th>
+                  <th><?php echo ($story->type == 'requirement'?$lang->story->rspResearchTime:$lang->story->rspResearchTime0);?></th>
                   <td><?php echo helper::isZeroDate($story->rspResearchTime) ? '' : $story->rspResearchTime;?></td>
                 </tr>
                 <tr>
-                  <th><?php echo $lang->story->rspRejectTime;?></th>
+                  <th><?php echo ($story->type == 'requirement'?$lang->story->rspRejectTime:$lang->story->rspRejectTime0);?></th>
                   <td><?php echo helper::isZeroDate($story->rspRejectTime) ? '' : $story->rspRejectTime;?></td>
                 </tr>
               </tbody>
