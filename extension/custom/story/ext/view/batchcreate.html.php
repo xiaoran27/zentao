@@ -124,7 +124,7 @@
             </td>
             <td class='text-left<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select('purchaser[$id]', $purchaserList, empty($story)?'':$story->purchaser, "class='form-control chosen' id='purchaser_\$id'  "); ?></td>
             <td class='text-left<?php echo zget($visibleFields, 'bizProject', ' hidden')?> bizProjectBox'><?php echo html::select('bizProject[$id]', $bizProjectList, empty($story)?'':$story->bizProject, "class='form-control chosen' id='bizProject_\$id'");?></td>
-            <td class='text-left<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input('uatDate[$id]', empty($story)?'':$story->uatDate, "class='form-control form-date' ");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input('uatDate[$id]', empty($story)?'':(helper::isZeroDate($story->uatDate) ? '' : $story->uatDate), "class='form-control form-date' ");?></td>
             <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select('bzCategory[$id]', $bzCategoryList, empty($story)?'':$story->bzCategory, "class='form-control chosen' id='bzCategory_\$id'"); ?></td>
             <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select('prCategory[$id]', $prCategoryList, empty($story)?'':$story->prCategory, "class='form-control chosen' id='prCategory_\$id'"); ?></td>
             <?php if($type == 'requirement'):?>
@@ -201,7 +201,7 @@
       </td>
       <td class='text-left<?php echo zget($visibleFields, 'purchaser', ' hidden')?> purchaserBox'><?php echo html::select("purchaser[$i]", $purchaserList, empty($story)?'ditto':$story->purchaser, "class='form-control chosen'  id='purchaser_$i' ");?></td>
       <td class='text-left<?php echo zget($visibleFields, 'bizProject', ' hidden')?> bizProjectBox'><?php echo html::select("bizProject[$i]", $bizProjects, empty($story)?'ditto':$story->bizProject, "class='form-control chosen' id='bizProject_$i'"); ?></td>
-      <td class='text-left<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input("uatDate[$i]", empty($story)?'':$story->uatDate, "class='form-control form-date' id='uatDate_$i'");?></td>      
+      <td class='text-left<?php echo zget($visibleFields, 'uatDate', ' hidden')?> uatDateBox'><?php echo html::input("uatDate[$i]", empty($story)?'':(helper::isZeroDate($story->uatDate) ? '' : $story->uatDate), "class='form-control form-date' id='uatDate_$i'");?></td>      
       <td class='text-left<?php echo zget($visibleFields, 'bzCategory', ' hidden')?> bzCategoryBox'><?php echo html::select("bzCategory[$i]", $bzCategoryList, empty($story)?'ditto':$story->bzCategory, "class='form-control chosen' id='bzCategory_$i'");?></td>
       <td class='text-left<?php echo zget($visibleFields, 'prCategory', ' hidden')?> prCategoryBox'><?php echo html::select("prCategory[$i]", $prCategoryList, empty($story)?'ditto':$story->prCategory, "class='form-control chosen' id='prCategory_$i'");?></td>
       <?php if($type == 'requirement'):?>

@@ -314,7 +314,7 @@ class myStory extends story
         $this->view->pri              = $pri;
         $this->view->productID        = $productID;
         $this->view->estimate         = $estimate;
-        $this->view->storyTitle       = isset($story->title) ? $story->title : '';
+        $this->view->storyTitle       = isset($story->title) ? $story->title : $this->view->title;
         $this->view->spec             = $spec;
         $this->view->type             = $storyType;
         $this->view->branch           = $branch;

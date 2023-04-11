@@ -8,10 +8,15 @@ if( $type == 'requirement' || $story->type == 'requirement' ){
 
 // $common->syncStarlink();
 
-$bizProjects = $this->loadModel('project')->getPairsListForB100();
-$bizProjectList = $bizProjects ;
+if (!isset($bizProjects)) $bizProjects = $this->loadModel('project')->getPairsListForB100();
+if (!isset($bizProjectList)) $bizProjectList = $bizProjects ;
 js::set('bizProjects', $bizProjects);
 js::set('bizProjectList', $bizProjectList);
+
+if (!isset($purchaserList)) $purchaserList    = $this->loadModel('common')->getPurchaserList();
+js::set('purchaserList', $purchaserList);
+if (!isset($purchasers)) $purchasers = $purchaserList ;
+js::set('purchasers', $purchasers);
 
 // echo $bizProjectList;
 ?>

@@ -131,44 +131,6 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
               <i class="icon-exclamation-sign"></i> <?php echo $lang->story->notice->branch;?>
             </td>
           </tr>
-	  <tr>
-            <th><?php echo $lang->story->purchaser;?></th>
-            <td colspan="2"><?php echo html::select('purchaser[]', $purchaserList, $purchaser, "onchange='set_bzCategory_scoreNum(this.value)' class='form-control chosen' multiple");?></td>
-            <td>
-              <div class="input-group">
-                   <div class="input-group-addon" style="min-width: 77px;"><?php echo $lang->story->bizProject;?></div>
-                  <?php echo html::select('bizProject', $bizProjects, $bizProject, "class='form-control chosen'");?>
-              </div>
-            </td>
-            <td >
-              <div class="input-group">
-                  <span class='input-group-addon' id="uatDateBox"><?php echo $lang->story->uatDate;?></span>
-                  <?php echo html::input('uatDate', $uatDate, "class='form-control form-date' style='min-width: 100px;'");?>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th><?php echo $lang->story->bzCategory;?></th>
-            <td ><?php echo html::select('bzCategory', $lang->story->bzCategoryList, $bzCategory, "class='form-control' ");?></td>
-            <td >
-                <div class="input-group scoreNumBox">
-                  <div class="input-group-addon " style="min-width: 77px;"><?php echo $lang->story->scoreNum;?></div>
-                  <?php echo html::input('scoreNum',empty($scoreNum)?0:$scoreNum, "class='form-control' readonly");?>
-                </div>
-            </td>
-            <td >
-                <div class="input-group prCategoryIdBox">
-                  <div class="input-group-addon " style="min-width: 77px;"><?php echo $lang->story->prCategory;?></div>
-                  <?php echo html::select('prCategory', $type == 'story'?$lang->story->prCategoryList:$lang->story->prCategoryList0, $prCategory, "class='form-control chosen' required");?>
-                </div>
-            </td>
-            <td >
-              <div class="input-group">
-                  <span class='input-group-addon' id="prLevelBox"><?php echo $lang->story->prLevel;?></span>
-                  <?php echo html::select('prLevel', $lang->story->prLevelList, $prLevel, "class='form-control chosen' style='min-width: 100px;'");?>
-              </div>
-            </td>
-          </tr>
           <tr class='<?php if($branches) echo "hidden"; ?> switchBranch'>
             <?php if(!$hiddenPlan):?>
             <th class='planTh'><?php echo $lang->story->planAB;?></th>
@@ -240,6 +202,44 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
             </td>
           </tr>
           <?php endif;?>
+	        <tr>
+            <th><?php echo $lang->story->purchaser;?></th>
+            <td colspan="2"><?php echo html::select('purchaser[]', $purchaserList, $purchaser, "onchange='set_bzCategory_scoreNum(this.value)' class='form-control chosen' multiple");?></td>
+            <td>
+              <div class="input-group">
+                   <div class="input-group-addon" style="min-width: 77px;"><?php echo $lang->story->bizProject;?></div>
+                  <?php echo html::select('bizProject', $bizProjects, $bizProject, "class='form-control chosen'");?>
+              </div>
+            </td>
+            <td >
+              <div class="input-group">
+                  <span class='input-group-addon' id="uatDateBox"><?php echo $lang->story->uatDate;?></span>
+                  <?php echo html::input('uatDate', $uatDate, "class='form-control form-date' style='min-width: 100px;'");?>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th><?php echo $lang->story->bzCategory;?></th>
+            <td ><?php echo html::select('bzCategory', $lang->story->bzCategoryList, $bzCategory, "class='form-control' ");?></td>
+            <td >
+                <div class="input-group scoreNumBox">
+                  <div class="input-group-addon " style="min-width: 77px;"><?php echo $lang->story->scoreNum;?></div>
+                  <?php echo html::input('scoreNum',empty($scoreNum)?0:$scoreNum, "class='form-control' readonly");?>
+                </div>
+            </td>
+            <td >
+                <div class="input-group prCategoryIdBox">
+                  <div class="input-group-addon " style="min-width: 77px;"><?php echo $lang->story->prCategory;?></div>
+                  <?php echo html::select('prCategory', $type == 'story'?$lang->story->prCategoryList:$lang->story->prCategoryList0, $prCategory, "class='form-control chosen' required");?>
+                </div>
+            </td>
+            <td >
+              <div class="input-group">
+                  <span class='input-group-addon' id="prLevelBox"><?php echo $lang->story->prLevel;?></span>
+                  <?php echo html::select('prLevel', $lang->story->prLevelList, $prLevel, "class='form-control chosen' style='min-width: 100px;'");?>
+              </div>
+            </td>
+          </tr>
           <tr>
             <th><?php echo $lang->story->reviewedBy;?></th>
             <td colspan='2' id='reviewerBox'>

@@ -575,6 +575,7 @@ class bytenewStory extends StoryModel
             ->setIF($this->post->assignedTo, 'assignedDate', helper::now())
             ->join('assignedTo', '')
             ->join('mailto', ',')
+            ->join('purchaser', ',')
             ->stripTags($this->config->story->editor->create['id'], $this->config->allowedTags)
             ->remove('files,labels,reviewer,needNotReview,newStory,uid,contactListMenu,URS,region,lane,ticket,branches,modules,plans')
             ->get();
@@ -864,7 +865,7 @@ class bytenewStory extends StoryModel
 
         $result  = $this->loadModel('common')->removeDuplicate('story', $stories, "product={$productID}");
         $stories = $result['data'];
-        // $this->loadModel('common')->log(json_encode($stories,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $this->loadModel('common')->log(json_encode($stories,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         $module = 0;
         $plan   = '';
@@ -878,7 +879,7 @@ class bytenewStory extends StoryModel
 
         foreach($stories->title as $i => $title)
         {
-            if(empty($title) and $this->common->checkValidRow('story', $stories, $i))
+            if( 1 == $i and empty($title) and $this->common->checkValidRow('story', $stories, $i))  // 仅校验第一行的title值
             {
                 dao::$errors["title$i"][] = sprintf($this->lang->error->notempty, $this->lang->story->title);
             }
@@ -940,7 +941,7 @@ class bytenewStory extends StoryModel
             $story->prCategory     = $stories->prCategory[$i];
             $story->responseResult     = $stories->responseResult[$i];
             $story->uatDate     = $stories->uatDate[$i];
-	    $story->purchaser     = gettype($stories->purchaser[$i]) == 'array' ? implode(',',$stories->purchaser[$i]):$stories->purchaser[$i];
+	        $story->purchaser     = gettype($stories->purchaser[$i]) == 'array' ? implode(',',$stories->purchaser[$i]):$stories->purchaser[$i];
             $story->bizProject     = $stories->bizProject[$i];
             $story->source     = $stories->source[$i];
             $story->category   = $stories->category[$i];

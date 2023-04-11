@@ -479,6 +479,9 @@ class myStory extends story
         $this->view->type             = $storyType;
         $this->view->category         = !empty($category) ? $category : 'feature';
 
+        $this->view->purchaserList    = $this->loadModel('common')->getPurchaserList();
+        $this->view->purchasers       = array_keys($this->view->purchaserList);
+
         $this->display();
     }
 

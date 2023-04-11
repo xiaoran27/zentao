@@ -4,15 +4,12 @@ global $config;
 $lang->story->bzCategory = '客户分层';
 $lang->story->bzCategoryList = array();
 $lang->story->bzCategoryList['']  = '';
-$lang->story->bzCategoryList['B5']  = '灯塔客户';
-$lang->story->bzCategoryList['B100'] = '头部客户';
-// $lang->story->bzCategoryList['B101-500'] = '次头部客户';
-$lang->story->bzCategoryList['B500'] = '次头部客户';
-$lang->story->bzCategoryList['LKA'] = '区域客户';
-$lang->story->bzCategoryList['SMB'] = '普通客户';
+$lang->story->bzCategoryList['B5']  = 'B5';
+$lang->story->bzCategoryList['B100'] = 'B100';
+$lang->story->bzCategoryList['B500'] = 'B500';
+$lang->story->bzCategoryList['LKA'] = 'B5000(LKA)';
+$lang->story->bzCategoryList['SMB'] = 'SMB';
 $lang->story->bzCategoryList['OKR'] = 'OKR专用';
-//$lang->story->bzCategoryList['KA']  = '重要客户';
-//$lang->story->bzCategoryList['SMB'] = '腰部客户';
 $lang->story->prCategory = '需求分类';
 $lang->story->prCategoryList = array();   // for业务需求
 $lang->story->prCategoryList['']  = '';
@@ -44,6 +41,7 @@ $lang->story->prCategoryList0['OKR'] = 'OKR专用';
 
 $lang->story->uatDate = 'UAT日期';
 $lang->story->purchaser = '客户名称';
+$lang->story->deliveryMonth = '交付年月';
 
 
 $lang->story->purchaserList  = array();
