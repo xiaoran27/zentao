@@ -103,7 +103,7 @@ class myCron extends cron
                                     $this->common->log(json_encode(array('appName' => $this->appName, 'classNameToFetch' => $classNameToFetch, 'cls_exists' => $cls_exists, 'file2Included' => $file2Included, 'params' => $params) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
                                     if(!$cls_exists)
                                     {
-                                        if (!class_exists($params['moduleName'])) helper::importControl($params['moduleName']);
+                                        // if (!class_exists($params['moduleName'])) helper::importControl($params['moduleName']);
                                         helper::import($file2Included);
                                     }
                                 }
