@@ -4,7 +4,39 @@ include '../../../../../module/story/control.php';
 
 class myStory extends story
 {
+    /**
+     * 更新业务需求的status和stage
+     *
+     * @param  int $$days = 1
+     * @access public
+     * @return void
+     */
+    public function updateRequirementStatusStage($days = 1)
+    {
+ 
+        $data = $this->story->updateRequirementStatusStage($days);
+        echo json_encode((array('result' => 'success', 'data' => $data, 'days' => $days)) ,JSON_UNESCAPED_UNICODE );
+        // return $this->send(array('result' => 'success', 'data' => $data, 'days' => $days));
+        
+    }
+
     
+    /**
+     * 据story.id找到关联业务需求IDs，对每一个业务需求ID的status和stage进行更新
+     *
+     * @param  int    $storyID
+     * @param  bool   $createAction
+     * @access public
+     * @return void
+     */
+    public function updateRequirementStatusStageByStoryID($storyID, $createAction = true)
+    {
+ 
+        $data = $this->story->updateRequirementStatusStageByStoryID($storyID, $createAction);
+        echo json_encode((array('result' => 'success', 'data' => $data, 'storyID' => $storyID, 'createAction' => $createAction)) ,JSON_UNESCAPED_UNICODE );
+        // return $this->send(array('result' => 'success', 'data' => $data, 'storyID' => $storyID, 'createAction' => $createAction));
+        
+    }
 
     /**
      * 整合所有需要在cron的方法，规避control.fetch(...)仅能加载一个control扩展的
@@ -124,6 +156,8 @@ class myStory extends story
         $str = $this->loadModel('common')->syncStarlink($timeout);
         echo $str;
     }
+
+
 
 
 }

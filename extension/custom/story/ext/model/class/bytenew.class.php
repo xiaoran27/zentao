@@ -4,6 +4,138 @@ class bytenewStory extends StoryModel
 {
 
     /**
+     * 更新业务需求的status和stage
+     *
+     * @param  int    $days=1
+     * @access public
+     * @return array()
+     */
+    public function updateRequirementStatusStage($days = 1)
+    {
+        $IDs = $this->dao->select("id")->from(TABLE_STORY)
+            ->where('deleted')->eq(0)->andWhere('status')->ne('draft')
+            ->andWhere('type')->eq('story')
+            ->andWhere("datediff(now(),case when lastEditedDate ='0000-00-00' then openedDate else lastEditedDate end )")->le($days)
+            ->fetchAll();
+        if(empty($IDs)) return array();
+
+        $datas = array();
+        foreach($IDs as $e){
+            $data = $this->updateRequirementStatusStageByStoryID($e->id);
+            $datas["SR{$e->id}"] = $data;
+        }
+
+        return  $datas;
+
+    }
+     /**
+     * 据story.id找到关联业务需求IDs，对每一个业务需求ID的status和stage进行更新
+     *
+     * @param  int    $storyID
+     * @param  bool   $createAction
+     * @access public
+     * @return array
+     */
+    public function updateRequirementStatusStageByStoryID($storyID, $createAction = true)
+    {
+
+        // select distinct bid from zt_relation where aid = 118 and atype='story'   -- 101,103
+        $IDs = $this->dao->select('distinct bid as id')->from(TABLE_RELATION)->where('aid')->eq($storyID)->andWhere('atype')->eq('story')->fetchAll();
+        if(empty($IDs)) return array();
+
+        $common = $this->loadModel('common');
+        $common->log(json_encode(array('storyID'=>$storyID,'IDs'=>$IDs),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+    
+        $requirements = array();
+        $requirements["story-id"] =  $storyID;
+        foreach($IDs as $requirementID) {
+            // select zs.status as status,zs.stage as stage from zt_story zs
+            //  join zt_relation zr on ( zr.atype='requirement' and zs.id = zr.bid )
+            // where zs.deleted  = '0'  and zs.status  != 'draft'  and zr.aid = 103
+            $storyValues = $this->dao->select("zs.id as id, zs.status as status,zs.stage as stage")->from(TABLE_STORY)->alias('zs')
+                ->leftJoin(TABLE_RELATION)->alias('zr')->on("zr.atype='requirement' and zs.id = zr.bid")
+                ->where('zs.deleted')->eq(0)->andWhere('zs.status')->ne('draft')->andWhere('zr.aid')->eq($requirementID->id)
+                ->fetchAll();
+            $requirements["{$requirementID->id}"] =  array();
+            $requirements["{$requirementID->id}"]["stories"] =  $storyValues;
+            $common->log(json_encode(array('requirementID'=>$requirementID,'storyValues'=>$storyValues),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            if(!$storyValues) continue;
+            
+            $statusAll = ",";
+            $stageAll = ",";
+            // https://banniu.yuque.com/staff-dmhmqa/selgla/rk2yoi3ia8kdltfh?singleDoc# 《禅道需求与所处阶段》
+            foreach($storyValues as $e ) {
+                $statusAll .= "$e->status," ;
+                $stageAll .= "$e->stage," ;
+            }
+            $common->log(json_encode(array('stageAll'=>$stageAll,'statusAll'=>$statusAll),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+            // 都closed是closed，其他有啥是啥
+            $status = 'active';
+            if ( strpos($statusAll, ",reviewing,") !== false ){ 
+                $status = 'reviewing';
+            }else if ( strpos($statusAll, ",changing,") !== false ){
+                $status = 'changing';
+            }else if ( strpos($statusAll, ",active,") !== false ){
+                $status = 'active';
+            }else{
+                $status = 'closed';
+            }
+
+            // 有啥是啥
+            $stage = 'wait';
+            if ( strpos($stageAll, ",testing,") !== false ){
+                $stage = 'testing';
+            }else if ( strpos($stageAll, ",developing,") !== false ){
+                $stage = 'developing';
+            }else if ( strpos($stageAll, ",projected,") !== false ){
+                $stage = 'projected';
+            }else if ( strpos($stageAll, ",planned,") !== false ){
+                $stage = 'planned';
+            }else{
+                // 全是啥是啥，或是啥及后是啥
+                $stageList = ['closed','released','verified','tested','developed'];  // 此序固定
+                foreach( $stageList as $s ){
+                    $common->log(json_encode(array('stageAll'=>$stageAll,'s'=>$s),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                    $stageAll = str_replace("{$s},", '', $stageAll);
+                    if ( str_replace(',', '', $stageAll) == "" ){
+                        $stage = $s;
+                        break;
+                    }
+                }
+            }
+
+            
+            $requirements["{$requirementID->id}"]["status"] = $status;
+            $requirements["{$requirementID->id}"]["stage"] = $stage;
+            $requirement = $this->dao->select("id,status,stage")->from(TABLE_STORY)
+                ->where('deleted')->eq(0)->andWhere('id')->eq($requirementID->id)
+                ->andWhere('status')->eq($status)->andWhere('stage')->eq($stage)
+                ->fetchAll();
+            if(!empty($requirement)) {
+                $requirements["{$requirementID->id}"]["old"] = $requirement;
+                continue;
+            }
+
+            
+            // update zt_story set status='',stage='' where deleted  = '0' and id = 103        
+            $rows = $this->dao->update(TABLE_STORY)->set('status')->eq($status)->set('stage')->eq($stage)->where('id')->eq($requirementID->id)->exec();
+            $requirements["{$requirementID->id}"]["rows"] = $rows;
+            
+
+            $common->log(json_encode(array('dao::isError()'=>dao::isError(),'requirementID'=>$requirementID,'statusAll'=>$statusAll,'stageAll'=>$stageAll,'status'=>$status,'stage'=>$stage),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            if ($createAction) {
+                $actionID = $this->loadModel('action')->create('story', $requirementID->id, 'commented', json_encode(array('storyID'=>$storyID,'$requirements'=>$requirements),JSON_UNESCAPED_UNICODE), '', '', false);
+                $requirements["{$requirementID->id}"]["action.id"] = $actionID;
+            }
+
+        }
+
+        $common->log(json_encode(array('storyID'=>$storyID,'requirements'=>$requirements),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        return $requirements;
+    }
+
+    /**
      * 据需求类型(requirement,story), 指派人为''重赋值
      * 
      * @param  string $type='requirement'  (all, requirement,story)
