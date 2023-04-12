@@ -270,7 +270,7 @@
                   <?php echo html::hidden('status', $story->status);?>
                 </td>
               </tr>
-              <?php if($story->type == 'story'):?>
+              <?php if(true or $story->type == 'story'):?>
               <tr>
                 <th><?php echo $lang->story->stage;?></th>
                 <td>

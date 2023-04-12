@@ -364,7 +364,7 @@ js::set('bizProjectList', $bizProjectList);
                   <th><?php echo $lang->story->status;?></th>
                   <td><span class='status-story status-<?php echo $story->status?>'><span class="label label-dot"></span> <?php echo $this->processStatus('story', $story);?></span></td>
                 </tr>
-                <?php if($story->type != 'requirement'):?>
+                <?php if(true or $story->type != 'requirement'):?>
                 <tr class='stage-line'>
                   <th><?php echo $lang->story->stage;?></th>
                   <td>
@@ -788,5 +788,5 @@ js::set('cancel', $lang->cancel);
 js::set('rawModule', $this->app->rawModule);
 ?>
 
-<?php include '../../common/view/syntaxhighlighter.html.php';?>
-<?php include '../../common/view/footer.html.php';?>
+<?php include '../../../../../module/common/view/syntaxhighlighter.html.php';?>
+<?php include '../../../../../module/common/view/footer.html.php';?>
