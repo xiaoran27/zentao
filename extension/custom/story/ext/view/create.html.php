@@ -228,7 +228,7 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
                 </div>
             </td>
             <td >
-                <div class="input-group prCategoryIdBox">
+                <div class="input-group prCategoryBox">
                   <div class="input-group-addon " style="min-width: 77px;"><?php echo $lang->story->prCategory;?></div>
                   <?php echo html::select('prCategory', $type == 'story'?$lang->story->prCategoryList:$lang->story->prCategoryList0, $prCategory, "class='form-control chosen' required");?>
                 </div>
@@ -253,14 +253,14 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
             </td>
             <?php if($type == 'requirement'):?>
             <td colspan='2' >
-              <div class='input-group' id='responseResultIdBox'>
+              <div class='input-group' id='responseResultBox'>
                 <div class="input-group-addon responseResult"><?php echo $lang->story->responseResult;?></div>
                 <?php echo html::select('responseResult', $responseResultList, $responseResult, "class='form-control chosen'");?>
               </div>
             </td>
             <?php else:?>
             <td colspan='2' >
-              <div class='input-group' id='responseResultIdBox'>
+              <div class='input-group' id='responseResultBox'>
                 <div class="input-group-addon responseResult"><?php echo $lang->story->responseResult0;?></div>
                 <?php echo html::select('responseResult', $responseResultList, $responseResult, "class='form-control chosen'");?>
               </div>
