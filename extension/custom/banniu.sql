@@ -969,3 +969,34 @@ ALTER TABLE zt_story ADD scoreNum FLOAT DEFAULT 0 NOT NULL COMMENT '行为分.<3
 
 -- sql.end.banniu_rel230220
 
+
+-- sql.start.banniu_rel230413
+
+-- 2023-3-27 13:48:13
+
+
+DROP TRIGGER IF EXISTS zentao.tri_story_bu;
+DELIMITER $$
+$$
+CREATE TRIGGER tri_story_bu BEFORE UPDATE ON zt_story FOR EACH ROW
+BEGIN
+  IF( old.rspRecievedTime is null and ( 'recieved' = new.responseResult or 'suspend' = new.responseResult )  ) THEN
+    SET new.rspRecievedTime=now();
+  ELSEIF( old.rspResearchTime is null and  'research' = new.responseResult  ) THEN
+    SET new.rspResearchTime=now();
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspResearchTime);
+  ELSEIF( old.rspRejectTime is null and 'reject' = new.responseResult  ) THEN
+    SET new.rspRejectTime=now();
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspRejectTime);
+    set new.rspResearchTime=ifnull(old.rspResearchTime, new.rspRejectTime);
+  ELSEIF( old.rspAcceptTime is null and ( 'accept' = new.responseResult or 'prd' = new.responseResult) ) THEN
+    SET new.rspAcceptTime=now();
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspAcceptTime);
+    set new.rspResearchTime=ifnull(old.rspResearchTime, new.rspAcceptTime);
+  END if;
+
+END
+$$
+DELIMITER ;
+
+-- sql.end.banniu_rel230413

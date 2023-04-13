@@ -262,9 +262,9 @@ class bytenewStory extends StoryModel
         // 未响应处理(responseResult ='todo')的记录且未指派(assignedTo ='')的需求记录
         //  update zt_story zs set assignedTo=(select po from zt_product where id=zs.product limit 1 ) where assignedTo ='' and responseResult ='todo' and `type` in ('requirement','story') and deleted = '0';
         if ($type == 'all' ) {
-            $sql = "update zt_story zs set assignedTo=(select po from zt_product where id=zs.product limit 1 ) where assignedTo ='' and responseResult ='todo' and `type` in ('requirement','story') and deleted = '0'";
+            $sql = "update zt_story zs set assignedTo=(select po from zt_product where id=zs.product limit 1 ), assignedDate=now()  where assignedTo ='' and responseResult ='todo' and `type` in ('requirement','story') and deleted = '0'";
         }else{
-            $sql = "update zt_story zs set assignedTo=(select po from zt_product where id=zs.product limit 1 ) where assignedTo ='' and responseResult ='todo' and `type` in ('requirement') and deleted = '0'";
+            $sql = "update zt_story zs set assignedTo=(select po from zt_product where id=zs.product limit 1 ), assignedDate=now() where assignedTo ='' and responseResult ='todo' and `type` in ('requirement') and deleted = '0'";
         }
         if ($product < 0 ) {
             $product=-1;
@@ -712,6 +712,29 @@ class bytenewStory extends StoryModel
             ->remove('files,labels,reviewer,needNotReview,newStory,uid,contactListMenu,URS,region,lane,ticket,branches,modules,plans')
             ->get();
 
+        $common = $this->loadModel('common');
+        $common->log(json_encode(array('story' => $story) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+        if( $story->type == 'requirement' ){
+            // $this->config->story->create->requiredFields .= ",purchaser,bzCategory";
+            $requiredFields = "," . $this->config->story->create->requiredFields . ",purchaser,bzCategory,";
+            if(strpos($requiredFields, ',purchaser,') !== false){
+                if(empty($story->purchaser))
+                {
+                    dao::$errors["purchaser"] = sprintf($this->lang->error->notempty, $this->lang->story->purchaser);
+                    // return false;
+                }
+            }
+            if(strpos($requiredFields, ',bzCategory,') !== false){
+                if(empty($story->bzCategory))
+                {
+                    dao::$errors["bzCategory"] = sprintf($this->lang->error->notempty, $this->lang->story->bzCategory);
+                    // return false;
+                }
+            }
+        }
+        
+
         /* Check repeat story. */
         $result = $this->loadModel('common')->removeDuplicate('story', $story, "product={$story->product}");
         if(isset($result['stop']) and $result['stop']) return array('status' => 'exists', 'id' => $result['duplicate']);
@@ -944,6 +967,12 @@ class bytenewStory extends StoryModel
         $story->assignedDate = isset($story->assignedTo) ? helper::now() : 0;
 
         if(isset($story->execution)) unset($story->execution);
+
+        if( $story->type == 'requirement' ){
+            $this->config->story->create->requiredFields .= ",purchaser,bzCategory"; 
+            $this->config->story->edit->requiredFields .= ",purchaser,bzCategory"; 
+            $this->config->story->change->requiredFields .= ",purchaser,bzCategory"; 
+        }
 
         $requiredFields = $this->config->story->create->requiredFields;
         $this->dao->insert(TABLE_STORY)->data($story, 'spec,verify,gitlab,gitlabProject')->autoCheck()->batchCheck($requiredFields, 'notempty')->exec();
@@ -1277,6 +1306,27 @@ class bytenewStory extends StoryModel
             ->remove('files,labels,reviewer,comment,needNotReview,uid')
             ->get();
 
+        $common = $this->loadModel('common');
+        $common->log(json_encode(array('story' => $story) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        if( $oldStory->type == 'requirement' ){
+            // $this->config->story->change->requiredFields .= ",purchaser,bzCategory"; 
+            $requiredFields = "," . $this->config->story->change->requiredFields . ",purchaser,bzCategory,";
+            if(strpos($requiredFields, ',purchaser,') !== false){
+                if(empty($story->purchaser))
+                {
+                    dao::$errors["purchaser"] = sprintf($this->lang->error->notempty, $this->lang->story->purchaser);
+                    // return false;
+                }
+            }
+            if(strpos($requiredFields, ',bzCategory,') !== false){
+                if(empty($story->bzCategory))
+                {
+                    dao::$errors["bzCategory"] = sprintf($this->lang->error->notempty, $this->lang->story->bzCategory);
+                    // return false;
+                }
+            }
+        }
+
         $story = $this->loadModel('file')->processImgURL($story, $this->config->story->editor->change['id'], $this->post->uid);
         $this->dao->update(TABLE_STORY)->data($story, 'spec,verify,deleteFiles,relievedTwins')
             ->autoCheck()
@@ -1442,6 +1492,27 @@ class bytenewStory extends StoryModel
             ->join('childStories', ',')
             ->remove('files,labels,comment,contactListMenu,reviewer,needNotReview')
             ->get();
+
+        $common = $this->loadModel('common');
+        $common->log(json_encode(array('story' => $story) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        if( $oldStory->type == 'requirement' ){
+            // $this->config->story->edit->requiredFields .= ",purchaser,bzCategory"; 
+            $requiredFields = "," . $this->config->story->edit->requiredFields . ",purchaser,bzCategory,";
+            if(strpos($requiredFields, ',purchaser,') !== false){
+                if(empty($story->purchaser))
+                {
+                    dao::$errors["purchaser"] = sprintf($this->lang->error->notempty, $this->lang->story->purchaser);
+                    // return false;
+                }
+            }
+            if(strpos($requiredFields, ',bzCategory,') !== false){
+                if(empty($story->bzCategory))
+                {
+                    dao::$errors["bzCategory"] = sprintf($this->lang->error->notempty, $this->lang->story->bzCategory);
+                    // return false;
+                }
+            }
+        }
 
         /* Relieve twins when change product. */
         if(!empty($oldStory->twins) and $story->product != $oldStory->product)
