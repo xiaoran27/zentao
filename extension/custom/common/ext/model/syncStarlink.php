@@ -153,7 +153,8 @@ public function syncStarlink($timeout=30)
             $this->log("INS:" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             $this->dao->insert($TABLE_PURCHASER)->data($purchaser,"category0")->exec();
             $cnt_ins = $cnt_ins + 1;
-        }elseif ( $purchaser->code != $purchaserNow->code || $purchaser->name != $purchaserNow->name || $purchaser->category != $purchaserNow->category) {
+        }elseif ( $purchaser->code != $purchaserNow->code || $purchaser->name != $purchaserNow->name 
+            || $purchaser->category != $purchaserNow->category || $purchaser->scoreNum != $purchaserNow->scoreNum ) {
             $this->log("UPD($purchaser->code,$code_pinyin):" . json_encode($purchaserNow,JSON_UNESCAPED_UNICODE) ." => ". json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             $this->dao->update($TABLE_PURCHASER)->data($purchaser,"category0")->where('code')->eq($purchaserNow->code)->exec();
             $cnt_upd = $cnt_upd + 1;
