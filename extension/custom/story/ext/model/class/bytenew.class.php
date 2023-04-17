@@ -1293,6 +1293,9 @@ class bytenewStory extends StoryModel
             ->setDefault('deleteFiles', array())
             ->add('id', $storyID)
             ->add('lastEditedDate', $now)
+            // ->add('type', $oldStory->type)
+            // ->add('purchaser', $oldStory->purchaser)
+            // ->add('bzCategory', $oldStory->bzCategory)
             ->setIF($specChanged, 'version', $oldStory->version + 1)
             ->setIF($specChanged, 'reviewedBy', '')
             ->setIF($specChanged, 'changedBy', $this->app->user->account)
@@ -1306,26 +1309,27 @@ class bytenewStory extends StoryModel
             ->remove('files,labels,reviewer,comment,needNotReview,uid')
             ->get();
 
-        $common = $this->loadModel('common');
-        $common->log(json_encode(array('story' => $story) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-        if( $oldStory->type == 'requirement' ){
-            // $this->config->story->change->requiredFields .= ",purchaser,bzCategory"; 
-            $requiredFields = "," . $this->config->story->change->requiredFields . ",purchaser,bzCategory,";
-            if(strpos($requiredFields, ',purchaser,') !== false){
-                if(empty($story->purchaser))
-                {
-                    dao::$errors["purchaser"] = sprintf($this->lang->error->notempty, $this->lang->story->purchaser);
-                    // return false;
-                }
-            }
-            if(strpos($requiredFields, ',bzCategory,') !== false){
-                if(empty($story->bzCategory))
-                {
-                    dao::$errors["bzCategory"] = sprintf($this->lang->error->notempty, $this->lang->story->bzCategory);
-                    // return false;
-                }
-            }
-        }
+        //  不校验客户XXX
+        // $common = $this->loadModel('common');
+        // $common->log(json_encode(array('story' => $story) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        // if( $story->type == 'requirement' ){
+        //     // $this->config->story->change->requiredFields .= ",purchaser,bzCategory"; 
+        //     $requiredFields = "," . $this->config->story->change->requiredFields . ",purchaser,bzCategory,";
+        //     if(strpos($requiredFields, ',purchaser,') !== false){
+        //         if(empty($story->purchaser))
+        //         {
+        //             dao::$errors["purchaser"] = sprintf($this->lang->error->notempty, $this->lang->story->purchaser);
+        //             // return false;
+        //         }
+        //     }
+        //     if(strpos($requiredFields, ',bzCategory,') !== false){
+        //         if(empty($story->bzCategory))
+        //         {
+        //             dao::$errors["bzCategory"] = sprintf($this->lang->error->notempty, $this->lang->story->bzCategory);
+        //             // return false;
+        //         }
+        //     }
+        // }
 
         $story = $this->loadModel('file')->processImgURL($story, $this->config->story->editor->change['id'], $this->post->uid);
         $this->dao->update(TABLE_STORY)->data($story, 'spec,verify,deleteFiles,relievedTwins')
