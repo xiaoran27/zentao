@@ -217,7 +217,10 @@
               </tr>              
               <tr>
                 <th><?php echo $lang->story->purchaser;?></th>
-                <td><?php echo html::select('purchaser[]', $purchaserList, $story->purchaser, "onchange='set_bzCategory_scoreNum(this.value)' class='form-control chosen' multiple");?></td>
+                <td><div class="input-group" id="purchaserIdBox">
+                  <?php echo html::select('purchaser[]', $purchaserList, $story->purchaser, "onchange='set_bzCategory_scoreNum(this.value)' class='form-control chosen' multiple");?>
+                  <div class="input-group-btn"><?php echo html::a(helper::createLink('story', 'syncStarlink','timeout=30','json'), "<i class='icon icon-refresh'></i>","_blank", "class='btn btn-icon refresh' data-toggle='tooltip' title='{$lang->refresh}'"); ?> </div>
+                </div></td>
               </tr>
               <tr>
                 <th><?php echo $lang->story->bizProject;?></th>

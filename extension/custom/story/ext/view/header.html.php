@@ -1,6 +1,6 @@
 
 <?php 
-if( $type == 'requirement' || $story->type == 'requirement' ){
+if( (isset($type) && $type == 'requirement') || (isset($story) && $story->type == 'requirement') ){
   $config->story->create->requiredFields .= ",purchaser,bzCategory"; 
   $config->story->edit->requiredFields .= ",purchaser,bzCategory"; 
   $config->story->change->requiredFields .= ",purchaser,bzCategory"; 
