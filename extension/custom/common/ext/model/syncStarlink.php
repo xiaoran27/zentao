@@ -161,7 +161,7 @@ public function syncStarlink($timeout=30)
                 $cnt_del ++;
             }
         }
-        $this->log(json_encode(array("purchaserNow"=>$purchaserNow,"purchasersExist"=>$purchasersExist),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        // $this->log(json_encode(array("purchaserNow"=>$purchaserNow,"purchasersExist"=>$purchasersExist),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         
         // $this->log(json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         // $this->log(json_encode($purchaserNow,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
