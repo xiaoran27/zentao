@@ -87,6 +87,7 @@ public function syncStarlink($timeout=30)
     // $this->log(json_encode($bodyData[0],JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
     $cnt_ins = 0;
     $cnt_upd = 0;
+    $cnt_del = 0;
     $cnt_same = 0;
     foreach($bodyData as $data) {
 
@@ -136,15 +137,31 @@ public function syncStarlink($timeout=30)
         //     ->where("code")->eq($purchaser->code)
         //     ->orWhere("code")->eq($code_pinyin)
         //     ->fetch();
+        $purchasersExist = array();
         $purchaserNow = null;
         if (array_key_exists($purchaser->code,$purchaserNows)) {
             $purchaserNow = $purchaserNows[$purchaser->code];
-        }elseif (array_key_exists($code_pinyin,$purchaserNows)) {
-            $purchaserNow = $purchaserNows[$code_pinyin];
-        }elseif (array_key_exists($purchaser->name,$purchaserNows)) {
-            $purchaserNow = $purchaserNows[$purchaser->name];
+            $purchasersExist["{$purchaser->code}"] = $purchaserNow;
         }
-        // $this->log(json_encode($purchaserNow,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        if (array_key_exists($code_pinyin,$purchaserNows)) {
+            $purchaserNow = $purchaserNows[$code_pinyin];
+            $purchasersExist["{$code_pinyin}"] = $purchaserNow;
+        }
+        if (array_key_exists($purchaser->name,$purchaserNows)) {
+            $purchaserNow = $purchaserNows[$purchaser->name];
+            $purchasersExist["{$purchaser->name}"] = $purchaserNow;
+        }
+        $purchaserNow = null;
+        foreach($purchasersExist as $key => $value){
+            if (empty($purchaserNow)) {
+                $purchaserNow = $value;
+            }elseif($value->code != $purchaserNow->code){ //  同name不同code
+                $this->log("exist({$purchaserNow->code},{$purchaserNow->name}), DEL:" . json_encode(array("key"=>$key,"value"=>$value),JSON_UNESCAPED_UNICODE) , __FILE__, __LINE__);
+                $this->dao->delete()->from($TABLE_PURCHASER)->where('code')->eq($value->code)->exec();
+                $cnt_del ++;
+            }
+        }
+        $this->log(json_encode(array("purchaserNow"=>$purchaserNow,"purchasersExist"=>$purchasersExist),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         
         // $this->log(json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         // $this->log(json_encode($purchaserNow,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
@@ -167,7 +184,8 @@ public function syncStarlink($timeout=30)
         }
         
     }
-    $this->log("cnt_ins = $cnt_ins, cnt_upd = $cnt_upd, cnt_same = $cnt_same", __FILE__, __LINE__);
+    $str = "cnt_ins = $cnt_ins, cnt_del = $cnt_del, cnt_upd = $cnt_upd, cnt_same = $cnt_same";
+    $this->log($str, __FILE__, __LINE__);
 
-    return "cnt_ins = $cnt_ins, cnt_upd = $cnt_upd, cnt_same = $cnt_same" ;
+    return $str ;
 }
