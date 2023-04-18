@@ -219,24 +219,36 @@
                 <th><?php echo $lang->story->purchaser;?></th>
                 <td><div class="input-group" id="purchaserIdBox">
                   <?php echo html::select('purchaser[]', $purchaserList, $story->purchaser, "onchange='set_bzCategory_scoreNum(this.value)' class='form-control chosen' multiple");?>
-                  <div class="input-group-btn"><?php echo html::a(helper::createLink('story', 'syncStarlink','timeout=30','json'), "<i class='icon icon-refresh'></i>","_blank", "class='btn btn-icon refresh' data-toggle='tooltip' title='{$lang->refresh}'"); ?> </div>
+                  <span class='input-group-addon'><div class="input-group-btn"><?php echo html::a("javascript:void(0)", $lang->refreshIcon, '', "class='refresh' title='$lang->refresh' onclick='syncStarlink()'"); ?> </div></span>
                 </div></td>
               </tr>
+              <tr>
+                <th><?php echo $lang->story->warning;?></th>
+                <td><div class="input-group" id="warningIdBox">
+                  <?php echo html::select('warning', $lang->story->warningList, $story->warning, "class='form-control chosen'");?>
+                  <div class='input-group-addon'><?php echo $lang->story->asort;?></div>
+                  <?php echo html::input('asort', $story->asort, "class='form-control'  style='min-width: 100px;'");?>
+                </div></td>
+              </tr>   
               <tr>
                 <th><?php echo $lang->story->bizProject;?></th>
                 <td><?php echo html::select('bizProject', $bizProjects, $story->bizProject, "class='form-control chosen'");?></td>
               </tr>          
               <tr>
                 <th><?php echo $lang->story->uatDate;?></th>
-                <td><?php echo html::input('uatDate', helper::isZeroDate($story->uatDate) ? '' : $story->uatDate, "class='form-control form-date'");?></td>
-              </tr> 
-              <tr>
-                <th><?php echo $lang->story->bzCategory;?></th>
-                <td><?php echo html::select('bzCategory', $lang->story->bzCategoryList, $story->bzCategory, "class='form-control' ");?></td>
+                <td><div class="input-group" id="uatDateIdBox">
+                  <?php echo html::input('uatDate', helper::isZeroDate($story->uatDate) ? '' : $story->uatDate, "class='form-control form-date'");?>
+                  <div class='input-group-addon'><?php echo $lang->story->planReleaseDate;?></div>
+                  <?php echo html::input('planReleaseDate', helper::isZeroDate($story->planReleaseDate) ? '' : $story->planReleaseDate, "class='form-control form-date'  style='min-width: 100px;'");?>
+                </div></td>
               </tr>
               <tr>
-                <th><?php echo $lang->story->scoreNum;?></th>
-                <td><?php echo html::input('scoreNum',empty($story->scoreNum)?0:$story->scoreNum , "class='form-control' readonly");?></td>
+                <th><?php echo $lang->story->bzCategory;?></th>
+                <td><div class="input-group" id="bzCategoryIdBox">
+                <?php echo html::select('bzCategory', $lang->story->bzCategoryList, $story->bzCategory, "class='form-control' ");?>
+                  <div class='input-group-addon'><?php echo $lang->story->scoreNum;?></div>
+                  <?php echo html::input('scoreNum',empty($story->scoreNum)?0:$story->scoreNum , "class='form-control' readonly  style='min-width: 100px;'");?>
+                </div></td>
               </tr>
               <tr>
                 <th><?php echo $lang->story->prCategory;?></th>

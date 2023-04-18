@@ -36,7 +36,7 @@ $config->story->exportFields = '
     rspRecievedTime, rspResearchTime, rspAcceptTime, rspRejectTime,scoreNum,
     childStories, linkStories, duplicateStory, files';
 
-$config->story->list->customCreateFields      = 'purchaser,bzCategory,prCategory,uatDate,source,verify,pri';
+$config->story->list->customCreateFields      = 'warning,planReleaseDate,purchaser,bzCategory,prCategory,uatDate,source,verify,pri';
 $config->story->list->customBatchCreateFields = 'purchaser,bzCategory,prCategory,uatDate,spec,source,verify,pri';
 $config->story->list->customBatchEditFields   = 'purchaser,bzCategory,prCategory,uatDate, pri,assignedTo';
 
@@ -44,14 +44,14 @@ $config->story->custom->createFields      = $config->story->list->customCreateFi
 $config->story->custom->batchCreateFields = 'purchaser,bzCategory,prCategory,uatDate,spec,pri,%s';
 $config->story->custom->batchEditFields   = 'purchaser,bzCategory,prCategory,uatDate,pri';
 
-$config->story->datatable->defaultField = array('id', 'title', 'pri', 'plan', 'status', 'openedBy', 'reviewedBy', 'stage', 'assignedTo', 'taskCount', 'actions');
+$config->story->datatable->defaultField = array('id', 'title', 'pri', 'plan', 'status', 'openedBy', 'warning', 'stage', 'assignedTo', 'taskCount', 'actions');
 if($app->tab == 'execution')
 {
     $config->story->datatable->defaultField = array('id', 'order', 'pri', 'title', 'purchaser', 'uatDate', 'openedBy', 'assignedTo', 'status', 'stage', 'taskCount', 'actions');
 }
 else
 {
-    $config->story->datatable->defaultField = array('id', 'asort', 'pri', 'title', 'purchaser', 'uatDate', 'openedBy', 'assignedTo', 'status', 'stage', 'taskCount', 'actions');
+    $config->story->datatable->defaultField = array('id', 'pri', 'title', 'purchaser', 'warning', 'uatDate', 'openedBy', 'assignedTo', 'status', 'stage', 'taskCount', 'actions');
 
 }
 
@@ -60,6 +60,17 @@ $config->story->datatable->fieldList['pri']['width']    = '20';
 $config->story->datatable->fieldList['title']['width']    = 'auto';
 $config->story->datatable->fieldList['module']['width']      = '50';
 
+$config->story->datatable->fieldList['planReleaseDate']['title']    = 'planReleaseDate';
+$config->story->datatable->fieldList['planReleaseDate']['fixed']    = 'left';
+$config->story->datatable->fieldList['planReleaseDate']['width']    = '50';
+$config->story->datatable->fieldList['planReleaseDate']['required'] = 'no';
+
+$config->story->datatable->fieldList['warning']['title']    = 'warning';
+$config->story->datatable->fieldList['warning']['fixed']    = 'left';
+$config->story->datatable->fieldList['warning']['width']    = '50';
+$config->story->datatable->fieldList['warning']['required'] = 'no';
+$config->story->datatable->fieldList['warning']['control']    = 'select';
+$config->story->datatable->fieldList['warning']['dataSource'] = $lang->story->warningList;
 
 $config->story->datatable->fieldList['bzCategory']['title']    = 'bzCategory';
 $config->story->datatable->fieldList['bzCategory']['fixed']    = 'left';

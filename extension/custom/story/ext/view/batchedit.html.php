@@ -68,8 +68,12 @@ foreach(explode(',', $config->story->edit->requiredFields) as $field)
           <th class='c-bzCategory required'><?php echo $lang->story->bzCategory;?></th>
           <th class='c-prCategory required'><?php echo $lang->story->prCategory;?></th>
           <?php if($storyType == 'requirement'):?>
-          <th class='c-responseResult required'><?php echo $lang->story->responseResult;?></th>
-          <?php endif;?>    
+            <th class='c-responseResult required'><?php echo $lang->story->responseResult;?></th>
+          <?php else:?>
+            <th class='c-responseResult required'><?php echo $lang->story->responseResult;?></th>
+          <?php endif;?>
+          <th class='c-warning<?php echo zget($visibleFields, 'warning', ' warning')?>'><?php echo $lang->story->bizProject;?></th>
+          <th class='c-planReleaseDate<?php echo zget($visibleFields, 'planReleaseDate', ' hidden')?>'><?php echo $lang->story->planReleaseDate;?></th>
           
           <th class='c-estimate<?php echo zget($visibleFields, 'estimate', ' hidden')?>'> <?php echo $lang->story->estimateAB;?></th>
           <th class='c-category'><?php echo $lang->story->category;?></th>
@@ -134,7 +138,9 @@ foreach(explode(',', $config->story->edit->requiredFields) as $field)
           <?php else:?>
             <td><?php echo html::select("responseResultes[$storyID]",  $responseResultList, $story->responseResult, "class='form-control picker-select' data-drop-width='auto' id='responseResult_$storyID'");?></td>
           <?php endif;?>
-
+          <td><?php echo html::select("warning[$storyID]",  $lang->story->warningList, $story->warning, "class='form-control picker-select' data-drop-width='auto' id='warning_$storyID'");?></td>
+          <td><?php echo html::input("planReleaseDate[$storyID]", helper::isZeroDate($story->planReleaseDate) ? '' : $story->planReleaseDate, "class='form-control form-date' id='planReleaseDate_$storyID'");?></td>
+          
           <td <?php echo zget($visibleFields, 'estimate', "class='hidden'")?>><?php echo html::input("estimates[$storyID]", $story->estimate, "class='form-control'"); ?></td>
           <td><?php echo html::select("category[$storyID]", $lang->story->categoryList, $story->category, 'class="form-control picker-select" data-drop-width="auto"');?></td>
           <td <?php echo zget($visibleFields, 'pri', "class='hidden'")?>><?php echo html::select("pris[$storyID]",     $priList, $story->pri, 'class=form-control');?></td>

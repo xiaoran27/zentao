@@ -27,6 +27,22 @@ js::set('purchasers', $purchasers);
 <?php js::set('hiddenProduct', isset($hiddenProduct) ? $hiddenProduct : false);?>
 <script>
 
+
+/**
+ * 选择客户后同步赋值 客户分层/行为分.
+ *
+ * @param  int   $purchaserValue
+ * @access public
+ * @return void
+ */
+function syncStarlink()
+{
+    $.get(createLink('story', 'syncStarlink', "timeout=30", "json"), function(data)
+    {
+        console.log("syncStarlink: "+data);
+    })
+}
+
 /**
  * 选择客户后同步赋值 客户分层/行为分.
  *

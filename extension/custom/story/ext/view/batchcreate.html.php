@@ -72,6 +72,10 @@
             <?php else:?>
               <th class='c-responseResult <?php echo zget($visibleFields, 'responseResult', ' hidden') . zget($requiredFields, 'responseResult', '', ' required');?> responseResultBox'><?php echo $lang->story->responseResult0;?></th>
             <?php endif;?>
+            <th class='c-warning <?php echo zget($visibleFields, 'warning', ' hidden') . zget($requiredFields, 'warning', '', ' required');?> warningBox'><?php echo $lang->story->warning;?></th>
+            <th class='c-planReleaseDate <?php echo zget($visibleFields, 'planReleaseDate', ' hidden') . zget($requiredFields, 'planReleaseDate', '', ' required');?> planReleaseDateBox'><?php echo $lang->story->planReleaseDate;?></th>
+            
+
             
             <th class='c-spec<?php echo zget($visibleFields, 'spec', ' hidden') . zget($requiredFields, 'spec', '', ' required');?> specBox'><?php echo $lang->story->spec;?></th>
             <th class='c-source<?php echo zget($visibleFields, 'source', ' hidden') . zget($requiredFields, 'source', '', ' required');?> sourceBox'><?php echo $lang->story->source;?></th>
@@ -132,6 +136,9 @@
             <?php else:?>
               <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select('responseResult[$id]', $responseResultList, 'todo', "class='form-control chosen' id='responseResult_\$id'");?></td>
             <?php endif;?>
+            <td class='text-left<?php echo zget($visibleFields, 'warning', ' hidden')?> warningBox'><?php echo html::select('warning[$id]', $lang->story->warningList, empty($story)?'':$story->warning, "class='form-control chosen' id='warning_\$id'");?></td>
+            <td class='text-left<?php echo zget($visibleFields, 'planReleaseDate', ' hidden')?> planReleaseDateBox'><?php echo html::input('planReleaseDate[$id]', empty($story)?'':(helper::isZeroDate($story->planReleaseDate) ? '' : $story->planReleaseDate), "class='form-control form-date' ");?></td>
+            
 
             <td class='<?php echo zget($visibleFields, 'spec', 'hidden')?> specBox'><textarea name="spec[$id]" id="spec$id" rows="1" class="form-control autosize"><?php echo empty($story)?$spec:$story->spec; ?></textarea></td>
             <td class='text-left<?php echo zget($visibleFields, 'source', ' hidden')?> sourceBox'><?php echo html::select('source[$id]', $sourceList, '', "class='form-control chosen' id='source_\$id'");?></td>
@@ -209,6 +216,9 @@
       <?php else:?>
         <td class='text-left<?php echo zget($visibleFields, 'responseResult', ' hidden')?> responseResultBox'><?php echo html::select("responseResult[$i]", $responseResultList, empty($story)?'ditto':$story->responseResult, "class='form-control chosen' id='responseResult_$i'");?></td>
       <?php endif;?>
+      <td class='text-left<?php echo zget($visibleFields, 'warning', ' hidden')?> warningBox'><?php echo html::select('warning[$id]', $lang->story->warningList, empty($story)?'':$story->warning, "class='form-control chosen' id='warning_\$id'");?></td>
+      <td class='text-left<?php echo zget($visibleFields, 'planReleaseDate', ' hidden')?> planReleaseDateBox'><?php echo html::input('planReleaseDate[$id]', empty($story)?'':(helper::isZeroDate($story->planReleaseDate) ? '' : $story->planReleaseDate), "class='form-control form-date' ");?></td>
+      
 
       <td class='<?php echo zget($visibleFields, 'spec', 'hidden')?> specBox'><textarea name="spec[<?php echo $i?>]" id="spec<?php echo $i;?>" rows="1" class="form-control autosize"><?php echo empty($story)?'':$story->spec;?></textarea></td>
       <td class='text-left<?php echo zget($visibleFields, 'source', ' hidden')?> sourceBox'><?php echo html::select("source[$i]", $sourceList, empty($story)?'ditto':$story->source, "class='form-control chosen' id='source_$i'");?></td>

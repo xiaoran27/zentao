@@ -3,6 +3,42 @@
 class bytenewStory extends StoryModel
 {
 
+
+    /**
+     * Get report data of planReleaseDate
+     *
+     * @access public
+     * @return array
+     */
+    public function getDataOfPlanReleaseDate()
+    {
+        $datas = $this->dao->select('planReleaseDate as name, count(uatDate) as value')->from(TABLE_STORY)
+            ->where($this->reportCondition())
+            ->groupBy('name')->orderBy('value DESC')->fetchAll('name');
+        if(!$datas) return array();
+        
+        return $datas;
+    }
+
+    /**
+     * Get report data of warning
+     *
+     * @access public
+     * @return array
+     */
+    public function getDataOfWarning()
+    {
+        
+        $datas = $this->dao->select('warning as name, count(1) as value')->from(TABLE_STORY)
+            ->where($this->reportCondition())
+            ->groupBy('name')->orderBy('value DESC')->fetchAll('name');
+        if(!$datas) return array();
+
+        $where = $this->reportCondition();
+        foreach($datas as $name => $data) $data->name = $this->lang->story->warningList[$name] ;
+        return $datas;
+    }
+
     /**
      * 更新业务需求的status和stage
      *
@@ -399,7 +435,7 @@ class bytenewStory extends StoryModel
     }
 
 
-        /**
+    /**
      * Get report data of uatDate
      *
      * @access public
@@ -1037,6 +1073,7 @@ class bytenewStory extends StoryModel
         $responseResult = 'todo';
         $purchaser='';
         $bizProject='';
+        $warning='';
 
         foreach($stories->title as $i => $title)
         {
@@ -1063,12 +1100,12 @@ class bytenewStory extends StoryModel
 
             $purchaser = $stories->purchaser[$i] == 'ditto' ? $purchaser : $stories->purchaser[$i];
             $stories->purchaser[$i] = $purchaser;
-
-
+            
             $bizProject = $stories->bizProject[$i] == 'ditto' ? $bizProject : $stories->bizProject[$i];
             $stories->bizProject[$i] = $bizProject;
 
-            
+            $warning = $stories->warning[$i] == 'ditto' ? $warning : $stories->warning[$i];
+            $stories->warning[$i] = $warning;
 
         }
 
@@ -1104,6 +1141,8 @@ class bytenewStory extends StoryModel
             $story->uatDate     = $stories->uatDate[$i];
 	        $story->purchaser     = gettype($stories->purchaser[$i]) == 'array' ? implode(',',$stories->purchaser[$i]):$stories->purchaser[$i];
             $story->bizProject     = $stories->bizProject[$i];
+            $story->warning     = $stories->warning[$i];
+            $story->planReleaseDate     = $stories->planReleaseDate[$i];
             $story->source     = $stories->source[$i];
             $story->category   = $stories->category[$i];
             $story->pri        = $stories->pri[$i];
@@ -2025,6 +2064,9 @@ class bytenewStory extends StoryModel
                 if($data->bizProject[$storyID]    == 'ditto') $data->bizProject[$storyID]    = isset($prev['bizProject'])   ? $prev['bizProject']   : '';
                 $prev['bizProject']    = $data->bizProject[$storyID];
 
+                if($data->warning[$storyID]    == 'ditto') $data->warning[$storyID]    = isset($prev['warning'])   ? $prev['warning']   : '';
+                $prev['warning']    = $data->warning[$storyID];
+
             }
 
             $extendFields = $this->getFlowExtendFields();
@@ -2081,6 +2123,14 @@ class bytenewStory extends StoryModel
 
                 $story->purchaser   = implode(',', $data->purchaser[$storyID]);
                 $story->bizProject  = $data->bizProject[$storyID];
+                $story->bzCategory  = $data->bzCategory[$storyID];
+                $story->scoreNum  = $oldStories[$storyID]->scoreNum;
+                $story->prCategory  = $data->prCategory[$storyID];
+                $story->prLevel  = $oldStories[$storyID]->prLevel;
+                $story->uatDate  = $data->uatDate[$storyID];
+
+                $story->warning  = $data->warning[$storyID];
+                $story->planReleaseDate  = $data->planReleaseDate[$storyID];
 
                 $stories[$storyID] = $story;
             }
@@ -5751,6 +5801,12 @@ class bytenewStory extends StoryModel
                 break;
             case 'uatDate':
                 echo helper::isZeroDate($story->uatDate) ? '' : $story->uatDate;
+                break;
+            case 'warning':
+                echo zget($this->lang->story->warningList, $story->warning, $story->warning);
+                break;
+            case 'planReleaseDate':
+                echo helper::isZeroDate($story->planReleaseDate) ? '' : $story->planReleaseDate;
                 break;
             case 'bizProject':
                 $bizProjects = $this->loadModel('project')->getPairsListForB100();

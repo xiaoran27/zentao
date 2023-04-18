@@ -1,6 +1,29 @@
 <?php
 global $config;
 
+// 2023-4-18 17:07:25
+$lang->story->planReleaseDate = '计划上线日期';
+$lang->story->warning = '预警级别';
+$lang->story->warningList = array();
+$lang->story->warningList['0']  = '无';
+$lang->story->warningList['1']  = '红';
+$lang->story->warningList['2']  = '橙';
+$lang->story->warningList['3']  = '黄';
+$lang->story->warningList['4']  = '蓝';
+
+
+$lang->story->report->charts['planReleaseDate']         = "按{$lang->story->planReleaseDate}来进行统计";
+$lang->story->report->planReleaseDate       = new stdclass();
+$lang->story->report->planReleaseDate->item       = $lang->story->planReleaseDate;
+$lang->story->report->planReleaseDate->graph       = new stdclass();
+$lang->story->report->planReleaseDate->graph->xAxisName      = $lang->story->planReleaseDate;
+
+$lang->story->report->charts['warning']         = "按{$lang->story->warning}来进行统计";
+$lang->story->report->warning       = new stdclass();
+$lang->story->report->warning->item       = $lang->story->warning;
+$lang->story->report->warning->graph       = new stdclass();
+$lang->story->report->warning->graph->xAxisName      = $lang->story->warning;
+
 
 // 函数权限配置
 // $lang->story->story             = zget($lang, 'SRCommon', "故事");

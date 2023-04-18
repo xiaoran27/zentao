@@ -312,6 +312,18 @@ js::set('bizProjectList', $bizProjectList);
                   </td>
                 </tr>
                 <tr>
+                  <th><?php echo $lang->story->bzCategory;?></th>
+                  <td id='bzCategory'><?php echo zget($lang->story->bzCategoryList, $story->bzCategory, $story->bzCategory);?></td>
+                </tr>
+                <tr>
+                  <th><?php echo $lang->story->scoreNum;?></th>
+                  <td id='scoreNum'><?php echo $story->scoreNum;?></td>
+                </tr>
+                <tr>
+                <th><?php echo $lang->story->warning;?></th>
+                <td><?php echo zget($lang->story->warningList, $story->warning, $story->warning);?></td>
+              </tr> 
+                <tr>
                   <th><?php echo $lang->story->bizProject;?></th>
                   <td id='bizProject'>
                     <?php if($story->bizProject):?>
@@ -326,12 +338,8 @@ js::set('bizProjectList', $bizProjectList);
                   <td><?php echo helper::isZeroDate($story->uatDate) ? '' : $story->uatDate;?></td>
                 </tr>
                 <tr>
-                  <th><?php echo $lang->story->bzCategory;?></th>
-                  <td id='bzCategory'><?php echo zget($lang->story->bzCategoryList, $story->bzCategory, $story->bzCategory);?></td>
-                </tr>
-                <tr>
-                  <th><?php echo $lang->story->scoreNum;?></th>
-                  <td id='scoreNum'><?php echo $story->scoreNum;?></td>
+                  <th><?php echo $lang->story->planReleaseDate;?></th>
+                  <td><?php echo helper::isZeroDate($story->planReleaseDate) ? '' : $story->planReleaseDate;?></td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->story->prCategory;?></th>

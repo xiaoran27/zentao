@@ -204,10 +204,16 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
           <?php endif;?>
 	        <tr>
             <th><?php echo $lang->story->purchaser;?></th>
-            <td colspan="2"><div class="input-group" id="purchaserIdBox">
-              <?php echo html::select('purchaser[]', $purchaserList, $purchaser, "onchange='set_bzCategory_scoreNum(this.value)' class='form-control chosen' multiple");?>
-              <div class="input-group-btn"><?php echo html::a(helper::createLink('story', 'syncStarlink','timeout=30','json'), "<i class='icon icon-refresh'></i>","_blank", "class='btn btn-icon refresh' data-toggle='tooltip' title='{$lang->refresh}'"); ?> </div>
+            <td ><div class="input-group" id="purchaserIdBox">
+                <?php echo html::select('purchaser[]', $purchaserList, $purchaser, "onchange='set_bzCategory_scoreNum(this.value)' class='form-control chosen' multiple");?>
+                <span class='input-group-addon'><div class="input-group-btn"><?php echo html::a("javascript:void(0)", $lang->refreshIcon, '', "class='refresh' title='$lang->refresh' onclick='syncStarlink()'"); ?> </div></span>
             </div></td>
+            <td>
+              <div class="input-group" >
+                <div class="input-group-addon" style="min-width: 77px;"><?php echo $lang->story->warning;?></div>
+                <?php echo html::select('warning', $lang->story->warningList, $warning, "class='form-control chosen' style='min-width: 50px;'");?>
+            </div>
+            </td>
             <td>
               <div class="input-group">
                    <div class="input-group-addon" style="min-width: 77px;"><?php echo $lang->story->bizProject;?></div>
@@ -217,7 +223,7 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
             <td >
               <div class="input-group">
                   <span class='input-group-addon' id="uatDateBox"><?php echo $lang->story->uatDate;?></span>
-                  <?php echo html::input('uatDate', $uatDate, "class='form-control form-date' style='min-width: 100px;'");?>
+                  <?php echo html::input('uatDate', $uatDate, "class='form-control form-date' style='min-width: 90px;'");?>
               </div>
             </td>
           </tr>
@@ -226,8 +232,10 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
             <td ><?php echo html::select('bzCategory', $lang->story->bzCategoryList, $bzCategory, "class='form-control' ");?></td>
             <td >
                 <div class="input-group scoreNumBox">
-                  <div class="input-group-addon " style="min-width: 77px;"><?php echo $lang->story->scoreNum;?></div>
-                  <?php echo html::input('scoreNum',empty($scoreNum)?0:$scoreNum, "class='form-control' readonly");?>
+                  <div class="input-group-addon " ><?php echo $lang->story->scoreNum;?></div>
+                  <?php echo html::input('scoreNum',empty($scoreNum)?0:$scoreNum, "class='form-control' readonly style='min-width: 40px;'");?>
+                  <span class='input-group-addon' id="planReleaseDateBox"><?php echo $lang->story->planReleaseDate;?></span>
+                  <?php echo html::input('planReleaseDate', $planReleaseDate, "class='form-control form-date' style='min-width: 85px;'");?>
                 </div>
             </td>
             <td >
