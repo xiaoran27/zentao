@@ -1,12 +1,19 @@
 <?php
 global $lang, $app;
 
+$config->product->search['fields']['planReleaseDate']     = $lang->story->planReleaseDate;
+$config->product->search['params']['planReleaseDate']     = array('operator' => '=', 'control' => 'input', 'values' => '', 'class' => 'date');
+
+$config->product->search['fields']['warning']     = $lang->story->warning;
+$config->product->search['params']['warning']     = array('operator' => '=', 'control' => 'multi-select', 'values' => (array(''=>'')+$lang->story->warningList) );
+
+
+
 $config->product->search['fields']['bzCategory']     = $lang->story->bzCategory;
 $config->product->search['fields']['prCategory']     = $lang->story->prCategory;
 $config->product->search['fields']['uatDate']     = $lang->story->uatDate;
 $config->product->search['fields']['purchaser']     = $lang->story->purchaser;
 $config->product->search['fields']['responseResult']     = $lang->story->responseResult;
-
 
 $config->product->search['params']['bzCategory']         = array('operator' => '=',       'control' => 'multi-select', 'values' => ( array(''=>'') + $lang->story->bzCategoryList) );
 $config->product->search['params']['prCategory']         = array('operator' => '=',       'control' => 'multi-select', 'values' => (array(''=>'') + $lang->story->prCategoryList) );

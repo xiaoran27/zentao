@@ -1,7 +1,7 @@
 <?php
 global $config;
 
-// 2023-4-18 17:07:25
+// 2023-4-18 22:41:56
 $lang->story->planReleaseDate = '计划上线日期';
 $lang->story->warning = '预警级别';
 $lang->story->warningList = array();
