@@ -9,7 +9,9 @@
 
 ## fixed:  
 
-1. 
+1. 修复bug编辑时产品都是首个的缺陷
+2. 修复按ID更新业务需求权限配置无效缺陷(updateRequirementStatusStageByStoryID->updateReqStatusStageByID)
+3. 更新业务需求status和stage的备注改由system添加
 
 
 

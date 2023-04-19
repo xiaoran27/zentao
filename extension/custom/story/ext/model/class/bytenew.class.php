@@ -161,7 +161,7 @@ class bytenewStory extends StoryModel
 
             $common->log(json_encode(array('dao::isError()'=>dao::isError(),'requirementID'=>$requirementID,'statusAll'=>$statusAll,'stageAll'=>$stageAll,'status'=>$status,'stage'=>$stage),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             if ($createAction) {
-                $actionID = $this->loadModel('action')->create('story', $requirementID->id, 'commented', json_encode(array('storyID'=>$storyID,'$requirements'=>$requirements),JSON_UNESCAPED_UNICODE), '', '', false);
+                $actionID = $this->loadModel('action')->create('story', $requirementID->id, 'commented', json_encode(array('storyID'=>$storyID,'requirements'=>$requirements),JSON_UNESCAPED_UNICODE), '', 'system', false);
                 $requirements["{$requirementID->id}"]["action.id"] = $actionID;
             }
 
