@@ -42,8 +42,8 @@ $lang->story->syncStarlink           = '同步星链客户';
 $lang->story->methodOrder[915]   = 'syncStarlink';
 $lang->story->updateRequirementStatusStage           = "更新{$lang->story->requirement}";
 $lang->story->methodOrder[920]   = 'updateRequirementStatusStage';
-$lang->story->updateRequirementStatusStageByStoryID           = "更新{$lang->story->requirement}(产品需求ID)";
-$lang->story->methodOrder[925]   = 'updateRequirementStatusStageByStoryID';
+$lang->story->updateReqStatusStageByID           = "更新{$lang->story->requirement}(产品需求ID)";
+$lang->story->methodOrder[925]   = 'updateReqStatusStageByID';
 
 $lang->requirement->addPurchaser           = '添加客户';
 $lang->requirement->methodOrder[900]   = 'addPurchaser';
@@ -59,8 +59,8 @@ $lang->requirement->syncStarlink           = '同步星链客户';
 $lang->requirement->methodOrder[915]   = 'syncStarlink';
 $lang->requirement->updateRequirementStatusStage           = "更新{$lang->story->requirement}";
 $lang->requirement->methodOrder[920]   = 'updateRequirementStatusStage';
-$lang->requirement->updateRequirementStatusStageByStoryID           = "更新{$lang->story->requirement}(产品需求ID)";
-$lang->requirement->methodOrder[925]   = 'updateRequirementStatusStageByStoryID';
+$lang->requirement->updateReqStatusStageByID           = "更新{$lang->story->requirement}(产品需求ID)";
+$lang->requirement->methodOrder[925]   = 'updateReqStatusStageByID';
 
 
 $lang->story->bzCategory = '客户分层';

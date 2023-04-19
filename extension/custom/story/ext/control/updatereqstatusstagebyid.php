@@ -13,7 +13,7 @@ class myStory extends story
      * @access public
      * @return void
      */
-    public function updateRequirementStatusStageByStoryID($storyID, $createAction = true)
+    public function updateReqStatusStageByID($storyID, $createAction = true)
     {
  
         $data = $this->story->updateRequirementStatusStageByStoryID($storyID, $createAction);
