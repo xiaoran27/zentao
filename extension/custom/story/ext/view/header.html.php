@@ -5,6 +5,8 @@ if( (isset($type) && $type == 'requirement') || (isset($story) && $story->type =
   $config->story->edit->requiredFields .= ",purchaser,bzCategory"; 
   $config->story->change->requiredFields .= ",purchaser,bzCategory"; 
 }
+$config->story->create->requiredFields = str_replace('module,','', $config->story->create->requiredFields);
+
 
 // $common->syncStarlink();
 
