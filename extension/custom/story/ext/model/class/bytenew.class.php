@@ -785,6 +785,7 @@ class bytenewStory extends StoryModel
             $this->post->plans    = isset($story->plan) ? array($story->plan) : array(0 => 0);
         }
 
+        $this->config->story->create->requiredFields = str_replace('module,','', $this->config->story->create->requiredFields);
         /* check module */
         $requiredFields = "," . $this->config->story->create->requiredFields . ",";
         if(strpos($requiredFields, ',module,') !== false)
