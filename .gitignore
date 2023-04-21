@@ -22,6 +22,7 @@
 /backup
 /.git.zip
 /extension/*.zip
+extension/banniu_rel*.sql
 /extension/custom/zentao*bk.sql
 /extension/custom/banniu_uninstall_rel*.sql
 /extension/custom/banniu_rel*.sql
