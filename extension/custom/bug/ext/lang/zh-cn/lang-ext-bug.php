@@ -13,6 +13,7 @@ $lang->bug->occursEnvList['pre'] = '预发环境';
 $lang->bug->occursEnvList['online'] = '正式环境';
 $lang->bug->occursEnvList['loreal'] = '欧莱雅环境';
 $lang->bug->occursEnvList['elc'] = '雅思兰黛环境';
+$lang->bug->occursEnvList['pg'] = '宝洁环境';
 
 $lang->bug->purchaserList = array();
 $lang->bug->purchaserList['']  = '';
