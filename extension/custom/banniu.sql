@@ -1000,3 +1000,13 @@ $$
 DELIMITER ;
 
 -- sql.end.banniu_rel230413
+
+
+-- sql.start.banniu_rel230420
+
+-- 2023-4-18 16:47:11
+
+ALTER TABLE zt_story ADD warning enum('0','1','2','3','4') DEFAULT '0' NOT NULL COMMENT '预警级别';
+ALTER TABLE zt_story ADD planReleaseDate DATE NULL COMMENT 'planReleaseDate';
+
+-- sql.end.banniu_rel230420
