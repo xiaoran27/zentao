@@ -88,7 +88,7 @@ class bytenewStory extends StoryModel
             // select zs.status as status,zs.stage as stage from zt_story zs
             //  join zt_relation zr on ( zr.atype='requirement' and zs.id = zr.bid )
             // where zs.deleted  = '0'  and zs.status  != 'draft'  and zr.aid = 103
-            $storyValues = $this->dao->select("zs.id as id, zs.status as status,zs.stage as stage")->from(TABLE_STORY)->alias('zs')
+            $storyValues = $this->dao->select("zs.id as id, zs.status as status,zs.stage as stage,zs.closedDate as closedDate")->from(TABLE_STORY)->alias('zs')
                 ->leftJoin(TABLE_RELATION)->alias('zr')->on("zr.atype='requirement' and zs.id = zr.bid")
                 ->where('zs.deleted')->eq(0)->andWhere('zs.status')->ne('draft')->andWhere('zr.aid')->eq($requirementID->id)
                 ->fetchAll();
@@ -99,10 +99,14 @@ class bytenewStory extends StoryModel
             
             $statusAll = ",";
             $stageAll = ",";
+            $closedDate="";
             // https://banniu.yuque.com/staff-dmhmqa/selgla/rk2yoi3ia8kdltfh?singleDoc# 《禅道需求与所处阶段》
             foreach($storyValues as $e ) {
                 $statusAll .= "$e->status," ;
                 $stageAll .= "$e->stage," ;
+                if ( $e->status='closed' or $e->stage='closed' ){
+                    if ( empty($closedDate) or  $closedDate < $e->closedDate ) $closedDate=$e->closedDate;
+                }
             }
             $common->log(json_encode(array('stageAll'=>$stageAll,'statusAll'=>$statusAll),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
@@ -144,7 +148,8 @@ class bytenewStory extends StoryModel
             
             $requirements["{$requirementID->id}"]["status"] = $status;
             $requirements["{$requirementID->id}"]["stage"] = $stage;
-            $requirement = $this->dao->select("id,status,stage")->from(TABLE_STORY)
+            $requirements["{$requirementID->id}"]["closedDate"] = $closedDate;
+            $requirement = $this->dao->select("id,status,stage,closedDate")->from(TABLE_STORY)
                 ->where('deleted')->eq(0)->andWhere('id')->eq($requirementID->id)
                 ->andWhere('status')->eq($status)->andWhere('stage')->eq($stage)
                 ->fetchAll();
@@ -155,7 +160,7 @@ class bytenewStory extends StoryModel
 
             
             // update zt_story set status='',stage='' where deleted  = '0' and id = 103        
-            $rows = $this->dao->update(TABLE_STORY)->set('status')->eq($status)->set('stage')->eq($stage)->where('id')->eq($requirementID->id)->exec();
+            $rows = $this->dao->update(TABLE_STORY)->set('status')->eq($status)->set('stage')->eq($stage)->set('closedDate')->eq($closedDate)->where('id')->eq($requirementID->id)->exec();
             $requirements["{$requirementID->id}"]["rows"] = $rows;
             
 
