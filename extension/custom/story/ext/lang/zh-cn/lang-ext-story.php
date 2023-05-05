@@ -28,6 +28,12 @@ $lang->story->report->warning->graph->xAxisName      = $lang->story->warning;
 // 函数权限配置
 // $lang->story->story             = zget($lang, 'SRCommon', "故事");
 // $lang->story->createStory       = '添加' . $lang->story->story;
+
+$lang->story->updateStoryAcceptTimeByTask           = "更新PRD完成时间";
+$lang->story->methodOrder[930]   = 'updateStoryAcceptTimeByTask';
+$lang->requirement->updateStoryAcceptTimeByTask           = "更新PRD完成时间";
+$lang->requirement->methodOrder[930]   = 'updateStoryAcceptTimeByTask';
+
 $lang->story->addPurchaser           = '添加客户';
 $lang->story->methodOrder[900]   = 'addPurchaser';
 $lang->story->dingRobotSend           = '钉钉通知';
@@ -61,6 +67,8 @@ $lang->requirement->updateRequirementStatusStage           = "更新{$lang->stor
 $lang->requirement->methodOrder[920]   = 'updateRequirementStatusStage';
 $lang->requirement->updateReqStatusStageByID           = "更新{$lang->story->requirement}(产品需求ID)";
 $lang->requirement->methodOrder[925]   = 'updateReqStatusStageByID';
+
+
 
 
 $lang->story->bzCategory = '客户分层';

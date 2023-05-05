@@ -4,6 +4,74 @@ class bytenewStory extends StoryModel
 {
 
 
+     /**
+     * 据task+action找到开发的最早启动时间作为对应产品需求的prd完成时间(rspAcceptTime)
+     *
+     * @param  int    $days=1  一天内
+     * @param  int    $taskID=0 表示全部
+     * @param  bool   $createAction
+     * @access public
+     * @return array
+     */
+    public function updateStoryRspAcceptTimeByTask($days=1, $taskID=0, $createAction = true)
+    {
+
+        // update zt_story  
+        //     join ( select min(za.`date`) as task_startedDate , zt.story as task_story
+        //         from zt_action as za
+        //             join zt_task as zt on ( zt.id = za.objectID and zt.`type`='devel' and zt.story > 0 )
+        //         where za.objectType = 'task' and za.`action`='started'
+        //             -- and datediff(now(),za.`date`) <= 1 
+        //             -- and zt.id = 147
+        //         group by zt.story ) as tmp on tmp.task_story = id
+        // set rspAcceptTime=task_startedDate 
+        // where `type`='story' and (rspAcceptTime is null or rspAcceptTime='0000-00-00') 
+
+
+        $tasks = $this->dao->select('min(za.`date`) as task_startedDate , zt.story as task_story')
+            ->from(TABLE_ACTION)->alias('za join zt_task as zt')->on("zt.id = za.objectID and zt.type='devel' and zt.story >0")
+            ->where('za.objectType')->eq('task')->andWhere('za.`action`')->eq('started')
+            ->beginIF($days > 0 )->andWhere("datediff(now(),za.`date`)")->le($days)->fi()
+            ->beginIF($taskID > 0 )->andWhere("zt.id")->eq($taskID)->fi()
+            ->groupBy('zt.story')->fetchAll();
+        if(empty($tasks)) return array();
+
+        $common = $this->loadModel('common');
+        $common->log(json_encode(array('days'=>$days,'taskID'=>$taskID,'createAction'=>$createAction,'tasks'=>$tasks),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+        $stories = array();
+        foreach($tasks as $task) {
+
+            $stories["{$task->task_story}"] =  array();
+            $stories["{$task->task_story}"]["task"] =  $task;
+
+            $story = $this->dao->select("id, rspAcceptTime")->from(TABLE_STORY)->alias('zs')
+                ->where('id')->eq($task->task_story)
+                ->fetch();
+            $stories["{$task->task_story}"]["story"] =  $story;
+            if(empty($story) || $story->rspAcceptTime == $task->task_startedDate ) continue;
+
+            
+            
+            // update zt_story set rspAcceptTime=task_startedDate where deleted  = '0' and id = 103        
+            $rows = $this->dao->update(TABLE_STORY)->set('rspAcceptTime')->eq($task->task_startedDate)->where('id')->eq($task->task_story)->exec();
+            $stories["{$task->task_story}"]["rows"] =  $rows;
+            $stories["{$task->task_story}"]["rspAcceptTime"] = "'{$story->rspAcceptTime}'->'{$task->task_startedDate}'";
+
+            $comment=json_encode(array('dao::isError()'=>dao::isError(),"stories[{$task->task_story}]"=>$stories["{$task->task_story}"]), JSON_UNESCAPED_UNICODE);
+            $common->log($comment, __FILE__, __LINE__);
+            if ($createAction) {
+                $actionID = $this->loadModel('action')->create('story', $task->task_story, 'commented', $comment, '', 'system', false);
+                $stories["{$task->task_story}"]["action.id"] = $actionID;
+            }
+
+        }
+
+        $common->log(json_encode(array('method'=>'updateStoryRspAcceptTimeByTask','stories'=>$stories),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        return $stories;
+    }
+
+
     /**
      * Get report data of planReleaseDate
      *

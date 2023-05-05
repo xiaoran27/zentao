@@ -2,6 +2,10 @@
 
 //参数长度<30
 
+$lang->resource->story->updateStoryAcceptTimeByTask           = 'updateStoryAcceptTimeByTask';
+$lang->resource->requirement->updateStoryAcceptTimeByTask           = 'updateStoryAcceptTimeByTask';
+
+
 $lang->resource->story->addPurchaser           = 'addPurchaser';
 $lang->resource->story->dingRobotSend           = 'dingRobotSend';
 $lang->resource->story->dingRobotSendForPD           = 'dingRobotSendForPD';
