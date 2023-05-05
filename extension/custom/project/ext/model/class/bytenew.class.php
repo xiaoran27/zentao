@@ -2367,6 +2367,12 @@ class bytenewProject  extends projectModel
                 case 'budget':
                     echo $budgetTitle;
                     break;
+                case 'contractNo':
+                    echo $project->contractNo;
+                    break;
+                case 'devEvaluate':
+                    echo $project->devEvaluate;
+                    break;
                 case 'teamCount':
                     echo $project->teamCount;
                     break;

@@ -1,5 +1,16 @@
 [toc]
 
+#  rel230505
+
+## changed:
+
+1. 通过task<devel>更新产品需求的prd时间
+2. 项目新增字段：产研评估人天+合同编号
+
+## fixed:  
+
+1. 
+
 #  rel230420
 
 ## changed:

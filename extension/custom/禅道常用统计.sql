@@ -1,4 +1,55 @@
 
+-- 需求交付SLA
+--  业务需求|产品需求
+--  Y|-
+--  N|Y
+
+
+select zt_story.id as bz_id , zt_story.title as bz_title , zt_story.openedDate as bz_openedDate, ifnull(zt_story.rspAcceptTime,ifnull(zt_story.rspRejectTime,ifnull(zt_story.rspResearchTime,ifnull(zt_story.rspRecievedTime,(case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ))))) as bz_rspTime
+    , zt_story.planReleaseDate as bz_planReleaseDate, zt_story.warning as bz_warning, zt_story.type as bz_type, zt_story.responseResult as bz_responseResult, zt_story.status as bz_status, zt_story.stage as bz_stage
+    , zs2.id as pd_id , zs2.title as pd_title , zs2.openedDate as pd_openedDate, ifnull(zs2.rspAcceptTime,ifnull(zs2.rspRejectTime,ifnull(zs2.rspResearchTime,ifnull(zs2.rspRecievedTime,(case when (zs2.closedDate is null or zs2.closedDate='0000-00-00') then now() else zs2.closedDate end ))))) as pd_rspTime
+    , zs2.planReleaseDate as pd_planReleaseDate, zs2.warning as pd_warning, zs2.type as pd_type, zs2.responseResult as pd_responseResult, zs2.status as pd_status, zs2.stage as pd_stage
+    , (case when (zs2.closedDate is null or zs2.closedDate='0000-00-00') then now() else zs2.closedDate end ) as dev_endTime
+    , timestampdiff( minute, zt_story.openedDate, ifnull(zt_story.rspAcceptTime,ifnull(zt_story.rspRejectTime,ifnull(zt_story.rspResearchTime,ifnull(zt_story.rspRecievedTime,(case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ))))) )/60/24 as sla_bz
+    , timestampdiff( minute, ifnull(zt_story.rspAcceptTime,ifnull(zt_story.rspRejectTime,ifnull(zt_story.rspResearchTime,ifnull(zt_story.rspRecievedTime,(case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ))))), ifnull(zs2.rspAcceptTime,ifnull(zs2.rspRejectTime,ifnull(zs2.rspResearchTime,ifnull(zs2.rspRecievedTime,(case when (zs2.closedDate is null or zs2.closedDate='0000-00-00') then now() else zs2.closedDate end ))))) )/60/24 as sla_pd
+    , timestampdiff( minute, ifnull(zs2.rspAcceptTime,ifnull(zs2.rspRejectTime,ifnull(zs2.rspResearchTime,ifnull(zs2.rspRecievedTime,(case when (zs2.closedDate is null or zs2.closedDate='0000-00-00') then now() else zs2.closedDate end ))))), (case when (zs2.closedDate is null or zs2.closedDate='0000-00-00') then now() else zs2.closedDate end ) )/60/24 as sla_dev
+    , zt_purchaser.name as bz_purchaser_name 
+    , zt_product.name as bz_product_name
+    
+from zt_story 
+    left join zt_relation zr on ( zt_story.id = zr.aid and zr.atype = 'requirement' and zr.btype = 'story' )
+    left join zt_story zs2 on ( zr.bid = zs2.id and zs2.type = 'story'  ) 
+    join zt_product on ( zt_story.product = zt_product.ID and zt_product.program = 223 )
+    join zt_purchaser on ( case when zt_story.purchaser like  ',%' then substring_index(SUBSTRING(zt_story.purchaser,2),',',1) else substring_index(zt_story.purchaser,',',1) end )  = zt_purchaser.code
+
+where zt_story.type = 'requirement' and  zt_story.deleted = '0' and timestampdiff( day, zt_story.openedDate, now()) <= 183 
+    and zs2.deleted = '0' and timestampdiff( day, zs2.openedDate, now()) <= 183 and zt_story.responseResult = 'suspend'
+    [[ and {{bz_title}} ]] [[ and {{bz_openedDate}} ]] [[ and {{bz_planReleaseDate}} ]] [[ and {{bz_purchaser_name}} ]] [[ and {{bz_product_name}} ]]
+    
+union all
+
+select '' as bz_id , '' as bz_title , zt_story.openedDate as bz_openedDate, ifnull(zt_story.rspAcceptTime,ifnull(zt_story.rspRejectTime,ifnull(zt_story.rspResearchTime,ifnull(zt_story.rspRecievedTime,(case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ))))) as bz_rspTime
+    , zt_story.planReleaseDate as bz_planReleaseDate, zt_story.warning as bz_warning, zt_story.type as bz_type, zt_story.responseResult as bz_responseResult, zt_story.status as bz_status, zt_story.stage as bz_stage
+    , zt_story.id as pd_id , zt_story.title as pd_title , zt_story.openedDate as pd_openedDate, ifnull(zt_story.rspAcceptTime,ifnull(zt_story.rspRejectTime,ifnull(zt_story.rspResearchTime,ifnull(zt_story.rspRecievedTime,(case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ))))) as pd_rspTime
+    , zt_story.planReleaseDate as pd_planReleaseDate, zt_story.warning as pd_warning, zt_story.type as pd_type, zt_story.responseResult as pd_responseResult, zt_story.status as pd_status, zt_story.stage as pd_stage
+    , (case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ) as dev_endTime
+    , timestampdiff( minute, zt_story.openedDate, ifnull(zt_story.rspAcceptTime,ifnull(zt_story.rspRejectTime,ifnull(zt_story.rspResearchTime,ifnull(zt_story.rspRecievedTime,(case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ))))) )/60/24 as sla_bz
+    , timestampdiff( minute, ifnull(zt_story.rspAcceptTime,ifnull(zt_story.rspRejectTime,ifnull(zt_story.rspResearchTime,ifnull(zt_story.rspRecievedTime,(case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ))))), ifnull(zt_story.rspAcceptTime,ifnull(zt_story.rspRejectTime,ifnull(zt_story.rspResearchTime,ifnull(zt_story.rspRecievedTime,(case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ))))) )/60/24 as sla_pd
+    , timestampdiff( minute, ifnull(zt_story.rspAcceptTime,ifnull(zt_story.rspRejectTime,ifnull(zt_story.rspResearchTime,ifnull(zt_story.rspRecievedTime,(case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ))))), (case when (zt_story.closedDate is null or zt_story.closedDate='0000-00-00') then now() else zt_story.closedDate end ) )/60/24 as sla_dev
+    , zt_purchaser.name as bz_purchaser_name 
+    , zt_product.name as bz_product_name
+    
+from zt_story 
+    join zt_product on ( zt_story.product = zt_product.ID and zt_product.program = 223 )
+    join zt_purchaser on ( case when zt_story.purchaser like  ',%' then substring_index(SUBSTRING(zt_story.purchaser,2),',',1) else substring_index(zt_story.purchaser,',',1) end )  = zt_purchaser.code
+
+where  zt_story.type = 'story' and zt_story.deleted = '0' and timestampdiff( day, zt_story.openedDate, now()) <= 183 
+    and zt_story.deleted = '0' and timestampdiff( day, zt_story.openedDate, now()) <= 183 
+    and zt_story.id not in ( select distinct zr.bid from zt_relation zr where  zr.btype = 'story' )
+    [[ and {{bz_title}} ]] [[ and {{bz_openedDate}} ]] [[ and {{bz_planReleaseDate}} ]] [[ and {{bz_purchaser_name}} ]] [[ and {{bz_product_name}} ]]
+
+
+
 
 -- B100的产品需求未关联大客定开项目的清单
 select distinct zt.id as story_id, zt.title as story_title, ifnull(b100_bound.story_id,0) as bound 
