@@ -153,7 +153,7 @@
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->devEvaluate; ?></span>
-                            <?php echo html::input('devEvaluate', $project->devEvaluate, "class='form-control' style='width: 150px'"); ?>
+                            <?php echo html::number('devEvaluate', $project->devEvaluate, "class='form-control' style='width: 150px' min='0'"); ?>
                         </div>
                     </td>
                     <td></td>

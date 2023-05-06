@@ -204,6 +204,6 @@ ALTER TABLE zt_story ADD planReleaseDate DATE NULL COMMENT 'planReleaseDate';
 ALTER TABLE zt_project ADD contractNo VARCHAR(30) NULL comment '合同编号';
 
 -- 2023/4/26 09:26
-ALTER TABLE zt_project ADD devEvaluate VARCHAR(30) NULL comment '产研评估人天';
+ALTER TABLE zt_project ADD devEvaluate int NULL comment '产研评估人天';
 
 -- sql.end.banniu_rel230505
