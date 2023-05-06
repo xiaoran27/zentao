@@ -17,10 +17,11 @@ class bytenewStory extends StoryModel
     {
 
         // update zt_story  
-        //     join ( select min(za.`date`) as task_startedDate , zt.story as task_story
-        //         from zt_action as za
-        //             join zt_task as zt on ( zt.id = za.objectID and zt.`type`='devel' and zt.story > 0 )
-        //         where za.objectType = 'task' and za.`action`='started'
+        //     join ( select min(za.`date`) as task_startedDate , zt.story as task_story, group_concat(zt.id) as task_ids, group_concat(za.`date`) as action_dates
+        //             from zt_action as za
+        //                 join zt_task as zt on ( zt.id = za.objectID and (zt.`type` in ('devel','request')) and zt.story > 0 )
+        //             where za.objectType = 'task' and ( ( zt.`type` = 'devel' and za.`action`='started' ) or ( zt.`type` = 'request' and za.`action`='finished' ) )
+        //             group by zt.story 
         //             -- and datediff(now(),za.`date`) <= 1 
         //             -- and zt.id = 147
         //         group by zt.story ) as tmp on tmp.task_story = id
@@ -28,9 +29,10 @@ class bytenewStory extends StoryModel
         // where `type`='story' and (rspAcceptTime is null or rspAcceptTime='0000-00-00') 
 
 
-        $tasks = $this->dao->select('min(za.`date`) as task_startedDate , zt.story as task_story')
-            ->from(TABLE_ACTION)->alias('za join zt_task as zt')->on("zt.id = za.objectID and zt.type='devel' and zt.story >0")
-            ->where('za.objectType')->eq('task')->andWhere('za.`action`')->eq('started')
+        $tasks = $this->dao->select('min(za.`date`) as task_startedDate , zt.story as task_story, group_concat(zt.id) as task_ids, group_concat(za.`date`) as action_dates')
+            ->from(TABLE_ACTION)->alias('za join zt_task as zt')->on("zt.id = za.objectID and (zt.type in ('devel','request')) and zt.story >0")
+            ->where('za.objectType')->eq('task')
+            ->andWhere("( ( zt.`type` = 'devel' and za.`action`='started' ) or ( zt.`type` = 'request' and za.`action`='finished' ) )")
             ->beginIF($days > 0 )->andWhere("datediff(now(),za.`date`)")->le($days)->fi()
             ->beginIF($taskID > 0 )->andWhere("zt.id")->eq($taskID)->fi()
             ->groupBy('zt.story')->fetchAll();
@@ -49,9 +51,8 @@ class bytenewStory extends StoryModel
                 ->where('id')->eq($task->task_story)
                 ->fetch();
             $stories["{$task->task_story}"]["story"] =  $story;
-            if(empty($story) || $story->rspAcceptTime == $task->task_startedDate ) continue;
+            if(empty($story) || ( $story->rspAcceptTime != '0000-00-00' && $story->rspAcceptTime <= $task->task_startedDate ) ) continue;
 
-            
             
             // update zt_story set rspAcceptTime=task_startedDate where deleted  = '0' and id = 103        
             $rows = $this->dao->update(TABLE_STORY)->set('rspAcceptTime')->eq($task->task_startedDate)->where('id')->eq($task->task_story)->exec();
