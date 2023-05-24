@@ -160,6 +160,7 @@ class bytenewSearch extends searchModel
         $formSessionName = $module . 'Form';
         $formSession     = $_SESSION[$formSessionName];
         // $this->loadModel('common')->log(json_encode($formSession,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        
 
         for($i = 1; $i <= $groupItems * $groups; $i ++)
         {
@@ -326,7 +327,25 @@ class bytenewSearch extends searchModel
             }
             elseif($condition)
             {
-                $where .= " $andOr " . '`' . $this->post->$fieldName . '` ' . $condition;
+                $findInSet = 'occursEnv'==$this->post->$fieldName || 'purchaser'==$this->post->$fieldName || 'assignedTo'==$this->post->$fieldName ;
+                $findInSet = $findInSet || 'os'==$this->post->$fieldName || 'browser'==$this->post->$fieldName ;
+                // $this->loadModel('common')->log(json_encode(array("fieldName"=>$this->post->$fieldName,"findInSet"=>$findInSet),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                if ( $findInSet ){  // occursEnv,purchaser,assignedTo,os,browser 支持任何一个选项的条件
+                    $values = $this->post->$valueName;
+                    $findInSetWhere = '';
+                    foreach ( $values as $k=>$v) {
+                        if ( 'all' == $v or '' == $v  ) {
+                            break;
+                        }
+                        $findInSetWhere .= "FIND_IN_SET('" . $v . "', `" . $this->post->$fieldName . "`) or ";
+                    }
+                    if ( !empty($findInSetWhere) ) $where .= " $andOr ( " .  $findInSetWhere . ' 0=1 ) ';
+                    
+                }
+                else{
+                    $where .= " $andOr " . '`' . $this->post->$fieldName . '` ' . $condition;
+                }
+                
             }
         }
 

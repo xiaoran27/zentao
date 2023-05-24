@@ -6,7 +6,7 @@ $lang->bug->feedbackTime      = '反馈时间';
 $lang->bug->collectTime      = '收集时间';
 
 $lang->bug->occursEnvList = array();
-$lang->bug->occursEnvList['']  = '';
+// $lang->bug->occursEnvList['']  = '';
 $lang->bug->occursEnvList['dev'] = '开发环境';
 $lang->bug->occursEnvList['test'] = '测试环境';
 $lang->bug->occursEnvList['pre'] = '预发环境';
