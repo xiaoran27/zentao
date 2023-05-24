@@ -94,7 +94,8 @@ public function syncStarlink($timeout=30)
         $purchaser  = new stdclass();
         $purchaser->code = $data['companyId'];
         $purchaser->name = $data['customerName'];
-        if ( isset($data['scoreNum']) ) $purchaser->scoreNum = $data['scoreNum'] ;  //行为分
+        if ( !isset($data['scoreNum']) )  $data['scoreNum'] = 0;
+        $purchaser->scoreNum = $data['scoreNum'] ;  //行为分
         $purchaser->category = $data['type'];
         $purchaser->category0 = $data['type'];
 

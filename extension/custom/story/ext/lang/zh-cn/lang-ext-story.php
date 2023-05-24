@@ -81,32 +81,35 @@ $lang->story->bzCategoryList['LKA'] = 'B5000(LKA)';
 $lang->story->bzCategoryList['SMB'] = 'SMB';
 $lang->story->bzCategoryList['OKR'] = 'OKR专用';
 $lang->story->prCategory = '需求分类';
-$lang->story->prCategoryList = array();   // for业务需求
+$lang->story->prCategoryList = array();   // for产品需求
 $lang->story->prCategoryList['']  = '';
 $lang->story->prCategoryList['project']  = '共创需求';
-$lang->story->prCategoryList['product'] = '功能迭代';
-$lang->story->prCategoryList['new'] = '新产品需求';
-$lang->story->prCategoryList['myself']  = '个性化需求';
-$lang->story->prCategoryList['yourself']  = '客制化需求';
-$lang->story->prCategoryList['platform'] = '电商平台';
-$lang->story->prCategoryList['tech'] = '技术改造';
+$lang->story->prCategoryList['product'] = '功能迭代'; //标品需求
+$lang->story->prCategoryList['new'] = '新产品需求'; //标品需求
+$lang->story->prCategoryList['myself']  = '个性化需求'; //个性化需求
+$lang->story->prCategoryList['yourself']  = '客制化需求'; //个性化需求
+$lang->story->prCategoryList['platform'] = '电商平台'; //技术改造
+$lang->story->prCategoryList['tech'] = '技术改造'; //技术改造
 $lang->story->prCategoryList['sa_support']  = '方案支持';
-$lang->story->prCategoryList['pd_support']  = '产品支持';
+$lang->story->prCategoryList['pd_support']  = '产品支持'; // 标品支持
 $lang->story->prCategoryList['std_support']  = '标品支持';
 $lang->story->prCategoryList['it_support']  = '技术支持';
 $lang->story->prCategoryList['other'] = '其他';
 $lang->story->prCategoryList['OKR'] = 'OKR专用';
 
-$lang->story->prCategoryList0 = array();   // for产品需求
+$lang->story->prCategoryList0 = array();   // for业务需求
 $lang->story->prCategoryList0['']  = '';
-$lang->story->prCategoryList0['product'] = '标品需求';
 $lang->story->prCategoryList0['project']  = '共创需求';
+$lang->story->prCategoryList0['product'] = '标品需求';
 $lang->story->prCategoryList0['myself']  = '个性化需求';
+$lang->story->prCategoryList0['tech'] = '技术改造';
 $lang->story->prCategoryList0['sa_support']  = '项目支持';
 $lang->story->prCategoryList0['std_support']  = '标品支持';
 $lang->story->prCategoryList0['it_support']  = '技术支持';
 // $lang->story->prCategoryList0['new'] = '新产品需求';
 $lang->story->prCategoryList0['OKR'] = 'OKR专用';
+$lang->story->prCategoryList0['other'] = '其他';
+
 
 
 $lang->story->uatDate = 'UAT日期';

@@ -15,7 +15,7 @@ $config->story->url['dingRobotSendSA']='https://oapi.dingtalk.com/robot/send?acc
 // $config->story->purchasers = array();
 
 $config->story->bzCategories   = array_keys($lang->story->bzCategoryList);
-$config->story->prCategories   = array_keys($lang->story->bzCategoryList);
+$config->story->prCategories   = array_keys($lang->story->prCategoryList);
 $config->story->responseResultes   = array_keys($lang->story->responseResultList);
 $config->story->purchasers = array_keys($lang->story->purchaserList);
 $config->story->prLevels = array_keys($lang->story->prLevelList);
@@ -84,7 +84,7 @@ $config->story->datatable->fieldList['prCategory']['fixed']    = 'left';
 $config->story->datatable->fieldList['prCategory']['width']    = '50';
 $config->story->datatable->fieldList['prCategory']['required'] = 'no';
 $config->story->datatable->fieldList['prCategory']['control']    = 'select';
-$config->story->datatable->fieldList['prCategory']['dataSource'] = $config->story->prCategories;
+$config->story->datatable->fieldList['prCategory']['dataSource'] = $lang->story->prCategoryList;
 
 $config->story->datatable->fieldList['uatDate']['title']    = 'uatDate';
 $config->story->datatable->fieldList['uatDate']['fixed']    = 'left';

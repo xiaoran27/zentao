@@ -11,7 +11,7 @@ class bytenewProject  extends projectModel
      * @access public
      * @return object
      */
-    public function getPairsListForB100($name='B100项目集', $type = 'project')
+    public function getPairsListForB100($name='正马项目集', $type = 'project')
     {
 
         $path = $this->dao->select('path')->from(TABLE_PROJECT)

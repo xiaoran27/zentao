@@ -120,7 +120,7 @@ class bytenewStory extends StoryModel
         $IDs = $this->dao->select("id")->from(TABLE_STORY)
             ->where('deleted')->eq(0)->andWhere('status')->ne('draft')
             ->andWhere('type')->eq('story')
-            ->andWhere("datediff(now(),case when lastEditedDate ='0000-00-00' then openedDate else lastEditedDate end )")->le($days)
+            ->andWhere("datediff(now(),case when lastEditedDate ='0000-00-00 00:00:00' then openedDate else lastEditedDate end )")->le($days)
             ->fetchAll();
         if(empty($IDs)) return array();
 
@@ -157,7 +157,7 @@ class bytenewStory extends StoryModel
             // select zs.status as status,zs.stage as stage from zt_story zs
             //  join zt_relation zr on ( zr.atype='requirement' and zs.id = zr.bid )
             // where zs.deleted  = '0'  and zs.status  != 'draft'  and zr.aid = 103
-            $storyValues = $this->dao->select("zs.id as id, zs.status as status,zs.stage as stage,zs.closedDate as closedDate")->from(TABLE_STORY)->alias('zs')
+            $storyValues = $this->dao->select("zs.id as id, zs.status as status,zs.stage as stage,zs.closedDate as closedDate,zs.planReleaseDate as planReleaseDate,bizProject as bizProject,lastEditedDate as lastEditedDate")->from(TABLE_STORY)->alias('zs')
                 ->leftJoin(TABLE_RELATION)->alias('zr')->on("zr.atype='requirement' and zs.id = zr.bid")
                 ->where('zs.deleted')->eq(0)->andWhere('zs.status')->ne('draft')->andWhere('zr.aid')->eq($requirementID->id)
                 ->fetchAll();
@@ -165,10 +165,13 @@ class bytenewStory extends StoryModel
             $requirements["{$requirementID->id}"]["stories"] =  $storyValues;
             $common->log(json_encode(array('requirementID'=>$requirementID,'storyValues'=>$storyValues),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             if(!$storyValues) continue;
-            
+
             $statusAll = ",";
             $stageAll = ",";
             $closedDate="";
+            $planReleaseDate = "";
+            $bizProject = "";
+            $lastEditedDate = "";
             // https://banniu.yuque.com/staff-dmhmqa/selgla/rk2yoi3ia8kdltfh?singleDoc# 《禅道需求与所处阶段》
             foreach($storyValues as $e ) {
                 $statusAll .= "$e->status," ;
@@ -176,12 +179,27 @@ class bytenewStory extends StoryModel
                 if ( $e->status='closed' or $e->stage='closed' ){
                     if ( empty($closedDate) or  $closedDate < $e->closedDate ) $closedDate=$e->closedDate;
                 }
+                if (empty($planReleaseDate) and !empty($e->planReleaseDate)){
+                    $planReleaseDate = "$e->planReleaseDate";
+                } elseif (!empty($e->planReleaseDate) and $e->planReleaseDate > $planReleaseDate){
+                    $planReleaseDate = "$e->planReleaseDate";
+                }
+                if (!empty($e->bizProject)){
+                    if (empty($lastEditedDate)){
+                        $lastEditedDate = $e->lastEditedDate;
+                        $bizProject = $e->bizProject;
+                    }elseif($e->lastEditedDate > $lastEditedDate){
+                        $lastEditedDate = $e->lastEditedDate;
+                        $bizProject = $e->bizProject;
+                    }
+                }
+
             }
             $common->log(json_encode(array('stageAll'=>$stageAll,'statusAll'=>$statusAll),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
             // 都closed是closed，其他有啥是啥
             $status = 'active';
-            if ( strpos($statusAll, ",reviewing,") !== false ){ 
+            if ( strpos($statusAll, ",reviewing,") !== false ){
                 $status = 'reviewing';
             }else if ( strpos($statusAll, ",changing,") !== false ){
                 $status = 'changing';
@@ -214,22 +232,26 @@ class bytenewStory extends StoryModel
                 }
             }
 
-            
+
             $requirements["{$requirementID->id}"]["status"] = $status;
             $requirements["{$requirementID->id}"]["stage"] = $stage;
             $requirements["{$requirementID->id}"]["closedDate"] = $closedDate;
-            $requirement = $this->dao->select("id,status,stage,closedDate")->from(TABLE_STORY)
+            $requirements["{$requirementID->id}"]["planReleaseDate"] = $planReleaseDate;
+            $requirements["{$requirementID->id}"]["bizProject"]  = $bizProject;
+            $requirement = $this->dao->select("id,status,stage,closedDate,planReleaseDate,bizProject")->from(TABLE_STORY)
                 ->where('deleted')->eq(0)->andWhere('id')->eq($requirementID->id)
-                ->andWhere('status')->eq($status)->andWhere('stage')->eq($stage)
+//                ->andWhere('status')->eq($status)->andWhere('stage')->eq($stage)
                 ->fetchAll();
-            if(!empty($requirement)) {
+            if(!empty($requirement) and $status == $requirement->status and $stage == $requirement->stage
+                and $closedDate == $requirement->closedDate and  $planReleaseDate == $requirement->planReleaseDate
+                and $bizProject == $requirement->bizProject ) {
                 $requirements["{$requirementID->id}"]["old"] = $requirement;
                 continue;
             }
 
-            
-            // update zt_story set status='',stage='' where deleted  = '0' and id = 103        
-            $rows = $this->dao->update(TABLE_STORY)->set('status')->eq($status)->set('stage')->eq($stage)->set('closedDate')->eq($closedDate)->where('id')->eq($requirementID->id)->exec();
+
+            // update zt_story set bizProject='', status='',stage='',closedDate='',planReleaseDate='' where deleted  = '0' and id = 103
+            $rows = $this->dao->update(TABLE_STORY)->beginIF(!empty($bizProject))->set("bizProject")->eq($bizProject)->fi()->set('status')->eq($status)->set('stage')->eq($stage)->beginIF(!empty($closedDate))->set('closedDate')->eq($closedDate)->fi()->beginIF(!empty($planReleaseDate))->set("planReleaseDate")->eq($planReleaseDate)->fi()->where('id')->eq($requirementID->id)->exec();
             $requirements["{$requirementID->id}"]["rows"] = $rows;
             
 
@@ -5869,7 +5891,7 @@ class bytenewStory extends StoryModel
                 echo zget($this->lang->story->bzCategoryList, $story->bzCategory, $story->bzCategory);
                 break;
             case 'prCategory':
-                echo zget($story->type == 'requirement'?$this->lang->story->prCategoryList:$this->lang->story->prCategoryList0, $story->prCategory, $story->prCategory);
+                echo zget($story->type == 'requirement'?$this->lang->story->prCategoryList0:$this->lang->story->prCategoryList, $story->prCategory, $story->prCategory);
                 break;
             case 'responseResult':
                 echo zget($story->type == 'requirement'?$this->lang->story->responseResultList:$this->lang->story->responseResultList0, $story->responseResult, $story->responseResult);
