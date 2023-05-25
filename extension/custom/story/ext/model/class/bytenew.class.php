@@ -177,7 +177,7 @@ class bytenewStory extends StoryModel
             foreach ($storyValues as $e) {
                 $statusAll .= "$e->status,";
                 $stageAll .= "$e->stage,";
-                if ($e->status = 'closed' or $e->stage = 'closed') {
+                if ($e->status == 'closed' or $e->stage == 'closed') {
                     if (empty($closedDate) or $closedDate < $e->closedDate) $closedDate = $e->closedDate;
                 }
                 if (empty($planReleaseDate) and !empty($e->planReleaseDate)) {
@@ -185,6 +185,7 @@ class bytenewStory extends StoryModel
                 } elseif (!empty($e->planReleaseDate) and $e->planReleaseDate > $planReleaseDate) {
                     $planReleaseDate = "$e->planReleaseDate";
                 }
+                //取"修改时间"最大的bizProject
                 if (!empty($e->bizProject)) {
                     if (empty($lastEditedDate)) {
                         $lastEditedDate = $e->lastEditedDate;
@@ -242,7 +243,7 @@ class bytenewStory extends StoryModel
             $requirement = $this->dao->select("id,status,stage,closedDate,planReleaseDate,bizProject")->from(TABLE_STORY)
                 ->where('deleted')->eq(0)->andWhere('id')->eq($requirementID->id)
 //                ->andWhere('status')->eq($status)->andWhere('stage')->eq($stage)
-                ->fetchAll();
+                ->fetch();
 
             if (!empty($requirement) and $status == $requirement->status and $stage == $requirement->stage
                 and $closedDate == $requirement->closedDate and $planReleaseDate == $requirement->planReleaseDate
