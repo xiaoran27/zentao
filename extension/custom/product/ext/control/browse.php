@@ -224,6 +224,7 @@ class myProduct extends product
 
         $bizProjects = $this->loadModel('project')->getPairsListForB100();
         if ( !$bizProjects ) $bizProjects = array();
+        $this->config->product->search['params']['bizProject']     = array('operator' => 'include', 'control' => 'select', 'values' => $bizProjects);
         $this->view->bizProjects      = $bizProjects;
 
         $project = $this->loadModel('project')->getByID($projectID);
