@@ -44,6 +44,8 @@ class myCron extends cron
         while(true)
         {
             dao::$cache = array();
+            $this->common->log(json_encode(array('parsedCrons' => $parsedCrons, 'PHP_SAPI' => PHP_SAPI) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                
 
             /* When cron is null then die. */
             if(empty($crons)) break;
@@ -76,6 +78,9 @@ class myCron extends cron
                 {
                     if($cronInfo->lastTime > $cron['time']->format(DT_DATETIME1)) return;
                 }
+
+                $this->common->log(json_encode(array('cron' => $cron, 'cronInfo' => $cronInfo, 'now' => $now) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                
 
                 if($now > $cron['time'])
                 {
