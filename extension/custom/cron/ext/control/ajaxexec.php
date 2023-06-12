@@ -72,11 +72,11 @@ class myCron extends cron
                 /* Skip cron that last time is more than this cron time. */
                 if('cli' === PHP_SAPI)
                 {
-                    if($cronInfo->lastTime >= $cron['time']->format(DT_DATETIME1)) continue;
+                    if($cronInfo->lastTime > $cron['time']->format(DT_DATETIME1)) continue;
                 }
                 else
                 {
-                    if($cronInfo->lastTime >= $cron['time']->format(DT_DATETIME1)) continue;
+                    if($cronInfo->lastTime > $cron['time']->format(DT_DATETIME1)) continue;
                 }
 
                 $this->common->log(json_encode(array('cron' => $cron, 'cronInfo' => $cronInfo, 'now' => $now) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
