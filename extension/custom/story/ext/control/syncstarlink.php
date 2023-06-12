@@ -12,9 +12,9 @@ class myStory extends story
      * @access public
      * @return void
      */
-    public function syncStarlink($timeout=30)
+    public function syncStarlink($timeout=30, $minutes=5)
     {
-        $str = $this->loadModel('common')->syncStarlink($timeout);
+        $str = $this->loadModel('common')->syncStarlink($timeout, $minutes);
         echo $str;
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-public function syncStarlink($timeout=30)
+public function syncStarlink($timeout=30, $minutes=5)
 {
-    static $maxGapMinute = 5;
+    $maxGapMinute = $minutes;
 
     // TODO: 
     // global $latestTimestamp;
@@ -20,10 +20,10 @@ public function syncStarlink($timeout=30)
 
     static $TABLE_PURCHASER = "zt_purchaser";
 
-    $diffm = $this->dao->select("timestampdiff(minute , max(mtime),now()) as diffm")->from($TABLE_PURCHASER)->fetch("diffm");
-    $this->log("diffm=$diffm", __FILE__, __LINE__);
-    if ( $diffm < $maxGapMinute ) {
-        return "NA(minutes): $diffm < $maxGapMinute";
+    $diff = $this->dao->select("timestampdiff(second , max(mtime),now()) as diff")->from($TABLE_PURCHASER)->fetch("diff");
+    $this->log("diff=$diff", __FILE__, __LINE__);
+    if ( $diff  < $maxGapMinute * 60 - 30 ) {   //  允许误差30s 
+        return "NA(seconds): $diff  < $maxGapMinute * 60 - 30";
     }
     
     
