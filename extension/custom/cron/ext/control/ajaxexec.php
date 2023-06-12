@@ -76,7 +76,7 @@ class myCron extends cron
                 }
                 else
                 {
-                    if($cronInfo->lastTime > $cron['time']->format(DT_DATETIME1)) return;
+                    if($cronInfo->lastTime >= $cron['time']->format(DT_DATETIME1)) continue;
                 }
 
                 $this->common->log(json_encode(array('cron' => $cron, 'cronInfo' => $cronInfo, 'now' => $now) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
