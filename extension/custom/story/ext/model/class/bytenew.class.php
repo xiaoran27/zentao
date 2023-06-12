@@ -51,7 +51,7 @@ class bytenewStory extends StoryModel
                 ->where('id')->eq($task->task_story)
                 ->fetch();
             $stories["{$task->task_story}"]["story"] = $story;
-            if (empty($story) || ($story->rspAcceptTime != '0000-00-00' && $story->rspAcceptTime <= $task->task_startedDate)) continue;
+            if (empty($story) || ( !helper::isZeroDate($story->rspAcceptTime) && $story->rspAcceptTime <= $task->task_startedDate)) continue;
 
 
             // update zt_story set rspAcceptTime=task_startedDate where deleted  = '0' and id = 103
