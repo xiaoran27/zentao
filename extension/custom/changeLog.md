@@ -1,4 +1,18 @@
 [toc]
+
+#  rel230613
+
+## changed:
+
+1. 
+
+## fixed:
+
+1. 定时任务加log，仅大于当前时间跳过
+2. 同步星链允许30s误差
+3. helper::isZeroDate 判断空日期
+
+
 #  rel230525
 
 ## changed:
