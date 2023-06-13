@@ -9,17 +9,21 @@
      * @access public
      * @return string
      */
-    public function pinyin($zhstr, $fn='convert')
+    public function pinyin($zhstr, $full=false, $fn='convert')
     {
         global $app;
         static $pinyin;
         if(empty($pinyin)) $pinyin = $app->loadClass('pinyin');
         $vals = $pinyin->convert($zhstr);
+        $pyfull = '';
         $pystr = '';
-        foreach($vals as $py ) $pystr .= $py[0];
-        // $this->log("zhstr=$zhstr, pystr=$pystr", __FILE__, __LINE__);
+        foreach($vals as $py ) {
+            $pyfull .= $py;
+            $pystr .= $py[0];
+        }
+        // $this->log("zhstr=$zhstr, pystr=$pystr, pyfull=$pyfull", __FILE__, __LINE__);
 
-        return $pystr;
+        return $full ? $pyfull : $pystr ;
 
         /*
         if(empty($pinyin)) $fn='abbr';
