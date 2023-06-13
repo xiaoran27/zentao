@@ -99,10 +99,8 @@ public function syncStarlink($timeout=30, $minutes=5)
         $purchaser->category = $data['type'];
         $purchaser->category0 = $data['type'];
 
-        $code_pinyin = $this->pinyin($purchaser->name);
         if ( empty($purchaser->code) ) {
-            $purchaser->code = $code_pinyin;
-            // $this->log("to Pinyin: " . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            $purchaser->code = "0";
         }else{
             // 去除前面的0
             $purchaser->code = '' . ($purchaser->code+0) ;
@@ -134,54 +132,78 @@ public function syncStarlink($timeout=30, $minutes=5)
             $purchaser->category = "SMB";
         }
 
-        // $purchaserNow = $this->dao->select("*")->from($TABLE_PURCHASER)
-        //     ->where("code")->eq($purchaser->code)
-        //     ->orWhere("code")->eq($code_pinyin)
-        //     ->fetch();
-        $purchasersExist = array();
+        // code name  增删改
         $purchaserNow = null;
-        if (array_key_exists($purchaser->code,$purchaserNows)) {
+        if ($purchaser->code != "0" && array_key_exists($purchaser->code,$purchaserNows)) {  // 班牛ID相同
             $purchaserNow = $purchaserNows[$purchaser->code];
+            $purchaserNow->eq = 'code';
             $purchasersExist["{$purchaser->code}"] = $purchaserNow;
+
+            if ( $purchaser->code == $purchaserNow->code && $purchaser->name == $purchaserNow->name 
+                && $purchaser->category == $purchaserNow->category && $purchaser->scoreNum == $purchaserNow->scoreNum ){
+                $cnt_same = $cnt_same + 1;
+                continue;  
+            }
+
+            // 班牛ID相同, 其他有不同
+            $this->log("UPD:" . json_encode(array('purchaserNow'=>$purchaserNow, 'purchaser'=>$purchaser),JSON_UNESCAPED_UNICODE) ." => ". json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            $this->dao->update($TABLE_PURCHASER)->data($purchaser,"category0")->where('code')->eq($purchaserNow->code)->exec();
+            if( dao::isError() )
+            {
+                $this->log("Fail to UPD $TABLE_PURCHASER :" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            }else{
+                $cnt_upd = $cnt_upd + 1;
+            }
+            continue;
         }
-        if (array_key_exists($code_pinyin,$purchaserNows)) {
+
+        $code_pinyin = $this->pinyin($purchaser->name);  // 仅首字母
+        $code_pinyin_full = $this->pinyin($purchaser->name, true);  //  全拼
+        if (array_key_exists($purchaser->name,$purchaserNows)) {  // 名称相同，无班牛ID
+            $purchaserNow = $purchaserNows[$purchaser->name];
+            $purchaserNow->eq = 'name';
+            $purchasersExist["{$purchaser->name}"] = $purchaserNow;
+
+            if ( $purchaser->code == "0" && ( $code_pinyin == $purchaserNow->code || $code_pinyin_full == $purchaserNow->code ) && $purchaser->name == $purchaserNow->name 
+                && $purchaser->category == $purchaserNow->category && $purchaser->scoreNum == $purchaserNow->scoreNum ){
+                $cnt_same = $cnt_same + 1;
+                continue;  
+            }
+
+            // 名称相同, 其他有不同
+            $purchaser->code = $purchaser->code == "0" ? $purchaserNow->code : $purchaser->code;
+            $this->log("UPD:" . json_encode(array('purchaserNow'=>$purchaserNow, 'purchaser'=>$purchaser),JSON_UNESCAPED_UNICODE) ." => ". json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            $this->dao->update($TABLE_PURCHASER)->data($purchaser,"category0")->where('code')->eq($purchaserNow->code)->exec();
+            if( dao::isError() )
+            {
+                $this->log("Fail to UPD $TABLE_PURCHASER :" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            }else{
+                $cnt_upd = $cnt_upd + 1;
+            }
+            continue;
+
+        }
+
+        // Deprecated
+        if (array_key_exists($code_pinyin,$purchaserNows)) {  // pinyin相同，名称不同
             $purchaserNow = $purchaserNows[$code_pinyin];
+            $purchaserNow->eq = 'pinyin';
             $purchasersExist["{$code_pinyin}"] = $purchaserNow;
         }
-        if (array_key_exists($purchaser->name,$purchaserNows)) {
-            $purchaserNow = $purchaserNows[$purchaser->name];
-            $purchasersExist["{$purchaser->name}"] = $purchaserNow;
+        if (array_key_exists($code_pinyin_full,$purchaserNows)) {  // pinyin_full相同，名称不同
+            $purchaserNow = $purchaserNows[$code_pinyin_full];
+            $purchaserNow->eq = 'pinyin_full';
+            $purchasersExist["{$code_pinyin_full}"] = $purchaserNow;
         }
-        $purchaserNow = null;
-        foreach($purchasersExist as $key => $value){
-            if (empty($purchaserNow)) {
-                $purchaserNow = $value;
-            }elseif($value->code != $purchaserNow->code){ //  同name不同code
-                $this->log("exist({$purchaserNow->code},{$purchaserNow->name}), DEL:" . json_encode(array("key"=>$key,"value"=>$value),JSON_UNESCAPED_UNICODE) , __FILE__, __LINE__);
-                $this->dao->delete()->from($TABLE_PURCHASER)->where('code')->eq($value->code)->exec();
-                $cnt_del ++;
-            }
-        }
-        // $this->log(json_encode(array("purchaserNow"=>$purchaserNow,"purchasersExist"=>$purchasersExist),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         
-        // $this->log(json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-        // $this->log(json_encode($purchaserNow,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-
-        if (empty($purchaserNow)){
-            $this->log("INS:" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-            $this->dao->insert($TABLE_PURCHASER)->data($purchaser,"category0")->exec();
-            $cnt_ins = $cnt_ins + 1;
-        }elseif ( $purchaser->code != $purchaserNow->code || $purchaser->name != $purchaserNow->name 
-            || $purchaser->category != $purchaserNow->category || $purchaser->scoreNum != $purchaserNow->scoreNum ) {
-            $this->log("UPD($purchaser->code,$code_pinyin):" . json_encode($purchaserNow,JSON_UNESCAPED_UNICODE) ." => ". json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-            $this->dao->update($TABLE_PURCHASER)->data($purchaser,"category0")->where('code')->eq($purchaserNow->code)->exec();
-            $cnt_upd = $cnt_upd + 1;
-        }else{
-            $cnt_same = $cnt_same + 1;
-        }
+        $purchaser->code = $purchaser->code == "0" ? ( array_key_exists($code_pinyin,$purchaserNows) ? $code_pinyin_full : $code_pinyin ) : $purchaser->code;
+        $this->log("INS:" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $this->dao->insert($TABLE_PURCHASER)->data($purchaser,"category0")->exec();
         if( dao::isError() )
         {
-            $this->log("Fail to insert or update $TABLE_PURCHASER :" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            $this->log("Fail to INS $TABLE_PURCHASER :" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        }else{
+            $cnt_ins = $cnt_ins + 1;
         }
         
     }
