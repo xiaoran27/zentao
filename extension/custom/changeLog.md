@@ -4,13 +4,14 @@
 
 ## changed:
 
-1. 
+1. webhook支持钉钉单聊通知
 
 ## fixed:
 
 1. 定时任务加log，仅大于当前时间跳过
-2. 同步星链允许30s误差
+2. 同步星链允许30s误差，解决名称不同但pinyin相同的缺陷
 3. helper::isZeroDate 判断空日期
+4. 需求的项目下拉选项([#20008](https://chandao.bytenew.com/zentao/bug-view-20008.html))
 
 
 #  rel230525
