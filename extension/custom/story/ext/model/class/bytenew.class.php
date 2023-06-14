@@ -602,6 +602,8 @@ class bytenewStory extends StoryModel
         $line->name = $name;
         $line->code = $code;
         $line->category = $category;
+        $line->creator = $this->app->user->account;
+        $line->modifier = $this->app->user->account;
 
         $common = $this->loadModel('common');
         if (empty($line->name)) {
