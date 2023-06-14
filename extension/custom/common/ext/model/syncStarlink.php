@@ -146,6 +146,7 @@ public function syncStarlink($timeout=30, $minutes=5)
             }
 
             // 班牛ID相同, 其他有不同
+            $purchaser->modifier = 'syncStarlink';
             $this->log("UPD:" . json_encode(array('purchaserNow'=>$purchaserNow, 'purchaser'=>$purchaser),JSON_UNESCAPED_UNICODE) ." => ". json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             $this->dao->update($TABLE_PURCHASER)->data($purchaser,"category0")->where('code')->eq($purchaserNow->code)->exec();
             if( dao::isError() )
@@ -153,6 +154,7 @@ public function syncStarlink($timeout=30, $minutes=5)
                 $this->log("Fail to UPD $TABLE_PURCHASER :" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             }else{
                 $cnt_upd = $cnt_upd + 1;
+                if ($purchaserNow->code != $purchaser->code) $this->updateRefPurchaser($purchaserNow->code, $purchaser->code);
             }
             continue;
         }
@@ -171,6 +173,7 @@ public function syncStarlink($timeout=30, $minutes=5)
             }
 
             // 名称相同, 其他有不同
+            $purchaser->modifier = 'syncStarlink';
             $purchaser->code = $purchaser->code == "0" ? $purchaserNow->code : $purchaser->code;
             $this->log("UPD:" . json_encode(array('purchaserNow'=>$purchaserNow, 'purchaser'=>$purchaser),JSON_UNESCAPED_UNICODE) ." => ". json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             $this->dao->update($TABLE_PURCHASER)->data($purchaser,"category0")->where('code')->eq($purchaserNow->code)->exec();
@@ -179,6 +182,7 @@ public function syncStarlink($timeout=30, $minutes=5)
                 $this->log("Fail to UPD $TABLE_PURCHASER :" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             }else{
                 $cnt_upd = $cnt_upd + 1;
+                if ($purchaserNow->code != $purchaser->code) $this->updateRefPurchaser($purchaserNow->code, $purchaser->code);
             }
             continue;
 
@@ -196,6 +200,9 @@ public function syncStarlink($timeout=30, $minutes=5)
             $purchasersExist["{$code_pinyin_full}"] = $purchaserNow;
         }
         
+        
+        $purchaser->creator = 'syncStarlink';
+        $purchaser->modifier = 'syncStarlink';
         $purchaser->code = $purchaser->code == "0" ? ( array_key_exists($code_pinyin,$purchaserNows) ? $code_pinyin_full : $code_pinyin ) : $purchaser->code;
         $this->log("INS:" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         $this->dao->insert($TABLE_PURCHASER)->data($purchaser,"category0")->exec();
