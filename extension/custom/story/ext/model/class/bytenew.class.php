@@ -180,9 +180,9 @@ class bytenewStory extends StoryModel
                 if ($e->status == 'closed' or $e->stage == 'closed') {
                     if (empty($closedDate) or $closedDate < $e->closedDate) $closedDate = $e->closedDate;
                 }
-                if (empty($planReleaseDate) and !empty($e->planReleaseDate)) {
+                if (empty($planReleaseDate) and !helper::isZeroDate($e->planReleaseDate)) {
                     $planReleaseDate = "$e->planReleaseDate";
-                } elseif (!empty($e->planReleaseDate) and $e->planReleaseDate > $planReleaseDate) {
+                } elseif (!helper::isZeroDate($e->planReleaseDate) and $e->planReleaseDate > $planReleaseDate) {
                     $planReleaseDate = "$e->planReleaseDate";
                 }
                 //取"修改时间"最大的bizProject
@@ -246,13 +246,15 @@ class bytenewStory extends StoryModel
                 ->fetch();
 
             if (!empty($requirement) and $status == $requirement->status and $stage == $requirement->stage
-                and $closedDate == $requirement->closedDate and $planReleaseDate == $requirement->planReleaseDate
-                and $bizProject == $requirement->bizProject) {
+                and (helper::isZeroDate($closedDate) or $closedDate == $requirement->closedDate ) 
+                and (helper::isZeroDate($planReleaseDate) or $planReleaseDate == $requirement->planReleaseDate )
+                and (empty($e->bizProject) or $bizProject == $requirement->bizProject )
+                ) {
                 $requirements["{$requirementID->id}"]["old"] = $requirement;
                 continue;
             }
             // update zt_story set bizProject='', status='',stage='',closedDate='',planReleaseDate='' where deleted  = '0' and id = 103
-            $rows = $this->dao->update(TABLE_STORY)->beginIF(!empty($bizProject))->set("bizProject")->eq($bizProject)->fi()->set('status')->eq($status)->set('stage')->eq($stage)->beginIF(!empty($closedDate))->set('closedDate')->eq($closedDate)->fi()->beginIF(!empty($planReleaseDate))->set("planReleaseDate")->eq($planReleaseDate)->fi()->where('id')->eq($requirementID->id)->exec();
+            $rows = $this->dao->update(TABLE_STORY)->beginIF(!empty($bizProject))->set("bizProject")->eq($bizProject)->fi()->set('status')->eq($status)->set('stage')->eq($stage)->beginIF(!helper::isZeroDate($closedDate))->set('closedDate')->eq($closedDate)->fi()->beginIF(!helper::isZeroDate($planReleaseDate))->set("planReleaseDate")->eq($planReleaseDate)->fi()->where('id')->eq($requirementID->id)->exec();
             $requirements["{$requirementID->id}"]["rows"] = $rows;
 
 
