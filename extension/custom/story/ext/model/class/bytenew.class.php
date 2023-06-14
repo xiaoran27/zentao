@@ -299,7 +299,7 @@ class bytenewStory extends StoryModel
         }
 
         $common = $this->loadModel('common');
-        $common->log(json_encode(array('type' => $type, 'product' => $product, 'sla' => $sla, 'program' => $program), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('type' => $type, 'product' => $product, 'sla' => $sla, 'program' => $program, 'responseResult' => $responseResult), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
 
         // // 获取产品-产品负责人 select id,po from zt_product where deleted = '0' ;
@@ -327,7 +327,7 @@ class bytenewStory extends StoryModel
         //     group by zu.realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  );
 
 
-        $dingdingDatas = $this->dao->select("zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(distinct zs.id) as total ")->from(TABLE_STORY)->alias('zs')
+        $dingdingDatas = $this->dao->select("zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(distinct zs.id) as total, group_concat(distinct zs.id) as ids ")->from(TABLE_STORY)->alias('zs')
             ->leftJoin(TABLE_USER)->alias('zu')->on('zs.assignedTo = zu.account')
             ->leftJoin(TABLE_PRODUCT)->alias('zp')->on('zs.product = zp.id')
             ->where('zs.deleted')->eq(0)
@@ -337,12 +337,13 @@ class bytenewStory extends StoryModel
             ->andWhere('zs.assignedTo')->ne('')
             // ->andWhere('zs.responseResult')->in("'todo','recieved','research','suspend'")
             // ->andWhere('zs.responseResult')->in("todo,recieved,research,suspend")
-            ->andWhere('zs.responseResult')->in($responseResult == 'all' ? "todo,recieved,research,suspend" : $responseResult)
+            // ->andWhere('zs.responseResult')->in($responseResult == 'all' ? "todo,recieved,research,suspend" : $responseResult)
+            ->beginIF($responseResult != 'all')->andWhere('zs.responseResult')->in($responseResult)->fi()
             // ->andWhere('zs.`type`')->in($type == 'all'?"'requirement','story'":"'$type'")
-            ->andWhere('zs.`type`')->in($type == 'all' ? "requirement,story" : $type)
+            // ->andWhere('zs.`type`')->in($type == 'all' ? "requirement,story" : $type)
+            ->beginIF($type != 'all')->andWhere('zs.`type`')->in($type)->fi()
             ->andWhere('zs.status')->ne('closed')
-            ->beginIF($program < 0)->andWhere("'1'")->eq(1)->fi()
-            ->beginIF($program >= 0)->andWhere('zp.program')->eq($program)->fi()
+            ->beginIF($program > 0)->andWhere('zp.program')->eq($program)->fi()
             ->beginIF($sla > 0)->andWhere('timestampdiff(hour,ifnull(lastEditedDate,openedDate ),now())')->gt($sla)->fi()
             // ->groupby("zu.realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  )")
             ->groupby("realname , dingding ")
@@ -351,23 +352,37 @@ class bytenewStory extends StoryModel
         $common->log(json_encode(array('dingdingDatas' => $dingdingDatas), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if (empty($dingdingDatas)) return array();
 
+        $webroot = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER["SERVER_PORT"] ;
+
         $content = '';
+        $contents = array();
+        $contentMdIds = array();
         $atMobiles = array();
+        $realnames = array();
         foreach ($dingdingDatas as $e) {
             //消息内容content中要带上"@手机号"，跟atMobiles参数结合使用，才有@效果，如上示例。
-            $content .= "@$e->dingding ($e->realname) 有 $e->total 个待处理或须跟踪的需求\n";
-            if (!empty($e->dingding)) $atMobiles[] = $e->dingding;
+            $str = "@$e->dingding ($e->realname) 有 $e->total 个待处理或须跟踪的需求\n" ;
+            $content .= $str ;
+            $contents[] = $str ;
+
+            $ids = explode(',', $e->ids);
+            $ids_md = '';
+            foreach ($ids as $i=>$id ) {
+                $ids_md .= " [{$id}]({$webroot}/zentao/story-view-{$id}.html)" ;
+                if ( $i>=10 ) {
+                    $ids_md .= " [更多]({$webroot}/zentao/product-browse-1-all-bySearch-myQueryID-requirement.html)" ;
+                    break;
+                }
+            }
+            $contentMdIds[] = $ids_md ;
+
+            $atMobiles[] = '' . $e->dingding;
+            $realnames[] = $e->realname;
         }
 
-        // +需求指派对象
-        if ($product < 0) {
-            $content .= "@PD+@SA";
-        } else if ($product >= 0) {
-            $content .= ($product != 66 ? "@PD" : "@SA");
-        }
-
-        $common->log(json_encode(array('content' => $content, 'atMobiles' => $atMobiles), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-        return array('content' => $content, 'atMobiles' => $atMobiles);
+        $returns = array('content' => $content, 'atMobiles' => $atMobiles, 'realnames' => $realnames, 'contents' => $contents, 'contentMdIds' => $contentMdIds);
+        $common->log(json_encode($returns, JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        return $returns;
     }
 
     /**
