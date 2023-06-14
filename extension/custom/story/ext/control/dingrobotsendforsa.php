@@ -14,7 +14,8 @@ class myStory extends story
      * @access public
      * @return void
      */
-    public function dingRobotSendForSA($url=null, $type='requirement', $product=66, $sla=0)
+    // @Deprecated
+    public function dingRobotSendForSA($url=null, $type='requirement', $product=66, $sla=0, $program = 223, $responseResult = 'todo')
     {
         if (empty($type)){
             $type = 'requirement';
@@ -24,10 +25,16 @@ class myStory extends story
         }
         if (empty($sla)){
             $sla = 0;
+        }        
+        if (empty($program)) {
+            $program = 223;
+        }
+        if (empty($responseResult)) {
+            $responseResult = 'todo';
         }
 
         $common = $this->loadModel('common'); 
-        $common->log(json_encode(array('url'=>$url,'type'=>$type, 'product'=>$product,'sla'=>$sla),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('url'=>$url,'type'=>$type, 'product'=>$product,'sla'=>$sla,'program'=>$program,'responseResult'=>$responseResult),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         
         // //模拟encodeURIComponent
         // echo urlencode(iconv("gbk", "UTF-8", '相当'));
@@ -66,18 +73,40 @@ class myStory extends story
         }
 
         $rows = $this->story->resetAssignedTo( $type, $product);
-        $dingDatas = $this->story->getTextForDing( $type, $product, $sla);
+        $dingDatas = $this->story->getTextForDing( $type, $product, $sla, $program, $responseResult );
         if (empty($dingDatas)) {
             echo '无ding数据';
             return;
         }
 
-        $content = $dingDatas['content'] ;
-        if (strpos($content, '@PD') === false) {
-            $content .= "@PD" ;
+        $msgtype='markdown' ;
+
+        // array('content' => $content, 'atMobiles' => $atMobiles, 'realnames' => $realnames, 'contents' => $contents, 'contentMdIds' => $contentMdIds);
+        $content = $dingDatas['content'];
+        $atMobiles = $dingDatas['atMobiles'];
+        $mdTitle='需求提醒 ';
+
+        // +需求指派对象
+        if ($product < 0) {
+            $content .= "@PD+@SA";
+            $mdTitle .= "@PD+@SA";
+        } else if ($product >= 0) {
+            $content .= ($product != 66 ? "@PD" : "@SA");
+            $mdTitle .= ($product != 66 ? "@PD" : "@SA");
         }
 
-        $str = $common->dingRobotSend($content, $url, $dingDatas['atMobiles']);
+        if ($msgtype=='markdown') {
+            $realnames = $dingDatas['realnames'];
+            $contents = $dingDatas['contents'];
+            $contentMdIds = $dingDatas['contentMdIds'];
+
+            $content = '';
+            foreach ( $atMobiles as $i => $mobile ) {
+                $content .= "- @$mobile($realnames[$i]) **需求集**: $contentMdIds[$i]  \n";
+            }
+        }
+
+        $str = $common->dingRobotSend($content, $url, $atMobiles, $msgtype,  $mdTitle);
         echo $str;
     }
 
