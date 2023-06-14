@@ -1,42 +1,40 @@
 <?php
 
-    /**
-     * Send message
-     *
-     * @param  string $userList
-     * @param  string $message
-     * @access public
-     * @return bool|string
-     */
-    public function sendSignle($accessToken,$robotCode,$userList, $message)
-    {
+/**
+ * Send message
+ *
+ * @param string $userList
+ * @param string $message
+ * @access public
+ * @return bool|string
+ */
+public
+function sendSignle($accessToken, $robotCode, $userList, $message)
+{
 
-        $url = 'https://api.dingtalk.com/v1.0/robot/oToMessages/batchSend';
+    $url = 'https://api.dingtalk.com/v1.0/robot/oToMessages/batchSend';
 
-        $headers = array(
-            'Host: api.dingtalk.com',
-            'x-acs-dingtalk-access-token: ' . $accessToken,
-            'Content-Type: application/json'
-        );
+    $headers = array(
+        'Host: api.dingtalk.com',
+        'x-acs-dingtalk-access-token: ' . $accessToken,
+        'Content-Type: application/json'
+    );
 
-        $data = array(
-            'robotCode' => $robotCode,
-            'userIds' => [$userList],
-            'msgKey' => 'officialMarkdownMsg',
-            'msgParam' => $message
-        );
-        $this->log(json_encode($data), __FILE__, __LINE__);
+    $data = array(
+        'robotCode' => $robotCode,
+        'userIds' => explode(",", $userList),
+        'msgKey' => 'officialMarkdownMsg',
+        'msgParam' => $message
+    );
+    $this->log(json_encode(array('data'=>$data),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
-        $data_string = json_encode($data);
+    $resp = common::http($url, $data, array(), $headers, 'json');
+    $errors   = commonModel::$requestErrors;
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $this->log(json_encode(array('resp'=>$resp, 'errors'=>$errors),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
-        $result = curl_exec($ch);
-        curl_close($ch);
 
-        return $result;
-    }
+    if($resp) return array('result' => 'success');
+    return array('result' => 'fail', 'message' => $errors);
+
+}
