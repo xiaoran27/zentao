@@ -10,9 +10,10 @@
      * @access public
      * @return string
      */
-    public function dingRobotSend($text, $webhook_url, $mobiles=array())
+    public function dingRobotSend($text, $webhook_url, $mobiles=array(), $msgtype='text', $mdTitle='通知')
     {
-        $this->log(json_encode(array('text' => $text, 'webhook_url' => $webhook_url, 'mobiles' => $mobiles) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $mobiles = array_unique($mobiles);
+        $this->log(json_encode(array('text' => $text, 'webhook_url' => $webhook_url, 'mobiles' => $mobiles, 'msgtype' => $msgtype, 'mdTitle' => $mdTitle) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         
         $err = 'OK';
         if (empty($webhook_url)) {
@@ -30,12 +31,25 @@
         
         $url = $webhook_url;
         $headers = array('Content-Type' => 'application/json','Accept' => 'application/json');
-        $data = array(
-            "msgtype"=>"text",
-            "text"=>array( "content"=>$text),
-            "at"=>array( "atMobiles"=>$mobiles)
-        );
+        $data = array();
+
+        if ($msgtype=='markdown'){
+            $markdown = array( "title"=>$mdTitle,"text"=>$text);
+            $data = array(
+                "msgtype"=>"markdown",
+                "markdown"=>$markdown,
+                "at"=>array( "atMobiles"=>$mobiles)
+            );
+        }else{
+            $data = array(
+                "msgtype"=>"text",
+                "text"=>array( "content"=>$text),
+                "at"=>array( "atMobiles"=>$mobiles)
+            );
+        }
         if (!empty($mobiles)) $data["at"]["isAll"] = true ;
+
+
         // $this->log(json_encode($data,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         $json_data = json_encode($data ,JSON_UNESCAPED_UNICODE);
         $this->log($json_data, __FILE__, __LINE__);
