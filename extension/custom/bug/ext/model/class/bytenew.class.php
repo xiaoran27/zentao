@@ -232,7 +232,8 @@ class bytenewBug extends BugModel
         if (!empty($openedBy)) {
             $account = $this->app->user->account ; 
             $bug->mailto = empty($bug->mailto)?$account:($account.','.$bug->mailto) ;
-            $bug->feedbackBy =  empty($bug->feedbackBy)?$account:($account.','.$bug->feedbackBy) ;
+            $realname = $this->app->user->realname . '('.$account.')'; 
+            $bug->feedbackBy =  empty($bug->feedbackBy)?$realname:($realname.','.$bug->feedbackBy) ;
         }
 
         $this->dao->insert(TABLE_BUG)->data($bug)
