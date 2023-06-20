@@ -10,10 +10,11 @@ class myBug extends bug
      * @param  int    $productID
      * @param  string $branch
      * @param  string $extras       others params, forexample, executionID=10,moduleID=10
+     * @param  string $openedBy   创建人
      * @access public
      * @return void
      */
-    public function create($productID, $branch = '', $extras = '')
+    public function create($productID, $branch = '', $extras = '', $openedBy='')
     {
         if(empty($this->products)) $this->locate($this->createLink('product', 'create'));
 
@@ -62,7 +63,7 @@ class myBug extends bug
 
             /* Set from param if there is a object to transfer bug. */
             setcookie('lastBugModule', (int)$this->post->module, $this->config->cookieLife, $this->config->webRoot, '', $this->config->cookieSecure, false);
-            $bugResult = $this->bug->create('', $extras);
+            $bugResult = $this->bug->create('', $extras, $openedBy);
             if(!$bugResult or dao::isError())
             {
                 $response['result']  = 'fail';

@@ -188,17 +188,18 @@ class bytenewBug extends BugModel
      *
      * @param  string $from   object that is transfered to bug.
      * @param  string $extras.
+     * @param  string $openedBy   创建人
      * @access public
      * @return array|bool
      */
-    public function create($from = '', $extras = '')
+    public function create($from = '', $extras = '', $openedBy='')
     {
         $extras = str_replace(array(',', ' '), array('&', ''), $extras);
         parse_str($extras, $output);
 
         $now = helper::now();
         $bug = fixer::input('post')
-            ->setDefault('openedBy', $this->app->user->account)
+            ->setDefault('openedBy', empty($openedBy)?$this->app->user->account: $openedBy) 
             ->setDefault('openedDate', $now)
             ->setDefault('project,execution,story,task', 0)
             ->setDefault('openedBuild', '')
@@ -226,6 +227,13 @@ class bytenewBug extends BugModel
         if($result and $result['stop']) return array('status' => 'exists', 'id' => $result['duplicate']);
 
         $bug = $this->loadModel('file')->processImgURL($bug, $this->config->bug->editor->create['id'], $this->post->uid);
+
+        // 创建人追加到CC和反馈人中
+        if (!empty($openedBy)) {
+            $account = $this->app->user->account ; 
+            $bug->mailto = empty($bug->mailto)?$account:($account.','.$bug->mailto) ;
+            $bug->feedbackBy =  empty($bug->feedbackBy)?$account:($account.','.$bug->feedbackBy) ;
+        }
 
         $this->dao->insert(TABLE_BUG)->data($bug)
             ->autoCheck()
