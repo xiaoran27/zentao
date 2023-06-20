@@ -125,10 +125,14 @@ class bytenewStory extends StoryModel
         if (empty($IDs)) return array();
 
         $datas = array();
+        $datas['updateRows'] = 0 ;
+        $updateRows = 0;
         foreach ($IDs as $e) {
             $data = $this->updateRequirementStatusStageByStoryID($e->id);
             $datas["SR{$e->id}"] = $data;
+            if ( $data['updateRows'] ) $updateRows ++;
         }
+        $datas['updateRows'] = $updateRows ;
 
         return $datas;
 
@@ -154,6 +158,7 @@ class bytenewStory extends StoryModel
 
         $requirements = array();
         $requirements["story-id"] = $storyID;
+        $updateRows = 0 ;
         foreach ($IDs as $requirementID) {
             // select zs.status as status,zs.stage as stage from zt_story zs
             //  join zt_relation zr on ( zr.atype='requirement' and zs.id = zr.bid )
@@ -256,6 +261,7 @@ class bytenewStory extends StoryModel
             // update zt_story set bizProject='', status='',stage='',closedDate='',planReleaseDate='' where deleted  = '0' and id = 103
             $rows = $this->dao->update(TABLE_STORY)->beginIF(!empty($bizProject))->set("bizProject")->eq($bizProject)->fi()->set('status')->eq($status)->set('stage')->eq($stage)->beginIF(!helper::isZeroDate($closedDate))->set('closedDate')->eq($closedDate)->fi()->beginIF(!helper::isZeroDate($planReleaseDate))->set("planReleaseDate")->eq($planReleaseDate)->fi()->where('id')->eq($requirementID->id)->exec();
             $requirements["{$requirementID->id}"]["rows"] = $rows;
+            $updateRows ++;
 
 
             $common->log(json_encode(array('dao::isError()' => dao::isError(), 'requirementID' => $requirementID, 'statusAll' => $statusAll, 'stageAll' => $stageAll, 'status' => $status, 'stage' => $stage), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
@@ -266,6 +272,7 @@ class bytenewStory extends StoryModel
             }
 
         }
+        $requirements['updateRows'] = $updateRows;
 
         $common->log(json_encode(array('storyID' => $storyID, 'requirements' => $requirements), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         return $requirements;
