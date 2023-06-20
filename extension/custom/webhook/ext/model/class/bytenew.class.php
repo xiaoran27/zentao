@@ -2,6 +2,95 @@
 
 class bytenewWebhook extends webhookModel
 {
+
+    
+    /**
+     * Build data.
+     *
+     * @param  string $objectType
+     * @param  int    $objectID
+     * @param  string $actionType
+     * @param  int    $actionID
+     * @param  object $webhook
+     * @access public
+     * @return string
+     */
+    public function buildData($objectType, $objectID, $actionType, $actionID, $webhook)
+    {
+        /* Validate data. */
+        if(!isset($this->lang->action->label)) $this->loadModel('action');
+        if(!isset($this->lang->action->label->$actionType)) return false;
+        if(empty($this->config->objectTables[$objectType])) return false;
+        $action = $this->dao->select('*')->from(TABLE_ACTION)->where('id')->eq($actionID)->fetch();
+
+        if($webhook->products)
+        {
+            $webhookProducts = explode(',', trim($webhook->products, ','));
+            $actionProduct   = explode(',', trim($action->product, ','));
+            $intersect       = array_intersect($webhookProducts, $actionProduct);
+            if(!$intersect) return false;
+        }
+        if($webhook->executions)
+        {
+            if(strpos(",$webhook->executions,", ",$action->execution,") === false) return false;
+        }
+
+        static $users = array();
+        if(empty($users)) $users = $this->loadModel('user')->getList();
+
+        $object         = $this->dao->select('*')->from($this->config->objectTables[$objectType])->where('id')->eq($objectID)->fetch();
+        $field          = $this->config->action->objectNameFields[$objectType];
+        $host           = empty($webhook->domain) ? common::getSysURL() : $webhook->domain;
+        $viewLink       = $this->getViewLink($objectType == 'kanbancard' ? 'kanban' : $objectType, $objectType == 'kanbancard' ? $object->kanban : $objectID);
+        $objectTypeName = ($objectType == 'story' and $object->type == 'requirement') ? $this->lang->action->objectTypes['requirement'] : $this->lang->action->objectTypes[$objectType];
+        // 据$action->actor判断：用登录用户or定时用户(system)
+        $title          = ($this->app->user->account == $action->actor?$this->app->user->realname:$action->actor) . $this->lang->action->label->$actionType . $objectTypeName;
+        // 同一个微应用相同消息内容同一个用户一天只能接收一次，重复发送会发送成功但用户接收不到。详见: https://www.dingtalk.com/qidian/help-detail-1060243472.html
+        $title          .=   ('('.$action->date.')') ;
+        $host           = (defined('RUN_MODE') and RUN_MODE == 'api') ? '' : $host;
+        $text           = $title . ' ' . "[#{$objectID}::{$object->$field}](" . $host . $viewLink . ")";
+
+        $mobile = '';
+        $email  = '';
+        if(in_array($objectType, $this->config->webhook->needAssignTypes) && !empty($object->assignedTo))
+        {
+            foreach($users as $user)
+            {
+                if($user->account == $object->assignedTo)
+                {
+                    $mobile = $user->mobile;
+                    $email  = $user->email;
+                    break;
+                }
+            }
+        }
+        $action->text = $text;
+
+        if($webhook->type == 'dinggroup' or $webhook->type == 'dinguser'  or $webhook->type == 'dingsingleuser')
+        {
+            $data = $this->getDingdingData($title, $text, ( $webhook->type == 'dinguser'  || $webhook->type == 'dingsingleuser' ) ? '' : $mobile);
+        }
+        elseif($webhook->type == 'bearychat')
+        {
+            $data = $this->getBearychatData($text, $mobile, $email, $objectType, $objectID);
+        }
+        elseif($webhook->type == 'wechatgroup' or $webhook->type == 'wechatuser')
+        {
+            $data = $this->getWeixinData($title, $text, $mobile);
+        }
+        elseif($webhook->type == 'feishuuser' or $webhook->type == 'feishugroup')
+        {
+            $data = $this->getFeishuData($title, $text);
+        }
+        else
+        {
+            $data = new stdclass();
+            foreach(explode(',', $webhook->params) as $param) $data->$param = $action->$param;
+        }
+
+        return json_encode($data,JSON_UNESCAPED_UNICODE);   // 解决log的中文问题
+    }
+
     /**
      * Post hook data.
      *
