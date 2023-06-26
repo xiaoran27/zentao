@@ -22,6 +22,7 @@ class bytenewWebhook extends webhookModel
         if(!isset($this->lang->action->label->$actionType)) return false;
         if(empty($this->config->objectTables[$objectType])) return false;
         $action = $this->dao->select('*')->from(TABLE_ACTION)->where('id')->eq($actionID)->fetch();
+        if ( $action->actor=='system' )  return false;  // 忽略system的修改
 
         if($webhook->products)
         {
@@ -88,6 +89,7 @@ class bytenewWebhook extends webhookModel
             foreach(explode(',', $webhook->params) as $param) $data->$param = $action->$param;
         }
 
+        
         return json_encode($data,JSON_UNESCAPED_UNICODE);   // 解决log的中文问题
     }
 
