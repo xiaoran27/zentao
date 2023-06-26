@@ -174,7 +174,7 @@ class myCron extends cron
 
             /* Break while. */
             if('cli' !== PHP_SAPI && connection_status() != CONNECTION_NORMAL) break;
-            if(((time() - $startedTime) / 3600 / 24) >= $this->config->cron->maxRunDays) break;
+            // if(((time() - $startedTime) / 3600 / 24) >= $this->config->cron->maxRunDays) break;  //  cron去除运行天数的限制
         }
 
         /* Revert cron status to stop. */
