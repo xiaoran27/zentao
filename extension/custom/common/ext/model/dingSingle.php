@@ -26,7 +26,7 @@ function sendSignle($accessToken, $robotCode, $userList, $message)
         'msgKey' => 'officialMarkdownMsg',
         'msgParam' => $message
     );
-    $this->log(json_encode(array('data'=>$data),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+    $this->log(json_encode(array('url'=>$url,'headers'=>$headers,'data'=>$data),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
     $resp = common::http($url, $data, array(), $headers, 'json');
     $errors   = commonModel::$requestErrors;
