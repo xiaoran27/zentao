@@ -67,9 +67,15 @@ class bytenewWebhook extends webhookModel
         }
         $action->text = $text;
 
-        if($webhook->type == 'dinggroup' or $webhook->type == 'dinguser'  or $webhook->type == 'dingsingleuser')
+        if($webhook->type == 'dinggroup' or $webhook->type == 'dinguser'  )
         {
-            $data = $this->getDingdingData($title, $text, ( $webhook->type == 'dinguser'  || $webhook->type == 'dingsingleuser' ) ? '' : $mobile);
+            $data = $this->getDingdingData($title, $text, ( $webhook->type == 'dinguser'  ) ? '' : $mobile);
+        }
+        elseif($webhook->type == 'dingsingleuser')  // 钉钉单聊markdown消息
+        {
+            $data = new stdclass();
+            $data->title = $title;
+            $data->text  = $text;
         }
         elseif($webhook->type == 'bearychat')
         {
