@@ -183,7 +183,7 @@
         $where .=" ))";
         $where  = $this->replaceDynamic($where);
 
-        $this->loadModel('common')->log($where, __FILE__, __LINE__);
+        $this->loadModel('common')->log('===where==='.$where, __FILE__, __LINE__);
 
         /* Save to session. */
         $querySessionName = $this->post->module . 'Query';
