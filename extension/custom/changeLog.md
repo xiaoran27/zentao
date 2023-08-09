@@ -1,10 +1,32 @@
 [toc]
 
+#  rel230809
+## changed:
+
+1. 添加prd内容审核时间&发布时间字段
+
+
+#  rel230628
+
+## changed:
+
+1. bug创建人可以由参数指定
+3. cron去除运行天数的限制
+
+
+## fixed:
+
+1. 解决同步星链时code变化关联数据跟随的问题([#19384](https://chandao.bytenew.com/zentao/bug-view-19384.html))
+2. helper::isZeroDate 判断空日期
+3. 定制buildData的通知信息(钉钉单聊markdown消息)
+
+
 #  rel230613
 
 ## changed:
 
 1. webhook支持钉钉单聊通知
+1. 需求通知改为markdown消息
 
 ## fixed:
 
@@ -12,6 +34,7 @@
 2. 同步星链允许30s误差，解决名称不同但pinyin相同的缺陷
 3. helper::isZeroDate 判断空日期
 4. 需求的项目下拉选项([#20008](https://chandao.bytenew.com/zentao/bug-view-20008.html))
+
 
 
 #  rel230525
