@@ -207,3 +207,10 @@ ALTER TABLE zt_project ADD contractNo VARCHAR(30) NULL comment '合同编号';
 ALTER TABLE zt_project ADD devEvaluate int NULL comment '产研评估人天';
 
 -- sql.end.banniu_rel230505
+
+-- sql.start.banniu_rel20230807
+
+alter table zt_story add prdReviewTime datetime null comment 'prd内容审核时间';
+alter table zt_story add releaseTime datetime null comment '发布时间';
+
+-- sql.end.banniu_rel20230807

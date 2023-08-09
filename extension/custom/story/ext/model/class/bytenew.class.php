@@ -51,7 +51,7 @@ class bytenewStory extends StoryModel
                 ->where('id')->eq($task->task_story)
                 ->fetch();
             $stories["{$task->task_story}"]["story"] = $story;
-            if (empty($story) || ( !helper::isZeroDate($story->rspAcceptTime) && $story->rspAcceptTime <= $task->task_startedDate)) continue;
+            if (empty($story) || (!helper::isZeroDate($story->rspAcceptTime) && $story->rspAcceptTime <= $task->task_startedDate)) continue;
 
 
             // update zt_story set rspAcceptTime=task_startedDate where deleted  = '0' and id = 103
@@ -125,14 +125,14 @@ class bytenewStory extends StoryModel
         if (empty($IDs)) return array();
 
         $datas = array();
-        $datas['updateRows'] = 0 ;
+        $datas['updateRows'] = 0;
         $updateRows = 0;
         foreach ($IDs as $e) {
             $data = $this->updateRequirementStatusStageByStoryID($e->id);
             $datas["SR{$e->id}"] = $data;
-            if ( $data['updateRows'] ) $updateRows ++;
+            if ($data['updateRows']) $updateRows++;
         }
-        $datas['updateRows'] = $updateRows ;
+        $datas['updateRows'] = $updateRows;
 
         return $datas;
 
@@ -158,12 +158,12 @@ class bytenewStory extends StoryModel
 
         $requirements = array();
         $requirements["story-id"] = $storyID;
-        $updateRows = 0 ;
+        $updateRows = 0;
         foreach ($IDs as $requirementID) {
             // select zs.status as status,zs.stage as stage from zt_story zs
             //  join zt_relation zr on ( zr.atype='requirement' and zs.id = zr.bid )
             // where zs.deleted  = '0'  and zs.status  != 'draft'  and zr.aid = 103
-            $storyValues = $this->dao->select("zs.id as id, zs.status as status,zs.stage as stage,zs.closedDate as closedDate,zs.planReleaseDate as planReleaseDate,bizProject as bizProject,lastEditedDate as lastEditedDate")->from(TABLE_STORY)->alias('zs')
+            $storyValues = $this->dao->select("zs.id as id, zs.status as status,zs.stage as stage,zs.closedDate as closedDate,zs.planReleaseDate as planReleaseDate,bizProject as bizProject,lastEditedDate as lastEditedDate,prdReviewTime as prdReviewTime,releaseTime as releaseTime")->from(TABLE_STORY)->alias('zs')
                 ->leftJoin(TABLE_RELATION)->alias('zr')->on("zr.atype='requirement' and zs.id = zr.bid")
                 ->where('zs.deleted')->eq(0)->andWhere('zs.status')->ne('draft')->andWhere('zr.aid')->eq($requirementID->id)
                 ->fetchAll();
@@ -178,6 +178,8 @@ class bytenewStory extends StoryModel
             $planReleaseDate = "";
             $bizProject = "";
             $lastEditedDate = "";
+            $prdReviewTime = "";
+            $releaseTime = "";
             // https://banniu.yuque.com/staff-dmhmqa/selgla/rk2yoi3ia8kdltfh?singleDoc# 《禅道需求与所处阶段》
             foreach ($storyValues as $e) {
                 $statusAll .= "$e->status,";
@@ -199,6 +201,16 @@ class bytenewStory extends StoryModel
                         $lastEditedDate = $e->lastEditedDate;
                         $bizProject = $e->bizProject;
                     }
+                }
+                if (empty($prdReviewTime) and !helper::isZeroDate($e->prdReviewTime)) {
+                    $prdReviewTime = "$e->prdReviewTime";
+                } elseif (!helper::isZeroDate($e->prdReviewTime) and $e->prdReviewTime > $prdReviewTime) {
+                    $prdReviewTime = "$e->prdReviewTime";
+                }
+                if (empty($releaseTime) and !helper::isZeroDate($e->releaseTime)) {
+                    $releaseTime = "$e->releaseTime";
+                } elseif (!helper::isZeroDate($e->releaseTime) and $e->releaseTime > $releaseTime) {
+                    $releaseTime = "$e->releaseTime";
                 }
 
             }
@@ -245,23 +257,27 @@ class bytenewStory extends StoryModel
             $requirements["{$requirementID->id}"]["closedDate"] = $closedDate;
             $requirements["{$requirementID->id}"]["planReleaseDate"] = $planReleaseDate;
             $requirements["{$requirementID->id}"]["bizProject"] = $bizProject;
-            $requirement = $this->dao->select("id,status,stage,closedDate,planReleaseDate,bizProject")->from(TABLE_STORY)
+            $requirements["{$requirementID->id}"]["prdReviewTime"] = $prdReviewTime;
+            $requirements["{$requirementID->id}"]["releaseTime"] = $releaseTime;
+            $requirement = $this->dao->select("id,status,stage,closedDate,planReleaseDate,bizProject,prdReviewTime,releaseTime")->from(TABLE_STORY)
                 ->where('deleted')->eq(0)->andWhere('id')->eq($requirementID->id)
 //                ->andWhere('status')->eq($status)->andWhere('stage')->eq($stage)
                 ->fetch();
 
             if (!empty($requirement) and $status == $requirement->status and $stage == $requirement->stage
-                and (helper::isZeroDate($closedDate) or $closedDate == $requirement->closedDate ) 
-                and (helper::isZeroDate($planReleaseDate) or $planReleaseDate == $requirement->planReleaseDate )
-                and (empty($e->bizProject) or $bizProject == $requirement->bizProject )
-                ) {
+                and (helper::isZeroDate($closedDate) or $closedDate == $requirement->closedDate)
+                and (helper::isZeroDate($planReleaseDate) or $planReleaseDate == $requirement->planReleaseDate)
+                and (empty($e->bizProject) or $bizProject == $requirement->bizProject)
+                and (empty($e->prdReviewTime) or $prdReviewTime == $$requirement->prdReviewTime)
+                and (empty($e->releaseTime) or $prdReviewTime == $$requirement->releaseTime)
+            ) {
                 $requirements["{$requirementID->id}"]["old"] = $requirement;
                 continue;
             }
             // update zt_story set bizProject='', status='',stage='',closedDate='',planReleaseDate='' where deleted  = '0' and id = 103
-            $rows = $this->dao->update(TABLE_STORY)->beginIF(!empty($bizProject))->set("bizProject")->eq($bizProject)->fi()->set('status')->eq($status)->set('stage')->eq($stage)->beginIF(!helper::isZeroDate($closedDate))->set('closedDate')->eq($closedDate)->fi()->beginIF(!helper::isZeroDate($planReleaseDate))->set("planReleaseDate")->eq($planReleaseDate)->fi()->where('id')->eq($requirementID->id)->exec();
+            $rows = $this->dao->update(TABLE_STORY)->beginIF(!empty($prdReviewTime))->set("prdReviewTime")->eq($prdReviewTime)->fi()->beginIF(!empty($releaseTime))->set("releaseTime")->eq($releaseTime)->fi()->beginIF(!empty($bizProject))->set("bizProject")->eq($bizProject)->fi()->set('status')->eq($status)->set('stage')->eq($stage)->beginIF(!helper::isZeroDate($closedDate))->set('closedDate')->eq($closedDate)->fi()->beginIF(!helper::isZeroDate($planReleaseDate))->set("planReleaseDate")->eq($planReleaseDate)->fi()->where('id')->eq($requirementID->id)->exec();
             $requirements["{$requirementID->id}"]["rows"] = $rows;
-            $updateRows ++;
+            $updateRows++;
 
 
             $common->log(json_encode(array('dao::isError()' => dao::isError(), 'requirementID' => $requirementID, 'statusAll' => $statusAll, 'stageAll' => $stageAll, 'status' => $status, 'stage' => $stage), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
@@ -361,7 +377,7 @@ class bytenewStory extends StoryModel
         $common->log(json_encode(array('dingdingDatas' => $dingdingDatas), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if (empty($dingdingDatas)) return array();
 
-        $webroot = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER["SERVER_PORT"] ;
+        $webroot = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER["SERVER_PORT"];
 
         $content = '';
         $contents = array();
@@ -370,20 +386,20 @@ class bytenewStory extends StoryModel
         $realnames = array();
         foreach ($dingdingDatas as $e) {
             //消息内容content中要带上"@手机号"，跟atMobiles参数结合使用，才有@效果，如上示例。
-            $str = "@$e->dingding ($e->realname) 有 $e->total 个待处理或须跟踪的需求\n" ;
-            $content .= $str ;
-            $contents[] = $str ;
+            $str = "@$e->dingding ($e->realname) 有 $e->total 个待处理或须跟踪的需求\n";
+            $content .= $str;
+            $contents[] = $str;
 
             $ids = explode(',', $e->ids);
             $ids_md = '';
-            foreach ($ids as $i=>$id ) {
-                $ids_md .= " [{$id}]({$webroot}/zentao/story-view-{$id}.html)" ;
-                if ( $i>=10 ) {
-                    $ids_md .= " [更多]({$webroot}/zentao/product-browse-1-all-bySearch-myQueryID-requirement.html)" ;
+            foreach ($ids as $i => $id) {
+                $ids_md .= " [{$id}]({$webroot}/zentao/story-view-{$id}.html)";
+                if ($i >= 10) {
+                    $ids_md .= " [更多]({$webroot}/zentao/product-browse-1-all-bySearch-myQueryID-requirement.html)";
                     break;
                 }
             }
-            $contentMdIds[] = $ids_md ;
+            $contentMdIds[] = $ids_md;
 
             $atMobiles[] = '' . $e->dingding;
             $realnames[] = $e->realname;
@@ -5520,6 +5536,12 @@ class bytenewStory extends StoryModel
                     break;
                 case 'rspRejectTime':
                     echo helper::isZeroDate($story->rspRejectTime) ? '' : substr($story->rspRejectTime, 5, 11);
+                    break;
+                case 'prdReviewTime':
+                    echo helper::isZeroDate($story->prdReviewTime) ? '' : substr($story->prdReviewTime, 5, 5);
+                    break;
+                case 'releaseTime';
+                    echo helper::isZeroDate($story->releaseTime) ? '' : substr($story->releaseTime, 5, 5);
                     break;
                 case 'asort':
                     echo $story->asort;

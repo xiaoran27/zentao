@@ -368,6 +368,14 @@ js::set('bizProjectList', $bizProjectList);
                   <th><?php echo $lang->story->sourceNote;?></th>
                   <td><?php echo $story->sourceNote;?></td>
                 </tr>
+                <tr id='prdReviewTimeBox'>
+                    <th><?php echo $lang->story->prdReviewTime;?></th>
+                    <td><?php echo helper::isZeroDate($story->prdReviewTime) ? '' : substr($story->prdReviewTime, 0, 10);?></td>
+                </tr>
+                <tr id='releaseTimeBox'>
+                    <th><?php echo $lang->story->releaseTime;?></th>
+                    <td><?php echo helper::isZeroDate($story->releaseTime) ? '' : substr($story->releaseTime, 0, 10);?></td>
+                </tr>
                 <tr>
                   <th><?php echo $lang->story->status;?></th>
                   <td><span class='status-story status-<?php echo $story->status?>'><span class="label label-dot"></span> <?php echo $this->processStatus('story', $story);?></span></td>
