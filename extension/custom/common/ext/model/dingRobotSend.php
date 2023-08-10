@@ -47,7 +47,7 @@
                 "at"=>array( "atMobiles"=>$mobiles)
             );
         }
-        if (!empty($mobiles)) $data["at"]["isAll"] = true ;
+        if (empty($mobiles)) $data["at"]["isAll"] = true ;
 
 
         // $this->log(json_encode($data,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);

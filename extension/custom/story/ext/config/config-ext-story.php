@@ -2,6 +2,10 @@
 
 global $lang, $app;
 
+# $config->story->baseurl="http://127.0.0.1:8081/zentao/";
+# $config->story->baseurl="http://47.92.142.215:30080/zentao/";
+$config->story->baseurl = "https://chandao.bytenew.com/zentao/";
+
 // 配置ding群配置的Robot的webhook
 $config->story->url['dingRobotSend'] = 'https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27';
 $config->story->url['dingRobotSendPD'] = 'https://oapi.dingtalk.com/robot/send?access_token=342307906f8961af0690bf236e240de4dc40a7f3eb18401766669681ee7e6a27';
