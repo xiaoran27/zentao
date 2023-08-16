@@ -33,6 +33,9 @@
         $headers = array('Content-Type' => 'application/json','Accept' => 'application/json');
         $data = array();
 
+        // fixed: 生产环境(php7.0)输出的是(k,v)
+        $mobiles = array_values($mobiles);
+
         if ($msgtype=='markdown'){
             $markdown = array( "title"=>$mdTitle,"text"=>$text);
             $data = array(
