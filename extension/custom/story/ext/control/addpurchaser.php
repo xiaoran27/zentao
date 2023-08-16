@@ -16,8 +16,15 @@ class myStory extends story
     {
         // $this->loadModel('common')->log('addPurchaser name=' . json_encode($name,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
-        $id = $this->story->addPurchaser($name,$code,$category);
-        echo json_encode((array('result' => ($id>0?'success':'failure'), 'name' => $name, 'id' => $id, 'category' => $category)) ,JSON_UNESCAPED_UNICODE );
+        $data = $this->story->addPurchaser($name,$code,$category);
+        $type = gettype ($data);
+        if ( $type == 'integer' ){
+            $id = $data;
+        }else{
+            $id = $data->ID;
+        }
+
+        echo json_encode((array('result' => ($id>0?'success':'failure'), 'name' => $name, 'id' => $id, 'category' => $category, 'data'=>$data)) ,JSON_UNESCAPED_UNICODE );
         // return $this->send(array('result' => ($id>0?'success':'failure'), 'message' => 'name=' . $name, 'id' => $id));
         
     }

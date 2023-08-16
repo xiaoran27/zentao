@@ -730,7 +730,7 @@ class bytenewStory extends StoryModel
      * @access public
      * @return void
      */
-    public function addPurchaser($name, $code = '', $category = 'B100')
+    public function addPurchaser($name, $code = '', $category = 'B500')
     {
         $line = new stdClass();
         $line->name = $name;
@@ -751,13 +751,44 @@ class bytenewStory extends StoryModel
         }
 
         static $TABLE_PURCHASER = 'zt_purchaser';
+
+        //  名字相同就更新: code不同用简拼, 否则用全拼
+        $purchaserRows = $this->dao->select("*")->from($TABLE_PURCHASER)->where('name')->eq($line->name)->orWhere('code')->eq($line->code)->fetchAll();
+        if (sizeof($purchaserRows) > 0 ){
+            $purchaser = $purchaserRows[0] ;
+            if (sizeof($purchaserRows) > 1 ){
+                $common->log(" Duplicate: " . json_encode($purchaserRows,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                if ( $purchaserRows[1]->name == $line->name ){
+                    $purchaser = $purchaserRows[1] ;
+                    $line->code = $common->pinyin($line->name, true);  //  全拼
+                }
+            }
+
+            $purchaser->code0 = $purchaser->code;
+            $purchaser->category0 = $purchaser->category;
+            $purchaser->code = $line->code;
+            $purchaser->category = $line->category;
+            $purchaser->modifier = $this->app->user->account;
+
+            $this->dao->update($TABLE_PURCHASER)->data($purchaser,"code0,category0")->where('ID')->eq($purchaser->ID)->exec();
+            if( dao::isError() )
+            {
+                $common->log("Fail to UPD $TABLE_PURCHASER :" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                return -2;
+            }else{
+                $common->log(json_encode($purchaser, JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                return $purchaser;
+            }
+        }
+
+
         $this->dao->insert($TABLE_PURCHASER)->data($line)->exec();
         if (!dao::isError()) {
-            $line->lineID = $this->dao->lastInsertID();
+            $line->ID = $this->dao->lastInsertID();
         }
         $common->log(json_encode($line, JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
-        return $line->lineID;
+        return $line;
     }
 
 
