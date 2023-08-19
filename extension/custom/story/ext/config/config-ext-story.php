@@ -2,6 +2,10 @@
 
 global $lang, $app;
 
+# 钉钉通知过滤的人员，支持钉钉手机号、禅道account、禅道realname
+$config->story->excludeUsers = '13788992292,xique,喜鹊';
+
+# Deprecated
 # $config->story->baseurl="http://127.0.0.1:8081/zentao/";
 # $config->story->baseurl="http://47.92.142.215:30080/zentao/";
 $config->story->baseurl = "https://chandao.bytenew.com/zentao/";
