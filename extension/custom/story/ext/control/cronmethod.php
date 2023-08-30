@@ -32,10 +32,10 @@ class myStory extends story
      * @access public
      * @return void
      */
-    public function updateRequirementStatusStage($days = 1)
+    public function updateRequirementStatusStage($days = 1, $reject = 3, $research = 30, $suspend = 30)
     {
  
-        $data = $this->story->updateRequirementStatusStage($days);
+        $data = $this->story->updateRequirementStatusStage($days,$reject,$research,$suspend);
         echo json_encode((array('result' => 'success', 'data' => $data, 'days' => $days)) ,JSON_UNESCAPED_UNICODE );
         // return $this->send(array('result' => 'success', 'data' => $data, 'days' => $days));
         

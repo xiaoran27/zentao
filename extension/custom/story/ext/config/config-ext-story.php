@@ -3,7 +3,7 @@
 global $lang, $app;
 
 # 钉钉通知过滤的人员，支持钉钉手机号、禅道account、禅道realname
-$config->story->excludeUsers = '13788992292,xique,喜鹊';
+$config->story->excludeUsers = '熊二,鹰隼,尼莫,曼尼,凤凰,三青,雪狼';
 
 # Deprecated
 # $config->story->baseurl="http://127.0.0.1:8081/zentao/";
@@ -29,7 +29,7 @@ $config->story->purchasers = array_keys($lang->story->purchaserList);
 $config->story->prLevels = array_keys($lang->story->prLevelList);
 
 
-$config->story->create->requiredFields = 'product,title,prCategory';
+$config->story->create->requiredFields = 'product,title,prCategory,mailto';
 $config->story->edit->requiredFields = 'product,title,prCategory';
 $config->story->change->requiredFields = 'product,title,prCategory';
 
@@ -165,3 +165,13 @@ $config->story->datatable->fieldList['scoreNum']['title'] = 'scoreNum';
 $config->story->datatable->fieldList['scoreNum']['fixed'] = 'left';
 $config->story->datatable->fieldList['scoreNum']['width'] = '40';
 $config->story->datatable->fieldList['scoreNum']['required'] = 'no';
+$config->story->datatable->fieldList['workType']['title'] = 'workType';
+$config->story->datatable->fieldList['workType']['fixed'] = 'left';
+$config->story->datatable->fieldList['workType']['width'] = '50';
+$config->story->datatable->fieldList['workType']['required'] = 'no';
+$config->product->search['fields']['workType']     = $lang->story->workType;
+$config->product->search['params']['workType']     = array('operator' => '=', 'control' => 'multi-select', 'values' => (array(''=>'')+$lang->story->workTypeList) );
+$config->product->search['fields']['prdReviewTime']     = $lang->story->prdReviewTime;
+$config->product->search['params']['prdReviewTime']     = array('operator' => '=', 'control' => 'input', 'values' => '', 'class' => 'date');
+$config->product->search['fields']['releaseTime']     = $lang->story->releaseTime;
+$config->product->search['params']['releaseTime']     = array('operator' => '=', 'control' => 'input', 'values' => '', 'class' => 'date');

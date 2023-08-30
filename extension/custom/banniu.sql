@@ -214,3 +214,62 @@ alter table zt_story add prdReviewTime datetime null comment 'prd内容审核时
 alter table zt_story add releaseTime datetime null comment '发布时间';
 
 -- sql.end.banniu_rel20230807
+
+-- sql.start.banniu_rel20230811
+
+-- 忽略 zentao.tri_story_bu
+
+-- sql.end.banniu_rel20230811
+
+
+-- sql.start.banniu_rel20230818
+
+-- 忽略 zentao.tri_story_bu
+
+-- sql.end.banniu_rel20230818
+
+
+-- sql.start.banniu_rel20230824
+alter table zt_story add workType varchar(255) null comment '工时类型';
+
+-- sql.end.banniu_rel20230824
+
+-- sql.start.banniu_rel20230830
+
+DROP TRIGGER IF EXISTS zentao.tri_story_bu;
+CREATE TRIGGER tri_story_bu BEFORE UPDATE ON zt_story FOR EACH ROW
+BEGIN
+  IF( old.rspRecievedTime is null and ( 'recieved' = new.responseResult or 'suspend' = new.responseResult )  ) THEN
+    SET new.rspRecievedTime=now();
+  ELSEIF( old.rspResearchTime is null and  'research' = new.responseResult  ) THEN
+    SET new.rspResearchTime=now();
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspResearchTime);
+  ELSEIF( old.rspRejectTime is null and 'reject' = new.responseResult  ) THEN
+    SET new.rspRejectTime=now();
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspRejectTime);
+    set new.rspResearchTime=ifnull(old.rspResearchTime, new.rspRejectTime);
+    
+    set new.prdReviewTime=ifnull(old.prdReviewTime, new.rspRejectTime);
+    set new.releaseTime=ifnull(old.releaseTime, new.rspRejectTime);
+  ELSEIF( old.rspAcceptTime is null and 'accept' = new.responseResult ) THEN
+    SET new.rspAcceptTime=now();
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspAcceptTime);
+    set new.rspResearchTime=ifnull(old.rspResearchTime, new.rspAcceptTime);
+  ELSEIF( old.rspAcceptTime is null and 'prd' = new.responseResult ) THEN
+    SET new.rspAcceptTime=now();
+    SET new.prdReviewTime=ifnull(old.prdReviewTime, new.rspAcceptTime);
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspAcceptTime);
+  ELSEIF( 'prd' = new.responseResult ) THEN
+    SET new.prdReviewTime=now();
+  ELSEIF( 'closed' = new.status or new.stage in ('verified', 'released', 'closed') ) THEN
+    set new.releaseTime=ifnull(old.releaseTime, ifnull(new.releaseTime, now()));
+    if ( ifnull(old.assignedTo,'') != '' and old.assignedTo != 'closed' ) then
+      -- set new.assignedTo = old.assignedTo ;
+       set new.assignedTo = new.assignedTo ;
+    end if;
+ 
+  END if;
+
+END
+
+-- sql.end.banniu_rel20230830

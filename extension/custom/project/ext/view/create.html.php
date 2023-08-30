@@ -110,7 +110,7 @@
                         <div id='pmBox' class='input-group'>
                             <?php echo html::select('PM', $pmUsers, '', "class='form-control chosen'" . (strpos($requiredFields, 'PM') !== false ? ' required' : '')); ?>
                             <span class='input-group-addon'><?php echo $lang->project->contractNo; ?></span>
-                            <?php echo html::input('contractNo', $contractNo, "class='form-control' style='width: 150px'"); ?>
+                            <?php echo html::input('contractNo', '无', "class='form-control' style='width: 150px'"); ?>
                         </div>
                     </td>
                 </tr>

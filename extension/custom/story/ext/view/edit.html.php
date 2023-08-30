@@ -301,6 +301,11 @@
                                 </td>
                             </tr>
                             <tr>
+                                <th id='workTypeBox'><?php echo $lang->story->workType; ?></th>
+                                <td><?php echo html::select('workType', $lang->story->workTypeList, $story->workType, "class='form-control chosen'"); ?>
+                                </td>
+                            </tr>
+                            <tr>
                                 <th><?php echo $lang->story->status; ?></th>
                                 <td>
                                     <span class='story-<?php echo $story->status; ?>'><?php echo $this->processStatus('story', $story); ?></span>

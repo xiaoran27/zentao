@@ -376,6 +376,10 @@ js::set('bizProjectList', $bizProjectList);
                     <th><?php echo $lang->story->releaseTime;?></th>
                     <td><?php echo helper::isZeroDate($story->releaseTime) ? '' : substr($story->releaseTime, 0, 10);?></td>
                 </tr>
+                <tr id='workTypeBox'>
+                    <th><?php echo $lang->story->workType;?></th>
+                    <td><?php echo zget($lang->story->workTypeList, $story->workType, $story->workType);?></td>
+                </tr>
                 <tr>
                   <th><?php echo $lang->story->status;?></th>
                   <td><span class='status-story status-<?php echo $story->status?>'><span class="label label-dot"></span> <?php echo $this->processStatus('story', $story);?></span></td>

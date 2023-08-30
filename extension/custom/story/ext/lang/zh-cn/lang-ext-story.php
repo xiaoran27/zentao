@@ -107,6 +107,7 @@ $lang->story->prCategoryList0['it_support'] = '技术支持';
 // $lang->story->prCategoryList0['new'] = '新产品需求';
 $lang->story->prCategoryList0['OKR'] = 'OKR专用';
 $lang->story->prCategoryList0['other'] = '其他';
+$lang->story->prCategoryList0['pre_sale'] = '售前需求';
 
 
 $lang->story->uatDate = 'UAT日期';
@@ -167,6 +168,11 @@ $lang->story->bizValue = '萃取价值';
 $lang->story->prdReviewTime = 'PRD通过日期';
 $lang->story->releaseTime = '发布日期';
 
+$lang->story->workType = '工时类型';
+$lang->story->workTypeList = array();
+$lang->story->workTypeList['base'] = '标品';
+$lang->story->workTypeList['made'] = '定开';
+$lang->story->workTypeList['outsourcing'] = '外包';
 
 /* 统计报表。*/
 $lang->story->report->charts['purchaser'] = "按{$lang->story->purchaser}来进行统计";

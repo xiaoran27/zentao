@@ -332,6 +332,14 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
                     </div>
                   </div>
                 </div>
+                  <?php if($type != 'requirement'):?>
+                  <div class='table-col categoryBox'>
+                      <div class='input-group' id='workTypeBox'>
+                          <div class="input-group-addon"><?php echo $lang->story->workType;?></div>
+                          <?php echo html::select('workType', $lang->story->workTypeList, 'base', "class='form-control chosen'");?>
+                      </div>
+                  </div>
+                  <?php endif;?>
                 <?php $hiddenPri = strpos(",$showFields,", ',pri,') !== false ? '' : 'hidden';?>
                 <div class="table-col categoryBox">
                   <div class="input-group">

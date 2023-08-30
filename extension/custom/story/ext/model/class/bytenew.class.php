@@ -222,7 +222,7 @@ class bytenewStory extends StoryModel
      * @access public
      * @return array()
      */
-    public function updateRequirementStatusStage($days = 1)
+    public function updateRequirementStatusStage($days = 1, $reject = 3, $research = 30, $suspend = 30)
     {
         $IDs = $this->dao->select("id")->from(TABLE_STORY)
             ->where('deleted')->eq(0)->andWhere('status')->ne('draft')
@@ -240,9 +240,23 @@ class bytenewStory extends StoryModel
             if ($data['updateRows']) $updateRows++;
         }
         $datas['updateRows'] = $updateRows;
-
+        $this->updateStage($reject, $research, $suspend);
         return $datas;
 
+    }
+    public function updateStage($reject, $research, $suspend)
+    {
+        $rejectSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed' , lastEditedDate = now() , lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'reject' and DATEDIFF(NOW(), lastEditedDate) > $reject";
+        $researchSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'research' and  DATEDIFF(NOW(), lastEditedDate) >  $research";
+        $suspendSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system', closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'suspend' and DATEDIFF(NOW(), lastEditedDate) >  $suspend";
+        $common = $this->loadModel('common');
+        $rejectRow = $this->dao->exec($rejectSql);
+        $researchRow = $this->dao->exec($researchSql);
+        $suspendRow = $this->dao->exec($suspendSql);
+        $common->log(json_encode(array('rows' => $rejectRow, 'sql' => $rejectSql), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('rows' => $researchRow, 'sql' => $researchSql), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('rows' => $suspendRow, 'sql' => $suspendSql), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        return $rejectRow + $researchRow + $suspendRow;
     }
 
     /**
@@ -2747,6 +2761,7 @@ class bytenewStory extends StoryModel
             ->add('id', $storyID)
             ->add('status', 'closed')
             ->add('stage', 'closed')
+            ->add('assignedTo', 'closed')
             ->setDefault('lastEditedBy', $this->app->user->account)
             ->setDefault('lastEditedDate', $now)
             ->setDefault('closedDate', $now)
@@ -2829,6 +2844,7 @@ class bytenewStory extends StoryModel
             $story->assignedDate = $now;
             $story->status = 'closed';
             $story->stage = 'closed';
+            $story->assignedTo = 'closed';
 
             $story->closedReason = $data->closedReasons[$storyID];
             $story->duplicateStory = $data->duplicateStoryIDList[$storyID] ? $data->duplicateStoryIDList[$storyID] : $oldStory->duplicateStory;
@@ -5648,6 +5664,9 @@ class bytenewStory extends StoryModel
                     break;
                 case 'responseResult':
                     echo zget($story->type == 'requirement' ? $this->lang->story->responseResultList : $this->lang->story->responseResultList0, $story->responseResult, $story->responseResult);
+                    break;
+                case 'workType':
+                    echo zget($this->lang->story->workTypeList, $story->workType, $story->workType);
                     break;
                 case 'uatDate':
                     echo helper::isZeroDate($story->uatDate) ? '' : $story->uatDate;
