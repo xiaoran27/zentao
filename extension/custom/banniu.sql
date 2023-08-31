@@ -243,33 +243,36 @@ BEGIN
     SET new.rspRecievedTime=now();
   ELSEIF( old.rspResearchTime is null and  'research' = new.responseResult  ) THEN
     SET new.rspResearchTime=now();
-    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspResearchTime);
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, ifnull(new.rspRecievedTime, new.rspResearchTime));
   ELSEIF( old.rspRejectTime is null and 'reject' = new.responseResult  ) THEN
     SET new.rspRejectTime=now();
-    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspRejectTime);
-    set new.rspResearchTime=ifnull(old.rspResearchTime, new.rspRejectTime);
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, ifnull(new.rspRecievedTime, new.rspRejectTime));
+    set new.rspResearchTime=ifnull(old.rspResearchTime, ifnull(new.rspResearchTime, new.rspRejectTime));
     
-    set new.prdReviewTime=ifnull(old.prdReviewTime, new.rspRejectTime);
-    set new.releaseTime=ifnull(old.releaseTime, new.rspRejectTime);
+    set new.prdReviewTime=ifnull(old.prdReviewTime, ifnull(new.prdReviewTime, new.rspRejectTime));
+    set new.releaseTime=ifnull(old.releaseTime, ifnull(new.releaseTime, new.rspRejectTime));
   ELSEIF( old.rspAcceptTime is null and 'accept' = new.responseResult ) THEN
     SET new.rspAcceptTime=now();
-    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspAcceptTime);
-    set new.rspResearchTime=ifnull(old.rspResearchTime, new.rspAcceptTime);
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, ifnull(new.rspRecievedTime, new.rspAcceptTime));
+    set new.rspResearchTime=ifnull(old.rspResearchTime, ifnull(new.rspResearchTime, new.rspAcceptTime));
   ELSEIF( old.rspAcceptTime is null and 'prd' = new.responseResult ) THEN
     SET new.rspAcceptTime=now();
-    SET new.prdReviewTime=ifnull(old.prdReviewTime, new.rspAcceptTime);
-    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspAcceptTime);
-  ELSEIF( 'prd' = new.responseResult ) THEN
-    SET new.prdReviewTime=now();
-  ELSEIF( 'closed' = new.status or new.stage in ('verified', 'released', 'closed') ) THEN
-    set new.releaseTime=ifnull(old.releaseTime, ifnull(new.releaseTime, now()));
-    if ( ifnull(old.assignedTo,'') != '' and old.assignedTo != 'closed' ) then
-      -- set new.assignedTo = old.assignedTo ;
-       set new.assignedTo = new.assignedTo ;
-    end if;
- 
+    SET new.prdReviewTime=ifnull(old.prdReviewTime, ifnull(new.prdReviewTime, new.rspAcceptTime));
+    set new.rspRecievedTime=ifnull(old.rspRecievedTime, ifnull(new.rspRecievedTime, new.rspAcceptTime));
+  ELSEIF( 'prd' = new.responseResult and date_format(ifnull(new.prdReviewTime, '0000-00-00'), '%Y-%m-%d')='0000-00-00' ) THEN
+    SET new.prdReviewTime=ifnull(new.rspAcceptTime,now());
   END if;
-
-END
+ 
+  IF( 'closed' = new.status or new.stage in ('verified', 'released', 'closed') ) THEN
+    if ( date_format(ifnull(new.releaseTime, '0000-00-00'), '%Y-%m-%d')='0000-00-00' ) then
+      set new.releaseTime=now();
+    end if;
+    if ( ifnull(old.assignedTo,'') != '' and old.assignedTo != 'closed' ) then
+       set new.assignedTo = ifnull(new.assignedTo, old.assignedTo);
+    end if;
+  END if;
+END;
 
 -- sql.end.banniu_rel20230830
+
+
