@@ -41,6 +41,7 @@
 <?php js::set('codeTips', $lang->project->copyProject->codeTips); ?>
 <?php js::set('endTips', $lang->project->copyProject->endTips); ?>
 <?php js::set('daysTips', $lang->project->copyProject->daysTips); ?>
+<?php $acl='open'; js::set('acl', $acl);  ?>
 <div id='mainContent' class='main-content'>
     <div class='center-block'>
         <div class='main-header'>
