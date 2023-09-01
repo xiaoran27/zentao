@@ -237,6 +237,7 @@ alter table zt_story add workType varchar(255) null comment '工时类型';
 -- sql.start.banniu_rel20230830
 
 DROP TRIGGER IF EXISTS zentao.tri_story_bu;
+delimiter $$
 CREATE TRIGGER tri_story_bu BEFORE UPDATE ON zt_story FOR EACH ROW
 BEGIN
   IF( old.rspRecievedTime is null and ( 'recieved' = new.responseResult or 'suspend' = new.responseResult )  ) THEN
@@ -272,6 +273,8 @@ BEGIN
     end if;
   END if;
 END;
+$$
+delimiter ;
 
 -- sql.end.banniu_rel20230830
 
