@@ -160,30 +160,7 @@ ALTER TABLE zt_story ADD scoreNum FLOAT DEFAULT 0 NOT NULL COMMENT '行为分.<3
 
 -- 2023-3-27 13:48:13
 
-
-DROP TRIGGER IF EXISTS zentao.tri_story_bu;
-DELIMITER $$
-$$
-CREATE TRIGGER tri_story_bu BEFORE UPDATE ON zt_story FOR EACH ROW
-BEGIN
-  IF( old.rspRecievedTime is null and ( 'recieved' = new.responseResult or 'suspend' = new.responseResult )  ) THEN
-    SET new.rspRecievedTime=now();
-  ELSEIF( old.rspResearchTime is null and  'research' = new.responseResult  ) THEN
-    SET new.rspResearchTime=now();
-    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspResearchTime);
-  ELSEIF( old.rspRejectTime is null and 'reject' = new.responseResult  ) THEN
-    SET new.rspRejectTime=now();
-    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspRejectTime);
-    set new.rspResearchTime=ifnull(old.rspResearchTime, new.rspRejectTime);
-  ELSEIF( old.rspAcceptTime is null and ( 'accept' = new.responseResult or 'prd' = new.responseResult) ) THEN
-    SET new.rspAcceptTime=now();
-    set new.rspRecievedTime=ifnull(old.rspRecievedTime, new.rspAcceptTime);
-    set new.rspResearchTime=ifnull(old.rspResearchTime, new.rspAcceptTime);
-  END if;
-
-END
-$$
-DELIMITER ;
+-- 忽略 zentao.tri_story_bu
 
 -- sql.end.banniu_rel230413
 
@@ -234,7 +211,15 @@ alter table zt_story add workType varchar(255) null comment '工时类型';
 
 -- sql.end.banniu_rel20230824
 
+
 -- sql.start.banniu_rel20230830
+
+-- 忽略 zentao.tri_story_bu
+
+-- sql.end.banniu_rel20230830
+
+
+-- sql.start.banniu_rel20230911
 
 DROP TRIGGER IF EXISTS zentao.tri_story_bu;
 delimiter $$
@@ -258,7 +243,7 @@ BEGIN
     set new.rspResearchTime=ifnull(old.rspResearchTime, ifnull(new.rspResearchTime, new.rspAcceptTime));
   ELSEIF( old.rspAcceptTime is null and 'prd' = new.responseResult ) THEN
     SET new.rspAcceptTime=now();
-    SET new.prdReviewTime=ifnull(old.prdReviewTime, ifnull(new.prdReviewTime, new.rspAcceptTime));
+    set new.prdReviewTime=ifnull(new.prdReviewTime, ifnull(old.prdReviewTime, new.rspAcceptTime));
     set new.rspRecievedTime=ifnull(old.rspRecievedTime, ifnull(new.rspRecievedTime, new.rspAcceptTime));
   ELSEIF( 'prd' = new.responseResult and date_format(ifnull(new.prdReviewTime, '0000-00-00'), '%Y-%m-%d')='0000-00-00' ) THEN
     SET new.prdReviewTime=ifnull(new.rspAcceptTime,now());
@@ -271,11 +256,28 @@ BEGIN
     if ( ifnull(old.assignedTo,'') != '' and old.assignedTo != 'closed' ) then
        set new.assignedTo = ifnull(new.assignedTo, old.assignedTo);
     end if;
+    
+    if (new.type = 'story' and 'prd' != old.responseResult and 'prd' != new.responseResult) then
+      set new.responseResult = 'prd';
+      
+      if ( date_format(ifnull(new.rspAcceptTime, '0000-00-00'), '%Y-%m-%d')='0000-00-00' ) then
+        select min( if( ! (type in ( 'devel','test' ) or status='closed'),CURDATE(), case when DATE_FORMAT(ifnull(realStarted,openedDate),'%Y-%m-%d') = '0000-00-00' then openedDate else realStarted end )) into @task_first_date 
+        from zt_task 
+        where deleted='0' and openedDate > '2023-01-01' 
+          and parent > -1 and status in ( 'doing','done','closed' ) and story = old.id ;
+        set new.rspAcceptTime=@task_first_date;
+      end if;
+                
+      set new.rspAcceptTime=ifnull(old.rspAcceptTime, ifnull(new.rspAcceptTime, now()));
+      set new.prdReviewTime=ifnull(new.prdReviewTime, ifnull(old.prdReviewTime, new.rspAcceptTime));
+      set new.rspRecievedTime=ifnull(old.rspRecievedTime, ifnull(new.rspRecievedTime, new.rspAcceptTime));
+      
+    end if;
   END if;
 END;
 $$
 delimiter ;
 
--- sql.end.banniu_rel20230830
+-- sql.end.banniu_rel20230911
 
 
