@@ -6,6 +6,9 @@ global $lang, $app;
 $config->custom->fieldList['project']['create']      = $config->custom->fieldList['project']['create'] . ',devEvaluate,contractNo';
 $config->custom->fieldList['project']['edit']        = $config->custom->fieldList['project']['edit'] . ',devEvaluate,contractNo';
 
+$config->custom->fieldList['story']['create']        = $config->custom->fieldList['story']['create'] . ',assignedTo';
+$config->custom->fieldList['story']['close']         =  $config->custom->fieldList['story']['close'] .',prdReviewTime,releaseTime';
+
 /*
 ## from custom/config.php
 $config->custom->fieldList['program']['create']      = 'budget,PM,desc';
