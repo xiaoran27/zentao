@@ -44,3 +44,10 @@ $config->product->search['params']['rspAcceptTime']     = array('operator' => '>
 
 $config->product->search['fields']['scoreNum']     = $lang->story->scoreNum;
 $config->product->search['params']['scoreNum']     = array('operator' => '>=', 'control' => 'input', 'values' => '');
+
+$config->product->search['fields']['workType']     = $lang->story->workType;
+$config->product->search['params']['workType']     = array('operator' => '=', 'control' => 'multi-select', 'values' => (array(''=>'')+$lang->story->workTypeList) );
+$config->product->search['fields']['prdReviewTime']     = $lang->story->prdReviewTime;
+$config->product->search['params']['prdReviewTime']     = array('operator' => '=', 'control' => 'input', 'values' => '', 'class' => 'date');
+$config->product->search['fields']['releaseTime']     = $lang->story->releaseTime;
+$config->product->search['params']['releaseTime']     = array('operator' => '=', 'control' => 'input', 'values' => '', 'class' => 'date');

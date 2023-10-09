@@ -169,9 +169,4 @@ $config->story->datatable->fieldList['workType']['title'] = 'workType';
 $config->story->datatable->fieldList['workType']['fixed'] = 'left';
 $config->story->datatable->fieldList['workType']['width'] = '50';
 $config->story->datatable->fieldList['workType']['required'] = 'no';
-$config->product->search['fields']['workType']     = $lang->story->workType;
-$config->product->search['params']['workType']     = array('operator' => '=', 'control' => 'multi-select', 'values' => (array(''=>'')+$lang->story->workTypeList) );
-$config->product->search['fields']['prdReviewTime']     = $lang->story->prdReviewTime;
-$config->product->search['params']['prdReviewTime']     = array('operator' => '=', 'control' => 'input', 'values' => '', 'class' => 'date');
-$config->product->search['fields']['releaseTime']     = $lang->story->releaseTime;
-$config->product->search['params']['releaseTime']     = array('operator' => '=', 'control' => 'input', 'values' => '', 'class' => 'date');
+
