@@ -456,11 +456,7 @@ class bytenewSearch extends searchModel
                 if(!empty($this->config->user->moreLink)) $this->config->moreLinks["field{$fieldName}"] = $this->config->user->moreLink;
                 $params[$fieldName]['values'] = $users;
             }
-            if($params[$fieldName]['values'] == 'bizProjects')
-            {
-                if(!isset($bizProjectList)) $bizProjectList    = array(''=>'')+$this->loadModel('project')->getPairsListForB100();
-                $params[$fieldName]['values'] = $bizProjectList;
-            }
+
             if($params[$fieldName]['values'] == 'products')   $params[$fieldName]['values'] = $products;
             if($params[$fieldName]['values'] == 'executions') $params[$fieldName]['values'] = $executions;
             if(is_array($params[$fieldName]['values']))
@@ -479,17 +475,16 @@ class bytenewSearch extends searchModel
                 {
                     $params[$fieldName]['values'] = $params[$fieldName]['values'] + array('null' => $this->lang->search->null);
                 }
-
-                if($fieldName == 'purchaser') {
-                    if(!isset($purchaserList)) $purchaserList    = array(''=>'')+$this->loadModel('common')->getPurchaserList();
-                    $params[$fieldName]['values'] = $purchaserList;
-                }
-                if($fieldName == 'bizProject') {
-                    if(!isset($bizProjectList)) $bizProjectList    = array(''=>'')+$this->loadModel('project')->getPairsListForB100();
-                    $params[$fieldName]['values'] = $bizProjectList;
-                }
             }
-
+            
+            if($fieldName == 'purchaser') {
+                if(!isset($purchaserList)) $purchaserList    = array(''=>'')+$this->loadModel('common')->getPurchaserList();
+                $params[$fieldName]['values'] = $purchaserList;
+            }
+            if($fieldName == 'bizProject') {
+                if(!isset($bizProjectList)) $bizProjectList    = array(''=>'')+$this->loadModel('project')->getPairsListForB100();
+                $params[$fieldName]['values'] = $bizProjectList;
+            }
             
         }
         return $params;
