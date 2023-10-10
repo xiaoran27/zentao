@@ -94,8 +94,8 @@ public function syncStarlink($timeout=30, $minutes=5)
         $purchaser  = new stdclass();
         $purchaser->code = $data['companyId'];
         $purchaser->name = $data['customerName'];
-        if ( !isset($data['scoreNum']) || empty($data['scoreNum']) )  $data['scoreNum'] = 0;
-        $purchaser->scoreNum = $data['scoreNum'] ;  //行为分
+        if ( !isset($data['scoreNum']) || empty($data['scoreNum']) )  $data['scoreNum'] = "0";
+        $purchaser->scoreNum = '' . $data['scoreNum'] ;  //行为分改用字符串
         $purchaser->category = $data['type'];
         $purchaser->category0 = $data['type'];
 
@@ -106,39 +106,28 @@ public function syncStarlink($timeout=30, $minutes=5)
             $purchaser->code = '' . ($purchaser->code+0) ;
         }
 
-        if ( $purchaser->category == "普通商家" ) {
-            $purchaser->category = "SMB";
-        // }else if ( strpos(strtoupper($purchaser->category), 'B500') !== false ) {
-        //     $purchaser->category = "B500";
-        // }else if ( strpos(strtoupper($purchaser->category), 'B5') !== false ) {
-        //     $purchaser->category = "B5";
-        // }else if ( strpos(strtoupper($purchaser->category), 'B100') !== false ) {
-        //     $purchaser->category = "B100";
-        // }else if ( strpos(strtoupper($purchaser->category), 'LKA') !== false ) {
-        //     $purchaser->category = "LKA";
-        // }elseif ( strpos(strtoupper($purchaser->category), 'SMB') !== false ) {
-        //     $purchaser->category = "SMB";
-        }elseif ($purchaser->category == "B5商家" || $purchaser->category == "B5" ) {
-            $purchaser->category = "B5";
-        }elseif ($purchaser->category == "B100商家" || $purchaser->category == "B100" ) {
-            $purchaser->category = "B100";
-        }elseif ($purchaser->category == "B500商家"  || $purchaser->category == "B500") {
+        if ( strpos(strtoupper($purchaser->category), 'B5000') !== false ) {
+            $purchaser->category = "B5000";
+        }else if ( strpos(strtoupper($purchaser->category), 'B500') !== false ) {
             $purchaser->category = "B500";
-        }elseif ($purchaser->category == "LKA商家"  || $purchaser->category == "LKA") {
+        }else if ( strpos(strtoupper($purchaser->category), 'B5') !== false ) {
+            $purchaser->category = "B5";
+        }else if ( strpos(strtoupper($purchaser->category), 'B100-') !== false ) {
+        }else if ( strpos(strtoupper($purchaser->category), 'B100') !== false ) {
+            $purchaser->category = "B100";
+        }else if ( strpos(strtoupper($purchaser->category), 'LKA') !== false ) {
             $purchaser->category = "LKA";
-        }elseif ($purchaser->category == "SMB商家"  || $purchaser->category == "SMB") {
+        }elseif ( strpos(strtoupper($purchaser->category), 'SMB') !== false || $purchaser->category == "普通商家"   || $purchaser->category == "5人以下" ) {
             $purchaser->category = "SMB";
-        }else {
-            // $purchaser->category = "SMB";
+        }elseif (preg_match("/[\x7f-\xff]/", $purchaser->category)) {  // 其他含中文认为是SMB
+            $purchaser->category = "SMB";
         }
         
 
-        // code name  增删改
         $purchaserNow = null;
         if ($purchaser->code != "0" && array_key_exists($purchaser->code,$purchaserNows)) {  // 班牛ID相同
             $purchaserNow = $purchaserNows[$purchaser->code];
             $purchaserNow->eq = 'code';
-            $purchasersExist["{$purchaser->code}"] = $purchaserNow;
 
             if ( $purchaser->code == $purchaserNow->code && $purchaser->name == $purchaserNow->name 
                 && $purchaser->category == $purchaserNow->category && $purchaser->scoreNum == $purchaserNow->scoreNum ){
@@ -146,10 +135,9 @@ public function syncStarlink($timeout=30, $minutes=5)
                 continue;  
             }
 
-            // code同,name不同,
+            // code同,name不同且存在
             if ( $purchaser->name != $purchaserNow->name && array_key_exists($purchaser->name,$purchaserNows)) {
 
-                
                 $this->dao->delete()->from($TABLE_PURCHASER)->where('name')->eq($purchaser->name)->exec();
                 $cnt_del = $cnt_del + 1;
 
@@ -178,15 +166,11 @@ public function syncStarlink($timeout=30, $minutes=5)
             continue;
         }
 
-        // $code_pinyin = $this->pinyin($purchaser->name);  // 仅首字母
-        // $code_pinyin_full = $this->pinyin($purchaser->name, true);  //  全拼
         if (array_key_exists($purchaser->name,$purchaserNows)) {  // 名称相同，无班牛ID
             $purchaserNow = $purchaserNows[$purchaser->name];
             $purchaserNow->eq = 'name';
-            $purchasersExist["{$purchaser->name}"] = $purchaserNow;
 
-            if ( $purchaser->code == "0" && $purchaser->name == $purchaserNow->code && $purchaser->name == $purchaserNow->name 
-            // if ( $purchaser->code == "0" && ( $code_pinyin == $purchaserNow->code || $code_pinyin_full == $purchaserNow->code ) && $purchaser->name == $purchaserNow->name 
+            if ( $purchaser->code == "0" && $purchaser->name == $purchaserNow->name 
                 && $purchaser->category == $purchaserNow->category && $purchaser->scoreNum == $purchaserNow->scoreNum ){
                 $cnt_same = $cnt_same + 1;
                 continue;  
@@ -211,24 +195,11 @@ public function syncStarlink($timeout=30, $minutes=5)
             continue;
 
         }
-
-        // // Deprecated
-        // if (array_key_exists($code_pinyin,$purchaserNows)) {  // pinyin相同，名称不同
-        //     $purchaserNow = $purchaserNows[$code_pinyin];
-        //     $purchaserNow->eq = 'pinyin';
-        //     $purchasersExist["{$code_pinyin}"] = $purchaserNow;
-        // }
-        // if (array_key_exists($code_pinyin_full,$purchaserNows)) {  // pinyin_full相同，名称不同
-        //     $purchaserNow = $purchaserNows[$code_pinyin_full];
-        //     $purchaserNow->eq = 'pinyin_full';
-        //     $purchasersExist["{$code_pinyin_full}"] = $purchaserNow;
-        // }
         
         
         $purchaser->creator = 'syncStarlink';
         $purchaser->modifier = 'syncStarlink';
-        // $purchaser->code = $purchaser->code == "0" ? ( array_key_exists($code_pinyin,$purchaserNows) ? $code_pinyin_full : $code_pinyin ) : $purchaser->code;
-        $purchaser->code = $purchaser->code == "0" ? $purchaser->name : $purchaser->code;
+        $purchaser->code = $purchaser->code == "0" ? $purchaser->name : $purchaser->code;  // 无ID用名称
         $this->log("INS:" . json_encode($purchaser,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         $this->dao->insert($TABLE_PURCHASER)->data($purchaser,"category0")->exec();
         if( dao::isError() )
