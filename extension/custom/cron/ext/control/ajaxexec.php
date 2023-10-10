@@ -37,6 +37,9 @@ class myCron extends cron
         $crons       = $this->cron->getCrons('nostop');
         $parsedCrons = $this->cron->parseCron($crons);
 
+        // 自定义的cron
+        $mycron_keys = array('syncStarlink','updateRequirementStatusStage','updateStoryAcceptTimeByTask','dingRobotSend');
+
         /* Update last time. */
         $this->cron->changeStatus(key($parsedCrons), 'normal', true);
         $this->loadModel('common');
@@ -44,8 +47,7 @@ class myCron extends cron
         while(true)
         {
             dao::$cache = array();
-            $this->common->log(json_encode(array('parsedCrons' => $parsedCrons, 'PHP_SAPI' => PHP_SAPI) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-                
+            // $this->common->log(json_encode(array('parsedCrons' => $parsedCrons, 'PHP_SAPI' => PHP_SAPI) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
             /* When cron is null then die. */
             if(empty($crons)) break;
@@ -65,6 +67,7 @@ class myCron extends cron
             foreach($parsedCrons as $id => $cron)
             {
                 $cronInfo = $this->cron->getById($id);
+
                 /* Skip empty and stop cron.*/
                 if(empty($cronInfo) or $cronInfo->status == 'stop') continue;
                 /* Skip cron that status is running and run time is less than max. */
@@ -78,12 +81,18 @@ class myCron extends cron
                 {
                     if($cronInfo->lastTime > $cron['time']->format(DT_DATETIME1)) continue;
                 }
-
-                $this->common->log(json_encode(array('cron' => $cron, 'cronInfo' => $cronInfo, 'now' => $now) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
                 
 
                 if($now > $cron['time'])
                 {
+                    
+                    foreach ( $mycron_keys as $cmdkey  ) {
+                        if ( strpos($cronInfo->command, "$cmdkey") !== false ) {  // 仅自定义cron才打log
+                            $this->common->log(json_encode(array('cron' => $cron, 'cronInfo' => $cronInfo, 'now' => $now) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                            break;
+                        }
+                    }
+
                     if(!$this->cron->changeStatusRunning($id)) continue;
                     $parsedCrons[$id]['time'] = $cron['cron']->getNextRunDate();
 
@@ -105,9 +114,9 @@ class myCron extends cron
                                     $file2Included = $actionExtPath['custom'] . 'cronmethod.php';
                                     $classNameToFetch = "my{$params['moduleName']}";
                                     $cls_exists = class_exists($classNameToFetch);
-                                    $this->common->log(json_encode(array('appName' => $this->appName, 'classNameToFetch' => $classNameToFetch, 'cls_exists' => $cls_exists, 'file2Included' => $file2Included, 'params' => $params) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
                                     if(!$cls_exists)
                                     {
+                                        $this->common->log(json_encode(array('appName' => $this->appName, 'classNameToFetch' => $classNameToFetch, 'cls_exists' => $cls_exists, 'file2Included' => $file2Included, 'params' => $params) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
                                         // if (!class_exists($params['moduleName'])) helper::importControl($params['moduleName']);
                                         helper::import($file2Included);
                                     }
