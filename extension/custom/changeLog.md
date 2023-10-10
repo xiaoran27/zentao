@@ -1,5 +1,19 @@
 [toc]
 
+#  rel231010
+
+## changed:
+1. 优化starLink的客户数据同步
+2. 仅自定义cron才打log
+
+## fixed:
+1. 搜索列下拉列表动态获取[bug#22816](https://chandao.bytenew.com/zentao/bug-view-22816.html)
+
+
+# rel20230918
+
+## changed:
+1. 需求closed时,添加prdReviewTime,releaseTime必填
 
 #  rel230830
 
