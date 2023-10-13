@@ -499,10 +499,10 @@ class bytenewStory extends StoryModel
         $common->log(json_encode(array('dingdingDatas' => $dingdingDatas), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if (empty($dingdingDatas)) return array();
 
+        $webroot = common::getSysUrl(). $this->config->webRoot;  // 直接用禅道自己的系统配置   有proxy就不可用
+        $webroot = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER["SERVER_PORT"] . $this->config->webRoot;  //  拼接可能不对
+        if (isset($this->config->story->baseurl)) $webroot = $this->config->story->baseurl;
         
-        // $webroot = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER["SERVER_PORT"] . $this->config->webRoot;
-        // if (isset($this->config->story->baseurl)) $webroot = $this->config->story->baseurl;
-        $webroot = common::getSysUrl(). $this->config->webRoot;  // 直接用禅道自己的系统配置
 
         // 过滤名单
         if ('admin' == $excludeUsers and isset($this->config->story->excludeUsers) )  $excludeUsers = $this->config->story->excludeUsers;
