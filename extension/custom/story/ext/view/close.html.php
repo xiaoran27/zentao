@@ -71,7 +71,8 @@
       </table>
     </form>
     <hr class='small' />
-    <div class='main'><?php include '../../common/view/action.html.php';?></div>
+    <div class='main'><?php include '../../../../../module/common/view/action.html.php';?></div>
   </div>
 </div>
-<?php include '../../common/view/footer.html.php';?>
+<?php include '../../../../../module/common/view/footer.html.php';?>
+

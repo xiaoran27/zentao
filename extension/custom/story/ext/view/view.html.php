@@ -545,7 +545,7 @@ js::set('bizProjectList', $bizProjectList);
           <?php if(!empty($twins)):?>
           <div class='tab-pane active' id='legendTwins'>
             <ul class="list-unstyled">
-                <?php include './blocktwins.html.php';?>
+                <?php include '../../../../../module/story/view/blocktwins.html.php';?>
             </ul>
           </div>
           <?php endif;?>
