@@ -3284,7 +3284,7 @@ class bytenewExecution extends executionModel
         $versions      = $this->loadModel('story')->getVersions($stories);
         $linkedStories = $this->dao->select('*')->from(TABLE_PROJECTSTORY)->where('project')->eq($executionID)->orderBy('order_desc')->fetchPairs('story', 'order');
         $lastOrder     = reset($linkedStories);
-        $storyList     = $this->dao->select('id, status, branch')->from(TABLE_STORY)->where('id')->in(array_values($stories))->fetchAll('id');
+        $storyList     = $this->dao->select('id, status, branch, bizProject')->from(TABLE_STORY)->where('id')->in(array_values($stories))->fetchAll('id');
         $execution     = $this->getById($executionID);
 
         $extra = str_replace(array(',', ' '), array('&', ''), $extra);
@@ -3311,15 +3311,18 @@ class bytenewExecution extends executionModel
             $data->version = $versions[$storyID];
             $data->order   = ++$lastOrder;
             $this->dao->replace(TABLE_PROJECTSTORY)->data($data)->exec();
-            $storyBizProjectId = $executionID;
-            if ($execution->type!='project'){
-                $storyBizProjectId = $execution->project;
-            }
-            $oldBizProject = $storyList[$storyID]->bizProject;
-            $newBizProject = '';
+            
+            $msg = '';
             if (empty($storyList[$storyID]->bizProject)){
+                $storyBizProjectId = $executionID;
+                if ($execution->type!='project'){
+                    $storyBizProjectId = $execution->project;
+                }
+                $oldBizProject = $storyList[$storyID]->bizProject;
                 $newBizProject = $storyBizProjectId;
                 $this->dao->update(TABLE_STORY)->set('lastEditedBy')->eq($this->app->user->account)->set('lastEditedDate')->eq(date('Y-m-d H:i:s'))->set('bizProject')->eq($storyBizProjectId)->where('id')->eq($storyID)->exec();
+
+                $msg = '修改了项目名称，旧值"'.$oldBizProject.'"，新值"'.$newBizProject.'"';
             }
 
             $this->story->setStage($storyID);
@@ -3327,10 +3330,7 @@ class bytenewExecution extends executionModel
 
             $action = $execution->type == 'project' ? 'linked2project' : 'linked2execution';
             if($action == 'linked2execution' and $execution->type == 'kanban') $action = 'linked2kanban';
-            $msg = '';
-            if (!empty($newBizProject)){
-                $msg = '修改了项目名称，旧值"'.$oldBizProject.'"，新值"'.$newBizProject.'"';
-            }
+            
             if($execution->multiple or $execution->type == 'project') $this->action->create('story', $storyID, $action, $msg, $executionID);
         }
 
