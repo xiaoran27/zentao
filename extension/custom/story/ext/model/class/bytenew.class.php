@@ -222,8 +222,16 @@ class bytenewStory extends StoryModel
      * @access public
      * @return array()
      */
-    public function updateRequirementStatusStage($days = 1, $reject = 3, $research = 30, $suspend = 30)
+    public function updateRequirementStatusStage($days = 1, $reject = 3, $research = 30, $suspend = 30, $todo=92)
     {
+        $datas = array();
+        
+        $rows = $this->timeoutClosed($reject, $research, $suspend, $todo);
+        $datas['timeoutClosedRows'] = $rows;
+        $rows = $this->updateStage($reject, $research, $suspend);
+        $datas['updateStageRows'] = $rows;
+
+
         $IDs = $this->dao->select("id")->from(TABLE_STORY)
             ->where('deleted')->eq(0)->andWhere('status')->ne('draft')
             ->andWhere('type')->eq('story')
@@ -231,20 +239,21 @@ class bytenewStory extends StoryModel
             ->fetchAll();
         if (empty($IDs)) return array();
 
-        $datas = array();
+        
         $datas['updateRows'] = 0;
         $updateRows = 0;
         foreach ($IDs as $e) {
             $data = $this->updateRequirementStatusStageByStoryID($e->id);
             $datas["SR{$e->id}"] = $data;
-            if ($data['updateRows']) $updateRows++;
+            $updateRows++;
         }
         $datas['updateRows'] = $updateRows;
-        $this->updateStage($reject, $research, $suspend);
+
         return $datas;
 
     }
-    public function updateStage($reject, $research, $suspend)
+
+    public function updateStage($reject=3, $research=30, $suspend=30)
     {
         $rejectSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed' , lastEditedDate = now() , lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'reject' and DATEDIFF(NOW(), lastEditedDate) > $reject";
         $researchSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'research' and  DATEDIFF(NOW(), lastEditedDate) >  $research";
@@ -257,6 +266,43 @@ class bytenewStory extends StoryModel
         $common->log(json_encode(array('rows' => $researchRow, 'sql' => $researchSql), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         $common->log(json_encode(array('rows' => $suspendRow, 'sql' => $suspendSql), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         return $rejectRow + $researchRow + $suspendRow;
+    }
+
+    
+
+    public function timeoutClosed($reject=3, $research=30, $suspend=30, $todo=92)
+    {
+        $sqls = array(
+            "rejectSql" => "UPDATE zt_story SET stage = 'closed' ,status = 'closed' , lastEditedDate = now() , lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'reject' and DATEDIFF(NOW(), openedDate) < $reject and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) < $reject and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) < $reject"
+            ,"researchSql" => "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'research' and DATEDIFF(NOW(), openedDate) < $research and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) < $research and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) < $research"
+            ,"suspendSql" => "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system', closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'suspend' and DATEDIFF(NOW(), openedDate) < $suspend and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) < $suspend and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) < $suspend"
+            ,"todoSql" => "UPDATE zt_story SET stage = 'closed' ,status = 'closed' , lastEditedDate = now() , lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'todo'  and DATEDIFF(NOW(), openedDate) < $todo and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) < $todo and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) < $todo  "
+        );
+
+        $BASESQL = "update zt_story ";
+        $BASESQL .= "set status=if(ifnull(status,'')!='closed','closed',status), stage=if(ifnull(stage,'')!='closed','closed',stage) ";
+        $BASESQL .= "    , responseResult = if(responseResult='todo','suspend',responseResult) ";
+        $BASESQL .= "    , closedBy=if(length(ifnull(closedBy,''))<1,'system',closedBy) ";
+        $BASESQL .= "    , closedDate=if(date_format(ifnull(closedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00',now(), closedDate) ";
+        $BASESQL .= "    , closedReason=if(length(ifnull(closedReason,''))<1,'postponed',closedReason) ";
+        $BASESQL .= "where deleted = '0' and status !='draft'  ";
+        $BASESQL .= "    and (stage != 'closed' or status !='closed') ";
+        $BASESQL .= "    and responseResult = 'PARAM1'  and DATEDIFF(NOW(), openedDate) < PARAM2 and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) < PARAM2 and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) < PARAM2 ";
+        $actions = array("reject","research","suspend","todo");
+
+        $rowCount = 0;
+        $common = $this->loadModel('common');
+        // foreach( $sqls as $key=>$sql ){
+        foreach( $actions as $key ){
+            $sql =  str_replace('PARAM2', ${$key}, str_replace('PARAM1', $key,$BASESQL));
+
+            $rows = $this->dao->exec($sql);
+            $rowCount += $rows;
+            $common->log(json_encode(array('error'=>dao::isError(), 'rows' => $rows, $key => $sql), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        }
+
+        return $rowCount;
+        
     }
 
     /**
@@ -279,6 +325,7 @@ class bytenewStory extends StoryModel
 
         $requirements = array();
         $requirements["story-id"] = $storyID;
+        $requirements["updateRows"] = 0;
         $updateRows = 0;
         foreach ($IDs as $requirementID) {
             // select zs.status as status,zs.stage as stage from zt_story zs
@@ -288,11 +335,12 @@ class bytenewStory extends StoryModel
                 ->leftJoin(TABLE_RELATION)->alias('zr')->on("zr.atype='requirement' and zs.id = zr.bid")
                 ->where('zs.deleted')->eq(0)->andWhere('zs.status')->ne('draft')->andWhere('zr.aid')->eq($requirementID->id)
                 ->fetchAll();
+            if (!$storyValues) continue;
+
             $requirements["{$requirementID->id}"] = array();
             $requirements["{$requirementID->id}"]["stories"] = $storyValues;
             $common->log(json_encode(array('requirementID' => $requirementID, 'storyValues' => $storyValues), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-            if (!$storyValues) continue;
-
+            
             $statusAll = ",";
             $stageAll = ",";
             $closedDate = "";
@@ -306,16 +354,16 @@ class bytenewStory extends StoryModel
                 $statusAll .= "$e->status,";
                 $stageAll .= "$e->stage,";
                 if ($e->status == 'closed' or $e->stage == 'closed') {
-                    if (empty($closedDate) or $closedDate < $e->closedDate) $closedDate = $e->closedDate;
+                    if (helper::isZeroDate($closedDate) or $closedDate < $e->closedDate) $closedDate = $e->closedDate;
                 }
-                if (empty($planReleaseDate) and !helper::isZeroDate($e->planReleaseDate)) {
+                if (helper::isZeroDate($planReleaseDate) and !helper::isZeroDate($e->planReleaseDate)) {
                     $planReleaseDate = "$e->planReleaseDate";
                 } elseif (!helper::isZeroDate($e->planReleaseDate) and $e->planReleaseDate > $planReleaseDate) {
                     $planReleaseDate = "$e->planReleaseDate";
                 }
                 //取"修改时间"最大的bizProject
                 if (!empty($e->bizProject)) {
-                    if (empty($lastEditedDate)) {
+                    if (helper::isZeroDate($lastEditedDate)) {
                         $lastEditedDate = $e->lastEditedDate;
                         $bizProject = $e->bizProject;
                     } elseif ($e->lastEditedDate > $lastEditedDate) {
@@ -323,12 +371,12 @@ class bytenewStory extends StoryModel
                         $bizProject = $e->bizProject;
                     }
                 }
-                if (empty($prdReviewTime) and !helper::isZeroDate($e->prdReviewTime)) {
+                if (helper::isZeroDate($prdReviewTime) and !helper::isZeroDate($e->prdReviewTime)) {
                     $prdReviewTime = "$e->prdReviewTime";
                 } elseif (!helper::isZeroDate($e->prdReviewTime) and $e->prdReviewTime > $prdReviewTime) {
                     $prdReviewTime = "$e->prdReviewTime";
                 }
-                if (empty($releaseTime) and !helper::isZeroDate($e->releaseTime)) {
+                if (helper::isZeroDate($releaseTime) and !helper::isZeroDate($e->releaseTime)) {
                     $releaseTime = "$e->releaseTime";
                 } elseif (!helper::isZeroDate($e->releaseTime) and $e->releaseTime > $releaseTime) {
                     $releaseTime = "$e->releaseTime";
@@ -372,6 +420,25 @@ class bytenewStory extends StoryModel
                 }
             }
 
+            $requirement = $this->dao->select("id,status,stage,closedDate,planReleaseDate,bizProject,prdReviewTime,releaseTime")->from(TABLE_STORY)
+                ->where('deleted')->eq(0)->andWhere('id')->eq($requirementID->id)
+//                ->andWhere('status')->eq($status)->andWhere('stage')->eq($stage)
+                ->fetch();
+            if (empty($requirement)) {
+                unset($requirements["{$requirementID->id}"]);
+                continue;
+            }else if (!empty($requirement) and $status == $requirement->status and $stage == $requirement->stage
+                and (helper::isZeroDate($closedDate) or $closedDate == $requirement->closedDate)
+                and (helper::isZeroDate($planReleaseDate) or $planReleaseDate == $requirement->planReleaseDate)
+                and (empty($bizProject) or $bizProject == $requirement->bizProject)
+                and (helper::isZeroDate($prdReviewTime) or $prdReviewTime == $requirement->prdReviewTime)
+                and (helper::isZeroDate($releaseTime) or $releaseTime == $requirement->releaseTime)
+            ) {
+                unset($requirements["{$requirementID->id}"]);
+                
+                continue;
+            }
+            $requirements["{$requirementID->id}"]["old"] = $requirement;
 
             $requirements["{$requirementID->id}"]["status"] = $status;
             $requirements["{$requirementID->id}"]["stage"] = $stage;
@@ -380,21 +447,7 @@ class bytenewStory extends StoryModel
             $requirements["{$requirementID->id}"]["bizProject"] = $bizProject;
             $requirements["{$requirementID->id}"]["prdReviewTime"] = $prdReviewTime;
             $requirements["{$requirementID->id}"]["releaseTime"] = $releaseTime;
-            $requirement = $this->dao->select("id,status,stage,closedDate,planReleaseDate,bizProject,prdReviewTime,releaseTime")->from(TABLE_STORY)
-                ->where('deleted')->eq(0)->andWhere('id')->eq($requirementID->id)
-//                ->andWhere('status')->eq($status)->andWhere('stage')->eq($stage)
-                ->fetch();
 
-            if (!empty($requirement) and $status == $requirement->status and $stage == $requirement->stage
-                and (helper::isZeroDate($closedDate) or $closedDate == $requirement->closedDate)
-                and (helper::isZeroDate($planReleaseDate) or $planReleaseDate == $requirement->planReleaseDate)
-                and (empty($e->bizProject) or $bizProject == $requirement->bizProject)
-                and (empty($e->prdReviewTime) or $prdReviewTime == $$requirement->prdReviewTime)
-                and (empty($e->releaseTime) or $prdReviewTime == $$requirement->releaseTime)
-            ) {
-                $requirements["{$requirementID->id}"]["old"] = $requirement;
-                continue;
-            }
             // update zt_story set bizProject='', status='',stage='',closedDate='',planReleaseDate='' where deleted  = '0' and id = 103
             $rows = $this->dao->update(TABLE_STORY)->beginIF(!empty($prdReviewTime))->set("prdReviewTime")->eq($prdReviewTime)->fi()->beginIF(!empty($releaseTime))->set("releaseTime")->eq($releaseTime)->fi()->beginIF(!empty($bizProject))->set("bizProject")->eq($bizProject)->fi()->set('status')->eq($status)->set('stage')->eq($stage)->beginIF(!helper::isZeroDate($closedDate))->set('closedDate')->eq($closedDate)->fi()->beginIF(!helper::isZeroDate($planReleaseDate))->set("planReleaseDate")->eq($planReleaseDate)->fi()->where('id')->eq($requirementID->id)->exec();
             $requirements["{$requirementID->id}"]["rows"] = $rows;
