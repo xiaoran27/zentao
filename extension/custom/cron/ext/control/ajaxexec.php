@@ -114,7 +114,7 @@ class myCron extends cron
                                     $file2Included = $actionExtPath['custom'] . 'cronmethod.php';
                                     $classNameToFetch = "my{$params['moduleName']}";
                                     $cls_exists = class_exists($classNameToFetch);
-                                    if(!$cls_exists)
+                                    if(!$cls_exists and is_file($file2Included) )
                                     {
                                         $this->common->log(json_encode(array('appName' => $this->appName, 'classNameToFetch' => $classNameToFetch, 'cls_exists' => $cls_exists, 'file2Included' => $file2Included, 'params' => $params) ,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
                                         // if (!class_exists($params['moduleName'])) helper::importControl($params['moduleName']);
