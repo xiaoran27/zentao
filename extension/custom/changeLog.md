@@ -1,5 +1,15 @@
 [toc]
 
+#  rel231025
+
+## changed:
+1. 存在cronmethod.php才导入
+2. 待响应(todo)的未关闭需求超时(>92d)关闭
+
+## fixed:
+1. 
+
+
 #  rel231010
 
 ## changed:
