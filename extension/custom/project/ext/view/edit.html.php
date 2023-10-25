@@ -150,13 +150,43 @@
                             <span class='input-group-addon'><?php echo $lang->execution->day; ?></span>
                         </div>
                     </td>
+                </tr>
+                <tr>
+                    <th></th>
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->devEvaluate; ?></span>
                             <?php echo html::number('devEvaluate', $project->devEvaluate, "class='form-control' style='width: 150px' min='0'"); ?>
                         </div>
                     </td>
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->poDays; ?></span>
+                            <?php echo html::number('poDays', $project->poDays, "class='form-control' style='width: 150px' min='0'"); ?>
+                        </div>
+                    </td>
                     <td></td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->outerDays; ?></span>
+                            <?php echo html::number('outerDays', $project->outerDays, "class='form-control' style='width: 150px' min='0'"); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->selfDays; ?></span>
+                            <?php echo html::number('selfDays', $project->selfDays, "class='form-control' style='width: 150px' min='0'"); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->saasDays; ?></span>
+                            <?php echo html::number('saasDays', $project->saasDays, "class='form-control' style='width: 150px' min='0'"); ?>
+                        </div>
+                    </td>
                 </tr>
                 <?php if ($project->hasProduct and $this->config->vision != 'lite'): ?>
                     <?php $i = 0; ?>

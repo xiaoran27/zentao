@@ -41,7 +41,8 @@
 <?php js::set('codeTips', $lang->project->copyProject->codeTips); ?>
 <?php js::set('endTips', $lang->project->copyProject->endTips); ?>
 <?php js::set('daysTips', $lang->project->copyProject->daysTips); ?>
-<?php $acl='open'; js::set('acl', $acl);  ?>
+<?php $acl = 'open';
+js::set('acl', $acl); ?>
 <div id='mainContent' class='main-content'>
     <div class='center-block'>
         <div class='main-header'>
@@ -149,20 +150,52 @@
                         colspan='2'><?php echo html::radio('delta', $lang->project->endList, '', "onclick='computeEndDate(this.value)'"); ?></td>
                 </tr>
                 <tr id='daysBox'>
-                    <th><?php echo $lang->execution->days; ?></th>
-                    <td>
+                    <th> <?php echo $lang->execution->days; ?></th>
+                    <td >
                         <div class='input-group'>
                             <?php echo html::input('days', '', "class='form-control'"); ?>
                             <span class='input-group-addon'><?php echo $lang->execution->day; ?></span>
                         </div>
                     </td>
+                </tr>
+                <tr>
+                    <th></th>
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->devEvaluate; ?></span>
                             <?php echo html::number('devEvaluate', '0', "class='form-control' style='width: 150px' min='0'"); ?>
                         </div>
                     </td>
-                    <td></td>
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->poDays; ?></span>
+                            <?php echo html::number('poDays', '0', "class='form-control' style='width: 150px' min='0'"); ?>
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <th id="poDays"></th>
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->outerDays; ?></span>
+                            <?php echo html::number('outerDays', '0', "class='form-control' style='width: 150px' min='0'"); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->selfDays; ?></span>
+                            <?php echo html::number('selfDays', '0', "class='form-control' style='width: 150px' min='0'"); ?>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->saasDays; ?></span>
+                            <?php echo html::number('saasDays', '0', "class='form-control' style='width: 150px' min='0'"); ?>
+                        </div>
+                    </td>
+
                 </tr>
                 <?php if ($products): ?>
                     <?php $i = 0; ?>
