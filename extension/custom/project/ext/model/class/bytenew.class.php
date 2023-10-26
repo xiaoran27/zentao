@@ -2373,6 +2373,18 @@ class bytenewProject  extends projectModel
                 case 'devEvaluate':
                     echo $project->devEvaluate;
                     break;
+                case 'poDays':
+                    echo $project->poDays;
+                    break;
+                case 'outerDays':
+                    echo $project->outerDays;
+                    break;
+                case 'selfDays':
+                    echo $project->selfDays;
+                    break;
+                case 'saasDays':
+                    echo $project->saasDays;
+                    break;
                 case 'teamCount':
                     echo $project->teamCount;
                     break;

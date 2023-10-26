@@ -280,4 +280,11 @@ delimiter ;
 
 -- sql.end.banniu_rel20230911
 
+-- sql.start.banniu_rel20231025
 
+ALTER TABLE zt_project ADD poDays int NULL default 0 comment '合同人天';
+ALTER TABLE zt_project ADD outerDays int NULL default 0 comment '外包人天';
+ALTER TABLE zt_project ADD selfDays int NULL default 0 comment '定开人天';
+ALTER TABLE zt_project ADD saasDays int NULL default 0 comment '标品人天';
+
+-- sql.end.banniu_rel20231025
