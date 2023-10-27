@@ -272,12 +272,6 @@ class bytenewStory extends StoryModel
 
     public function timeoutClosed($reject=3, $research=30, $suspend=30, $todo=92)
     {
-        $sqls = array(
-            "rejectSql" => "UPDATE zt_story SET stage = 'closed' ,status = 'closed' , lastEditedDate = now() , lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'reject' and DATEDIFF(NOW(), openedDate) < $reject and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) < $reject and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) < $reject"
-            ,"researchSql" => "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'research' and DATEDIFF(NOW(), openedDate) < $research and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) < $research and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) < $research"
-            ,"suspendSql" => "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system', closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'suspend' and DATEDIFF(NOW(), openedDate) < $suspend and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) < $suspend and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) < $suspend"
-            ,"todoSql" => "UPDATE zt_story SET stage = 'closed' ,status = 'closed' , lastEditedDate = now() , lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'todo'  and DATEDIFF(NOW(), openedDate) < $todo and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) < $todo and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) < $todo  "
-        );
 
         $BASESQL = "update zt_story ";
         $BASESQL .= "set status=if(ifnull(status,'')!='closed','closed',status), stage=if(ifnull(stage,'')!='closed','closed',stage) ";
@@ -287,7 +281,7 @@ class bytenewStory extends StoryModel
         $BASESQL .= "    , closedReason=if(length(ifnull(closedReason,''))<1,'postponed',closedReason) ";
         $BASESQL .= "where deleted = '0' and status !='draft'  ";
         $BASESQL .= "    and (stage != 'closed' or status !='closed') ";
-        $BASESQL .= "    and responseResult = 'PARAM1'  and DATEDIFF(NOW(), openedDate) < PARAM2 and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) < PARAM2 and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) < PARAM2 ";
+        $BASESQL .= "    and responseResult = 'PARAM1'  and DATEDIFF(NOW(), openedDate) > PARAM2 and DATEDIFF(NOW(), if(date_format(ifnull(lastEditedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', lastEditedDate)) > PARAM2 and DATEDIFF(NOW(), if(date_format(ifnull(assignedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00','2000-01-01', assignedDate)) > PARAM2 ";
         $actions = array("reject","research","suspend","todo");
 
         $rowCount = 0;
