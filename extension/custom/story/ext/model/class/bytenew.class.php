@@ -255,9 +255,9 @@ class bytenewStory extends StoryModel
 
     public function updateStage($reject=3, $research=30, $suspend=30)
     {
-        $rejectSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed' , lastEditedDate = now() , lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'reject' and DATEDIFF(NOW(), lastEditedDate) > $reject";
-        $researchSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'research' and  DATEDIFF(NOW(), lastEditedDate) >  $research";
-        $suspendSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system', closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'suspend' and DATEDIFF(NOW(), lastEditedDate) >  $suspend";
+        $rejectSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed' , lastEditedDate = now() , lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'reject'    and (stage != 'closed' or status !='closed')  and DATEDIFF(NOW(), lastEditedDate) > $reject";
+        $researchSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system' , closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'research'  and (stage != 'closed' or status !='closed')  and DATEDIFF(NOW(), lastEditedDate) >  $research";
+        $suspendSql = "UPDATE zt_story SET stage = 'closed' ,status = 'closed', lastEditedDate = now(), lastEditedBy = 'system', closedDate = now() , closedBy = 'system', closedReason = 'willnotdo', stagedBy = 'system' where responseResult = 'suspend'     and (stage != 'closed' or status !='closed')  and DATEDIFF(NOW(), lastEditedDate) >  $suspend";
         $common = $this->loadModel('common');
         $rejectRow = $this->dao->exec($rejectSql);
         $researchRow = $this->dao->exec($researchSql);
@@ -276,6 +276,8 @@ class bytenewStory extends StoryModel
         $BASESQL = "update zt_story ";
         $BASESQL .= "set status=if(ifnull(status,'')!='closed','closed',status), stage=if(ifnull(stage,'')!='closed','closed',stage) ";
         $BASESQL .= "    , responseResult = if(responseResult='todo','suspend',responseResult) ";
+        $BASESQL .= "    , lastEditedDate = now(), lastEditedBy = 'system' ";
+        $BASESQL .= "    , stagedBy=if(length(ifnull(stagedBy,''))<1,'system',stagedBy) ";
         $BASESQL .= "    , closedBy=if(length(ifnull(closedBy,''))<1,'system',closedBy) ";
         $BASESQL .= "    , closedDate=if(date_format(ifnull(closedDate,'0000-00-00'),'%Y-%m-%d')='0000-00-00',now(), closedDate) ";
         $BASESQL .= "    , closedReason=if(length(ifnull(closedReason,''))<1,'postponed',closedReason) ";
