@@ -51,6 +51,18 @@ class bytenewWebhook extends webhookModel
         $host           = (defined('RUN_MODE') and RUN_MODE == 'api') ? '' : $host;
         $text           = $title . ' ' . "[#{$objectID}::{$object->$field}](" . $host . $viewLink . ")";
 
+        // 需要在action->logHistory中触发. 默认是action->creat
+        $this->loadModel("action");
+        // $printAction = $this->action->printAction($action, '', true);
+        // if(!empty($printAction)) $text .=  "<br /> $printAction";
+        $histories = $this->action->getHistory(intval($actionID));
+        if(!empty($histories)) {
+            $printChanges = $this->action->printChanges($action->objectType, $histories[$actionID], true, true);
+            if(!empty($printChanges)) $text .=  "<br /> $printChanges";
+        }else{
+            return ''; // 无变化不通知
+        }
+
         $mobile = '';
         $email  = '';
         if(in_array($objectType, $this->config->webhook->needAssignTypes) && !empty($object->assignedTo))
@@ -110,6 +122,8 @@ class bytenewWebhook extends webhookModel
      */
     public function fetchHook($webhook, $sendData, $actionID = 0)
     {
+        if(empty($sendData)) return '';
+
         if(!extension_loaded('curl')) return print(helper::jsonEncode($this->lang->webhook->error->curl));
 
         if($webhook->type == 'dinguser' || $webhook->type == 'wechatuser' || $webhook->type == 'feishuuser' || $webhook->type == 'dingsingleuser')

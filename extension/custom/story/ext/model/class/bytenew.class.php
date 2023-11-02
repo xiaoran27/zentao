@@ -228,8 +228,8 @@ class bytenewStory extends StoryModel
         
         $rows = $this->timeoutClosed($reject, $research, $suspend, $todo);
         $datas['timeoutClosedRows'] = $rows;
-        $rows = $this->updateStage($reject, $research, $suspend);
-        $datas['updateStageRows'] = $rows;
+        // $rows = $this->updateStage($reject, $research, $suspend);
+        // $datas['updateStageRows'] = $rows;
 
 
         $IDs = $this->dao->select("id")->from(TABLE_STORY)
