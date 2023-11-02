@@ -1,5 +1,15 @@
 [toc]
 
+#  rel231103
+
+## changed:
+1. task#27836: 历史记录在通知消息内，且project+execution也通知
+2. 
+
+## fixed:
+1. fixed: 需求超时是大于而非小于指定的天数
+
+
 #  rel231025
 
 ## changed:
