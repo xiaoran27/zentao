@@ -67,15 +67,15 @@ class bytenewAction extends actionModel
         /* Call the message notification function. */
         $actionTypes = array('activated','archived','assigned','blocked','bugconfirmed','canceled','changed','closed','commented','confirmed','created','delayed','deleted','edited','finished','frombug','moved','opened','paused','resolved','restarted','restore','reviewed','started','suspended','undeleted');
         $actionTypes = array('opened','finished','commented','created','resolved','deleted','assigned','run' , 'recordestimate','adjusttasktowait','submitreview');
-        if (  str_starts_with($actionType,'link') 
-            or str_starts_with($actionType,'unlink') 
-            or str_starts_with($actionType,'to') 
-            or str_starts_with($actionType,'from') 
-            or str_starts_with($actionType,'review') 
-            or str_starts_with($actionType,'import') 
-            or str_ends_with($actionType,'system')
-            or str_ends_with($actionType,'tolib')
-            or in_array($actionType, $actionTypes)) {
+        if (  strpos(",$actionType,",',link') !== false 
+            or strpos(",$actionType,",',unlink') !== false
+            or strpos(",$actionType,",',to') !== false
+            or strpos(",$actionType,",',from') !== false
+            or strpos(",$actionType,",',review') !== false
+            or strpos(",$actionType,",',import') !== false
+            or strpos(",$actionType,",'system,') !== false
+            or strpos(",$actionType,",'tolib,') !== false
+            or in_array($actionType, $actionTypes) ) {
             $this->loadModel('message')->send(strtolower($objectType), $objectID, $actionType, $actionID, $actor, $extra);
         }
         
