@@ -65,7 +65,20 @@ class bytenewAction extends actionModel
         if($this->post->uid) $this->file->updateObjectID($this->post->uid, $objectID, $objectType);
 
         /* Call the message notification function. */
-        // $this->loadModel('message')->send(strtolower($objectType), $objectID, $actionType, $actionID, $actor, $extra);
+        $actionTypes = array('activated','archived','assigned','blocked','bugconfirmed','canceled','changed','closed','commented','confirmed','created','delayed','deleted','edited','finished','frombug','moved','opened','paused','resolved','restarted','restore','reviewed','started','suspended','undeleted');
+        $actionTypes = array('opened','finished','commented','created','resolved','deleted','assigned','run' , 'recordestimate','adjusttasktowait','submitreview');
+        if (  str_starts_with($actionType,'link') 
+            or str_starts_with($actionType,'unlink') 
+            or str_starts_with($actionType,'to') 
+            or str_starts_with($actionType,'from') 
+            or str_starts_with($actionType,'review') 
+            or str_starts_with($actionType,'import') 
+            or str_ends_with($actionType,'system')
+            or str_ends_with($actionType,'tolib')
+            or in_array($actionType, $actionTypes)) {
+            $this->loadModel('message')->send(strtolower($objectType), $objectID, $actionType, $actionID, $actor, $extra);
+        }
+        
 
         /* Add index for global search. */
         $this->saveIndex($objectType, $objectID, $actionType);

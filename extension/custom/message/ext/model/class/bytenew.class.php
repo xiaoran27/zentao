@@ -53,6 +53,25 @@ class bytenewMessage extends messageModel
     }
 
     /**
+     * Check sended.
+     *
+     * @param  string $msgType
+     * @param  int    $actionID
+     * @access public
+     * @return bool
+     */
+    public function isSended($actionID, $msgType = '')
+    {
+
+        $logs = $this->dao->select('*')->from(TABLE_LOG)
+            ->where('action')->eq($actionID)
+            ->beginIF(!empty($msgType))->andWhere('objectType')->eq($msgType)->fi()
+            ->fetchAll();
+
+        return !empty($logs);
+    }
+
+    /**
      * Check send.
      *
      * @param  string $objectType
@@ -74,6 +93,9 @@ class bytenewMessage extends messageModel
 
         if(isset($messageSetting['mail']))
         {
+            $isSended = $this->isSended($actionID, 'mail');
+            if ($isSended) return;
+
             $actions = $messageSetting['mail']['setting'];
             if(isset($actions[$objectType]) and in_array($actionType, $actions[$objectType]))
             {
@@ -108,6 +130,9 @@ class bytenewMessage extends messageModel
 
         if(isset($messageSetting['webhook']))
         {
+            $isSended = $this->isSended($actionID, 'webhook');
+            if ($isSended) return;
+
             $actions = $messageSetting['webhook']['setting'];
             if(isset($actions[$objectType]) and in_array($actionType, $actions[$objectType]))
             {
@@ -116,6 +141,9 @@ class bytenewMessage extends messageModel
         }
         if(isset($messageSetting['message']))
         {
+            $isSended = $this->isSended($actionID, 'message');
+            if ($isSended) return;
+
             $actions = $messageSetting['message']['setting'];
             if(isset($actions[$objectType]) and in_array($actionType, $actions[$objectType]))
             {
@@ -189,6 +217,7 @@ class bytenewMessage extends messageModel
     {
         $toList = '';
         if(!empty($object->assignedTo)) $toList = $object->assignedTo;
+        if(empty($toList) and $objectType == 'product' ) $toList = "$object->PO,$object->QD,$object->RD,$object->reviewer";
         if(empty($toList) and in_array($objectType, array('project', 'execution', 'sprint')) ) $toList = "$object->PM,$object->PO,$object->QD,$object->RD";
         if(empty($toList) and $objectType == 'todo') $toList = $object->account;
         if(empty($toList) and $objectType == 'testtask') $toList = $object->owner;

@@ -60,7 +60,7 @@ class bytenewWebhook extends webhookModel
             $printChanges = $this->action->printChanges($action->objectType, $histories[$actionID], true, true);
             if(!empty($printChanges)) $text .=  "<br /> $printChanges";
         }else{
-            return ''; // 无变化不通知
+            // return ''; // 无变化不通知。类似新建无历史记录的保留发送通知
         }
 
         $mobile = '';
