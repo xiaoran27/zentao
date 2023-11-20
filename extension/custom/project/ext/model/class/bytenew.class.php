@@ -2352,6 +2352,42 @@ class bytenewProject  extends projectModel
                     if($project->PM) echo html::smallAvatar(array('avatar' => $userAvatar, 'account' => $project->PM, 'name' => $userName), "avatar-circle avatar-{$project->PM}");
                     echo empty($project->PM) ? '' : html::a($PMLink, $userName, '', "title='{$userName}' data-toggle='modal' data-type='iframe' data-width='600'");
                     break;
+                case 'bd':
+                    $user       = $this->loadModel('user')->getByID($project->bd, 'account');
+                    $userID     = !empty($user) ? $user->id : '';
+                    $userAvatar = !empty($user) ? $user->avatar : '';
+                    $bdLink     = helper::createLink('user', 'profile', "userID=$userID", '', true);
+                    $userName   = zget($users, $project->bd);
+                    if($project->bd) echo html::smallAvatar(array('avatar' => $userAvatar, 'account' => $project->bd, 'name' => $userName), "avatar-circle avatar-{$project->bd}");
+                    echo empty($project->bd) ? '' : html::a($bdLink, $userName, '', "title='{$userName}' data-toggle='modal' data-type='iframe' data-width='600'");
+                    break;
+                case 'sa':
+                    $user       = $this->loadModel('user')->getByID($project->sa, 'account');
+                    $userID     = !empty($user) ? $user->id : '';
+                    $userAvatar = !empty($user) ? $user->avatar : '';
+                    $saLink     = helper::createLink('user', 'profile', "userID=$userID", '', true);
+                    $userName   = zget($users, $project->sa);
+                    if($project->sa) echo html::smallAvatar(array('avatar' => $userAvatar, 'account' => $project->sa, 'name' => $userName), "avatar-circle avatar-{$project->sa}");
+                    echo empty($project->sa) ? '' : html::a($saLink, $userName, '', "title='{$userName}' data-toggle='modal' data-type='iframe' data-width='600'");
+                    break;
+                case 'cs':
+                    $user       = $this->loadModel('user')->getByID($project->cs, 'account');
+                    $userID     = !empty($user) ? $user->id : '';
+                    $userAvatar = !empty($user) ? $user->avatar : '';
+                    $csLink     = helper::createLink('user', 'profile', "userID=$userID", '', true);
+                    $userName   = zget($users, $project->cs);
+                    if($project->cs) echo html::smallAvatar(array('avatar' => $userAvatar, 'account' => $project->cs, 'name' => $userName), "avatar-circle avatar-{$project->cs}");
+                    echo empty($project->cs) ? '' : html::a($csLink, $userName, '', "title='{$userName}' data-toggle='modal' data-type='iframe' data-width='600'");
+                    break;
+                case 'deciders':
+                    $user       = $this->loadModel('user')->getByID($project->deciders, 'account');
+                    $userID     = !empty($user) ? $user->id : '';
+                    $userAvatar = !empty($user) ? $user->avatar : '';
+                    $decidersLink     = helper::createLink('user', 'profile', "userID=$userID", '', true);
+                    $userName   = zget($users, $project->deciders);
+                    if($project->deciders) echo html::smallAvatar(array('avatar' => $userAvatar, 'account' => $project->deciders, 'name' => $userName), "avatar-circle avatar-{$project->deciders}");
+                    echo empty($project->deciders) ? '' : html::a($decidersLink, $userName, '', "title='{$userName}' data-toggle='modal' data-type='iframe' data-width='600'");
+                    break;
                 case 'begin':
                     echo $project->begin;
                     break;

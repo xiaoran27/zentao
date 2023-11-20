@@ -5,9 +5,9 @@ global $lang, $app;
 
 #$config->project->list->allFields = $config->project->list->allFields . ", contractNo, devEvaluate, poDays, outerDays, selfDays, saasDays";
 
-$config->project->list->exportFields = $config->project->list->exportFields . ", contractNo, devEvaluate, poDays, outerDays, selfDays, saasDays";
-
-
+$config->project->list->exportFields = $config->project->list->exportFields . ", contractNo, devEvaluate, poDays, outerDays, selfDays, saasDays, bd, sa, cs, deciders";
+$config->project->create->requiredFields2 = $config->project->create->requiredFields.',bd,deciders,PM';
+$config->project->edit->requiredFields2 = $config->project->edit->requiredFields.',bd,deciders,PM';
 
 $config->project->search['fields']['contractNo'] = $lang->project->contractNo;
 $config->project->search['params']['contractNo'] = array('operator' => '=', 'control' => 'input', 'values' => '');
@@ -56,3 +56,27 @@ $config->project->datatable->fieldList['saasDays']['title'] = 'saasDays';
 $config->project->datatable->fieldList['saasDays']['fixed'] = 'left';
 $config->project->datatable->fieldList['saasDays']['width'] = 'auto';
 $config->project->datatable->fieldList['saasDays']['required'] = 'no';
+
+$config->project->datatable->fieldList['sa']['title'] = 'sa';
+$config->project->datatable->fieldList['sa']['fixed'] = 'left';
+$config->project->datatable->fieldList['sa']['width'] = 'auto';
+$config->project->datatable->fieldList['sa']['required'] = 'no';
+
+
+$config->project->datatable->fieldList['bd']['title'] = 'bd';
+$config->project->datatable->fieldList['bd']['fixed'] = 'left';
+$config->project->datatable->fieldList['bd']['width'] = 'auto';
+$config->project->datatable->fieldList['bd']['required'] = 'no';
+
+
+$config->project->datatable->fieldList['cs']['title'] = 'cs';
+$config->project->datatable->fieldList['cs']['fixed'] = 'left';
+$config->project->datatable->fieldList['cs']['width'] = 'auto';
+$config->project->datatable->fieldList['cs']['required'] = 'no';
+
+
+$config->project->datatable->fieldList['deciders']['title'] = 'deciders';
+$config->project->datatable->fieldList['deciders']['fixed'] = 'left';
+$config->project->datatable->fieldList['deciders']['width'] = 'auto';
+$config->project->datatable->fieldList['deciders']['required'] = 'no';
+

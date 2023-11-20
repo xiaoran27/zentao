@@ -28,7 +28,7 @@
 <?php js::set('linkedProjectsTip', $lang->project->linkedProjectsTip); ?>
 <?php js::set('multiBranchProducts', $multiBranchProducts); ?>
 <?php $aclList = $project->parent ? $lang->project->subAclList : $lang->project->aclList; ?>
-<?php $requiredFields = $config->project->edit->requiredFields; ?>
+<?php $requiredFields = $config->project->edit->requiredFields2; ?>
 <?php js::set('requiredFields', $requiredFields); ?>
 <?php js::set('budget', $project->budget); ?>
 <?php js::set('budgetOverrun', $lang->project->budgetOverrun); ?>
@@ -90,16 +90,52 @@
                     <th id='projectType'><?php echo $lang->project->type; ?></th>
                     <td colspan='3'><?php echo nl2br(html::radio('hasProduct', $lang->project->projectTypeList, $project->hasProduct, 'disabled')); ?></td>
                 </tr>
+
                 <tr>
                     <th><?php echo $lang->project->PM; ?></th>
                     <td>
                         <div id='pmBox' class='input-group'>
                             <?php echo html::select('PM', $PMUsers, $project->PM, "class='form-control chosen'" . (strpos($requiredFields, 'PM') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div id='contractNoBox' class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->contractNo; ?></span>
                             <?php echo html::input('contractNo', $project->contractNo, "class='form-control' style='width: 150px'"); ?>
                         </div>
                     </td>
                 </tr>
+
+                <tr>
+                    <th><?php echo $lang->project->bd; ?></th>
+                    <td>
+                        <div id='bdBox' class='input-group'>
+                            <?php echo html::select('bd', $PMUsers, $project->bd, "class='form-control chosen'" . (strpos($requiredFields, 'bd') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div id='saBox' class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->sa; ?></span>
+                            <?php echo html::select('sa', $PMUsers, $project->sa, "class='form-control chosen'" . (strpos($requiredFields, 'sa') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><?php echo $lang->project->cs; ?></th>
+                    <td>
+                        <div id='csBox' class='input-group'>
+                            <?php echo html::select('cs', $PMUsers, $project->cs, "class='form-control chosen'" . (strpos($requiredFields, 'cs') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div id='decidersBox' class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->deciders; ?></span>
+                            <?php echo html::select('deciders', $PMUsers, $project->deciders, "class='form-control chosen'" . (strpos($requiredFields, 'deciders') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
+                </tr>
+
                 <tr>
                     <th><?php echo $lang->project->budget; ?></th>
                     <td>
@@ -156,13 +192,13 @@
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->devEvaluate; ?></span>
-                            <?php echo html::number('devEvaluate', $project->devEvaluate, "class='form-control' style='width: 150px' min='0'"); ?>
+                            <?php echo html::number('devEvaluate', $project->devEvaluate, "class='form-control' min='0'"); ?>
                         </div>
                     </td>
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->poDays; ?></span>
-                            <?php echo html::number('poDays', $project->poDays, "class='form-control' style='width: 150px' min='0'"); ?>
+                            <?php echo html::number('poDays', $project->poDays, "class='form-control' min='0'"); ?>
                         </div>
                     </td>
                     <td></td>
@@ -172,19 +208,19 @@
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->outerDays; ?></span>
-                            <?php echo html::number('outerDays', $project->outerDays, "class='form-control' style='width: 150px' min='0'"); ?>
+                            <?php echo html::number('outerDays', $project->outerDays, "class='form-control' min='0'"); ?>
                         </div>
                     </td>
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->selfDays; ?></span>
-                            <?php echo html::number('selfDays', $project->selfDays, "class='form-control' style='width: 150px' min='0'"); ?>
+                            <?php echo html::number('selfDays', $project->selfDays, "class='form-control' min='0'"); ?>
                         </div>
                     </td>
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->saasDays; ?></span>
-                            <?php echo html::number('saasDays', $project->saasDays, "class='form-control' style='width: 150px' min='0'"); ?>
+                            <?php echo html::number('saasDays', $project->saasDays, "class='form-control' min='0'"); ?>
                         </div>
                     </td>
                 </tr>

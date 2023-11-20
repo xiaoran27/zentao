@@ -34,7 +34,7 @@
 <?php js::set('beginLetterParent', $lang->project->beginLetterParent); ?>
 <?php js::set('endGreaterParent', $lang->project->endGreaterParent); ?>
 <?php js::set('ignore', $lang->project->ignore); ?>
-<?php $requiredFields = $config->project->create->requiredFields; ?>
+<?php $requiredFields = $config->project->create->requiredFields2; ?>
 <?php js::set('requiredFields', $requiredFields); ?>
 <?php js::set('copyType', ''); ?>
 <?php js::set('nameTips', $lang->project->copyProject->nameTips); ?>
@@ -111,11 +111,48 @@ js::set('acl', $acl); ?>
 
                         <div id='pmBox' class='input-group'>
                             <?php echo html::select('PM', $pmUsers, '', "class='form-control chosen'" . (strpos($requiredFields, 'PM') !== false ? ' required' : '')); ?>
+
+                        </div>
+                    </td>
+                    <td>
+                        <div id='contractNoBox' class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->contractNo; ?></span>
                             <?php echo html::input('contractNo', '无', "class='form-control' style='width: 150px'"); ?>
                         </div>
                     </td>
                 </tr>
+
+                <tr>
+                    <th><?php echo $lang->project->bd; ?></th>
+                    <td>
+
+                        <div id='bdBox' class='input-group'>
+                            <?php echo html::select('bd', $pmUsers, '', "class='form-control chosen'" . (strpos($requiredFields, 'bd') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div id='saBox' class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->sa; ?></span>
+                            <?php echo html::select('sa', $pmUsers, '', "class='form-control chosen'" . (strpos($requiredFields, 'sa') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><?php echo $lang->project->cs; ?></th>
+                    <td>
+                        <div id='csBox' class='input-group'>
+                            <?php echo html::select('cs', $pmUsers, '', "class='form-control chosen'" . (strpos($requiredFields, 'cs') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div id='decidersBox' class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->deciders; ?></span>
+                            <?php echo html::select('deciders', $pmUsers, '', "class='form-control chosen'" . (strpos($requiredFields, 'deciders') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
+                </tr>
+
                 <tr>
                     <th><?php echo $lang->project->budget; ?></th>
                     <td>
@@ -161,15 +198,15 @@ js::set('acl', $acl); ?>
                 <tr>
                     <th></th>
                     <td>
-                        <div class='input-group'>
+                        <div id="devEvaluateBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->devEvaluate; ?></span>
-                            <?php echo html::number('devEvaluate', '0', "class='form-control' style='width: 150px' min='0'"); ?>
+                            <?php echo html::number('devEvaluate', '0', "class='form-control' min='0'"); ?>
                         </div>
                     </td>
                     <td>
-                        <div class='input-group'>
+                        <div id="poDaysBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->poDays; ?></span>
-                            <?php echo html::number('poDays', '0', "class='form-control' style='width: 150px' min='0'"); ?>
+                            <?php echo html::number('poDays', '0', "class='form-control' min='0'"); ?>
                         </div>
                     </td>
 
@@ -177,22 +214,22 @@ js::set('acl', $acl); ?>
                 <tr>
                     <th id="poDays"></th>
                     <td>
-                        <div class='input-group'>
+                        <div id="outerDaysBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->outerDays; ?></span>
-                            <?php echo html::number('outerDays', '0', "class='form-control' style='width: 150px' min='0'"); ?>
+                            <?php echo html::number('outerDays', '0', "class='form-control' min='0'"); ?>
                         </div>
                     </td>
                     <td>
-                        <div class='input-group'>
+                        <div id="selfDaysBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->selfDays; ?></span>
-                            <?php echo html::number('selfDays', '0', "class='form-control' style='width: 150px' min='0'"); ?>
+                            <?php echo html::number('selfDays', '0', "class='form-control' min='0'"); ?>
                         </div>
                     </td>
 
                     <td>
-                        <div class='input-group'>
+                        <div id="saasDaysBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->saasDays; ?></span>
-                            <?php echo html::number('saasDays', '0', "class='form-control' style='width: 150px' min='0'"); ?>
+                            <?php echo html::number('saasDays', '0', "class='form-control' min='0'"); ?>
                         </div>
                     </td>
 
