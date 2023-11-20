@@ -218,7 +218,7 @@ class bytenewMessage extends messageModel
         $toList = '';
         if(!empty($object->assignedTo)) $toList = $object->assignedTo;
         if(empty($toList) and $objectType == 'product' ) $toList = "$object->PO,$object->QD,$object->RD,$object->reviewer";
-        if(empty($toList) and in_array($objectType, array('project', 'execution', 'sprint')) ) $toList = "$object->PM,$object->PO,$object->QD,$object->RD";
+        if(empty($toList) and in_array($objectType, array('project', 'execution', 'sprint')) ) $toList = "$object->PM,$object->PO,$object->QD,$object->RD,$object->bd,$object->sa,$object->cs,$object->deciders";
         if(empty($toList) and $objectType == 'todo') $toList = $object->account;
         if(empty($toList) and $objectType == 'testtask') $toList = $object->owner;
         if(empty($toList) and $objectType == 'meeting') $toList = $object->host . $object->participant;
