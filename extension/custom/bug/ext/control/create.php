@@ -217,7 +217,7 @@ class myBug extends bug
         if(isset($bugID))
         {
             $bug = $this->bug->getById($bugID);
-
+            $this->loadModel('common')->log(json_encode($bug,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
             extract((array)$bug);
             $executionID = $bug->execution;
             $moduleID    = $bug->module;
@@ -232,10 +232,12 @@ class myBug extends bug
             $testtask    = $bug->testtask;
             $feedbackBy  = $bug->feedbackBy;
             $notifyEmail = $bug->notifyEmail;
+            $occursEnv   = $bug->occursEnv;
             if($pri == 0) $pri = '3';
             $purchaser   = $bug->purchaser;
             $feedbackTime          = $bug->feedbackTime;
             $collectTime          = $bug->collectTime;
+            $mailto      = $bug->mailto;
         }
 
         if($testtask)
@@ -396,6 +398,12 @@ class myBug extends bug
         $this->view->branches              = $branches;
         $this->view->blockID               = $blockID;
         $this->view->color                 = $color;
+        $this->view->occursEnv             = $occursEnv;
+        $this->view->purchaser             = $purchaser;
+        $this->view->feedbackTime          = $feedbackTime;
+        $this->view->collectTime           = $collectTime;
+
+
         $this->view->stepsRequired         = strpos($this->config->bug->create->requiredFields, 'steps');
         $this->view->isStepsTemplate       = $steps == $this->lang->bug->tplStep . $this->lang->bug->tplResult . $this->lang->bug->tplExpect ? true : false;
         $this->view->issueKey              = $from == 'sonarqube' ? $output['sonarqubeID'] . ':' . $output['issueKey'] : '';
