@@ -221,10 +221,29 @@ alter table zt_story add workType varchar(255) null comment '工时类型';
 
 -- sql.start.banniu_rel20230911
 
+-- 忽略 zentao.tri_story_bu
+
+-- sql.end.banniu_rel20230911
+
+
+-- sql.start.banniu_rel20231025
+
+ALTER TABLE zt_project ADD poDays int NULL default 0 comment '合同人天';
+ALTER TABLE zt_project ADD outerDays int NULL default 0 comment '外包人天';
+ALTER TABLE zt_project ADD selfDays int NULL default 0 comment '定开人天';
+ALTER TABLE zt_project ADD saasDays int NULL default 0 comment '标品人天';
+
+-- sql.end.banniu_rel20231025
+
+
+-- sql.end.banniu_rel20231122
+
 DROP TRIGGER IF EXISTS zentao.tri_story_bu;
 delimiter $$
 CREATE TRIGGER tri_story_bu BEFORE UPDATE ON zt_story FOR EACH ROW
 BEGIN
+
+  -- responseResult及对应时间的处理
   IF( old.rspRecievedTime is null and ( 'recieved' = new.responseResult or 'suspend' = new.responseResult )  ) THEN
     SET new.rspRecievedTime=now();
   ELSEIF( old.rspResearchTime is null and  'research' = new.responseResult  ) THEN
@@ -249,6 +268,7 @@ BEGIN
     SET new.prdReviewTime=ifnull(new.rspAcceptTime,now());
   END if;
  
+  -- status&stage的关闭处理
   IF( 'closed' = new.status or new.stage in ('verified', 'released', 'closed') ) THEN
     if ( date_format(ifnull(new.releaseTime, '0000-00-00'), '%Y-%m-%d')='0000-00-00' ) then
       set new.releaseTime=now();
@@ -274,17 +294,76 @@ BEGIN
       
     end if;
   END if;
+  
+  -- prdReviewTime或releaseTime有值对responseResult = 'todo'的处理
+  IF ( new.responseResult = 'todo'
+  		AND ( date_format(ifnull(new.prdReviewTime, '0000-00-00'), '%Y-%m-%d')!='0000-00-00' 
+  			OR date_format(ifnull(new.releaseTime, '0000-00-00'), '%Y-%m-%d')!='0000-00-00'  ) ) THEN
+    set new.responseResult = IF(new.type = 'story', 'prd', 'accept');
+    set new.rspRecievedTime=if(date_format(ifnull(new.prdReviewTime, '0000-00-00'), '%Y-%m-%d')!='0000-00-00', new.prdReviewTime, new.releaseTime);
+    set new.rspAcceptTime=new.rspRecievedTime;
+     
+  END IF;
+  
+  
+  -- status的激活处理
+  IF ( old.status = 'closed' and new.status = 'active') THEN
+    set new.stage = IF(new.stage = 'closed', 'wait', new.stage);
+    -- set new.prdReviewTime=if(date_format(ifnull(old.prdReviewTime, '0000-00-00'), '%H:%i:%S')!='00:00:00',"",old.prdReviewTime);
+    set new.releaseTime=if(date_format(ifnull(old.releaseTime, '0000-00-00'), '%H:%i:%S')!='00:00:00',"",old.releaseTime);
+  END IF;
+
+  
 END;
 $$
 delimiter ;
 
--- sql.end.banniu_rel20230911
+-- sql.end.banniu_rel20231122
 
--- sql.start.banniu_rel20231025
 
-ALTER TABLE zt_project ADD poDays int NULL default 0 comment '合同人天';
-ALTER TABLE zt_project ADD outerDays int NULL default 0 comment '外包人天';
-ALTER TABLE zt_project ADD selfDays int NULL default 0 comment '定开人天';
-ALTER TABLE zt_project ADD saasDays int NULL default 0 comment '标品人天';
+-- sql.start.banniu_rel20231206
+      
+--  产品需求关联项目或迭代即可
+CREATE OR REPLACE VIEW ztv_projectdays AS
+  select proj_id, proj_name
+    ,sum(estimate) as estimate, sum(consumed) as consumed
+    , sum(consumed_saas) as consumed_saas, sum(consumed_self) as consumed_self, sum(consumed_outer) as consumed_outer
+  from (
+    select zt_project.id as proj_id, zt_project.name as proj_name
+        , sum(zt_task.estimate)/8 as estimate, sum(zt_task.consumed)/8 as consumed 
+        , sum(if(ifnull(zt_story.workType,"saas")="saas", zt_task.consumed,0))/8 as consumed_saas
+        , sum(if(ifnull(zt_story.workType,"saas")="self", zt_task.consumed,0))/8 as consumed_self
+        , sum(if(ifnull(zt_story.workType,"saas")="outer", zt_task.consumed,0))/8 as consumed_outer
+    from zt_project
+        join zt_projectstory on ( zt_project.id = zt_projectstory.project )
+        join zt_story on ( zt_story.id = zt_projectstory.story and zt_story.deleted = '0'  )
+        join zt_task on ( zt_task.story = zt_story.id and zt_task.story > 0 and zt_task.deleted = '0' and zt_task.parent > -1  )
+    where zt_project.deleted = '0'  and zt_project.path like  ',223,%' 
+        and zt_project.type = 'project' 
+        and DATEDIFF(NOW(), zt_project.begin) <= (365+183)
+    group by proj_id
+   
+    union all
+    
+    --  项目或迭代的未关联需求的任务
+    select zt_project.id as proj_id, zt_project.name as proj_name
+        , sum(zt_task.estimate)/8 as estimate, sum(zt_task.consumed)/8 as consumed 
+        , sum(zt_task.consumed)/8 as consumed_saas
+        , 0 as consumed_self
+        , 0 as consumed_outer
+    from zt_project
+        join zt_task on ( zt_project.id = zt_task.project and zt_task.story = 0 and zt_task.deleted = '0' and zt_task.parent > -1 ) 
+        -- join zt_task on ( zt_project.id = zt_task.project and zt_task.story = 0 and zt_task.deleted = '0' and zt_task.parent <=0 )
+    where zt_project.deleted = '0'  and zt_project.path like  ',223,%' 
+        and zt_project.type = 'project' 
+        and DATEDIFF(NOW(), zt_project.begin) <= (365+183)
+    group by proj_id
+  ) as t
+  group by proj_id
+;
 
--- sql.end.banniu_rel20231025
+
+
+-- sql.end.banniu_rel20231206
+
+
