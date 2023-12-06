@@ -859,9 +859,19 @@ class bytenewAction extends actionModel
         $history = $this->getHistory($actionID);  // 在create中已入库
         if(!empty($history)) return false;
 
+        $toSend = false;   //  有效变化才发送通知
         $historyIDs = '';
         foreach($changes as $change)
         {
+             // 版本变化不保存
+            $field = (is_object($change)?$change->field:$change['field']);
+            if ( $field == 'version' ) continue;
+
+            // 日期无值的变化不保存
+            $noSave = ( helper::isZeroDate(is_object($change)?$change->old:$change['old']) and helper::isZeroDate(is_object($change)?$change->new:$change['new']) ) ;
+            if ($noSave) continue;
+
+
             if(is_object($change))
             {
                 $change->action = $actionID;
@@ -870,17 +880,19 @@ class bytenewAction extends actionModel
             {
                 $change['action'] = $actionID;
             }
+
             $this->dao->insert(TABLE_HISTORY)->data($change)->exec();
             $historyID = $this->dao->lastInsertID();
             $historyIDs .= ",$historyID";
+            $toSend = true;
 
-            $common = $this->loadModel('common');
-            $common->log('logHistory:'.json_encode(array('historyID' => $historyID, 'change' => $change), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+            // $common = $this->loadModel('common');
+            // $common->log('logHistory:'.json_encode(array('historyID' => $historyID, 'change' => $change), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
     
         }
 
         //  消息包含有历史记录
-        $this->loadModel('message')->send($action->objectType, $action->objectID, $action->action, $action->id, $action->actor, $action->extra);
+        if ($toSend) $this->loadModel('message')->send($action->objectType, $action->objectID, $action->action, $action->id, $action->actor, $action->extra);
 
         return $historyIDs;
     }
