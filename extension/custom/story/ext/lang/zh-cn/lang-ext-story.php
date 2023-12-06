@@ -173,10 +173,13 @@ $lang->story->prdReviewTime = 'PRD通过日期';
 $lang->story->releaseTime = '发布日期';
 
 $lang->story->workType = '工时类型';
+
 $lang->story->workTypeList = array();
-$lang->story->workTypeList['base'] = '标品';
-$lang->story->workTypeList['made'] = '定开';
-$lang->story->workTypeList['outsourcing'] = '外包';
+$lang->story->workTypeList['saas'] = '标品';
+$lang->story->workTypeList['self'] = '定开';
+$lang->story->workTypeList['outer'] = '外包';
+
+
 
 /* 统计报表。*/
 $lang->story->report->charts['purchaser'] = "按{$lang->story->purchaser}来进行统计";
