@@ -379,15 +379,14 @@ do
 	begin
 	  update zt_project , ztv_projectdays set saasDays = round(consumed_saas), selfDays = round(consumed_self)
       , lastEditedBy='system', lastEditedDate=now()
-      , `desc` = REGEXP_REPLACE(`desc`, '<p>.*更新人天.*</p>', concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") )
+      , `desc` = if ( `desc` REGEXP '<p>.*更新人天.*</p>', REGEXP_REPLACE(`desc`, '<p>.*更新人天.*</p>', concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") ), concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") )
     where id = proj_id
       and ( saasDays != round(consumed_saas) OR selfDays != round(consumed_self) );
 	end
 $$
 delimiter ;
--- select id,name,saasDays,selfDays from zt_project where `desc` like '%更新人天%' limit 5;
--- select id,name,saasDays,selfDays,`desc` from zt_project
--- WHERE `desc` REGEXP '<p>.*更新人天.*</p>' limit 5
+-- select id,name,saasDays,selfDays,`desc` from zt_project where `desc` like '%更新人天%' and lastEditedDate > current_date limit 5;
+-- select id,name,saasDays,selfDays,`desc` from zt_project WHERE `desc` REGEXP '<p>.*更新人天.*</p>'  and lastEditedDate > current_date  limit 5;
 
 -- sql.end.banniu_rel20231206
 
