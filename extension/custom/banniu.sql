@@ -379,7 +379,7 @@ do
 	begin
 	  update zt_project , ztv_projectdays set saasDays = round(consumed_saas), selfDays = round(consumed_self)
       , lastEditedBy='system', lastEditedDate=now()
-      , `desc` = if ( `desc` REGEXP '<p>.*更新人天.*</p>', REGEXP_REPLACE(`desc`, '<p>.*更新人天.*</p>', concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") ), concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") )
+      , `desc` = if ( `desc` REGEXP '<p>.*更新人天.*</p>', REGEXP_REPLACE(`desc`, '<p>.*更新人天.*</p>', concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") ), concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>", `desc`) )
     where id = proj_id
       and ( saasDays != round(consumed_saas) OR selfDays != round(consumed_self) );
 	end
