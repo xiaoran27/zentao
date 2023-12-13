@@ -266,7 +266,7 @@ BEGIN
     set new.rspRecievedTime=ifnull(old.rspRecievedTime, ifnull(new.rspRecievedTime, new.rspAcceptTime));
   ELSEIF( 'prd' = new.responseResult and date_format(ifnull(new.prdReviewTime, '0000-00-00'), '%Y-%m-%d')='0000-00-00' ) THEN
     SET new.prdReviewTime=ifnull(new.rspAcceptTime,now());
-  END if;
+  END IF;
  
   -- status&stage的关闭处理
   IF( 'closed' = new.status or new.stage in ('verified', 'released', 'closed') ) THEN
@@ -293,12 +293,10 @@ BEGIN
       set new.rspRecievedTime=ifnull(old.rspRecievedTime, ifnull(new.rspRecievedTime, new.rspAcceptTime));
       
     end if;
-  END if;
+  END IF;
   
   -- prdReviewTime或releaseTime有值对responseResult = 'todo'的处理
-  IF ( new.responseResult = 'todo'
-  		AND ( date_format(ifnull(new.prdReviewTime, '0000-00-00'), '%Y-%m-%d')!='0000-00-00' 
-  			OR date_format(ifnull(new.releaseTime, '0000-00-00'), '%Y-%m-%d')!='0000-00-00'  ) ) THEN
+  IF ( new.responseResult = 'todo' AND ( date_format(ifnull(new.prdReviewTime, '0000-00-00'), '%Y-%m-%d')!='0000-00-00'  OR date_format(ifnull(new.releaseTime, '0000-00-00'), '%Y-%m-%d')!='0000-00-00'  ) ) THEN
     set new.responseResult = IF(new.type = 'story', 'prd', 'accept');
     set new.rspRecievedTime=if(date_format(ifnull(new.prdReviewTime, '0000-00-00'), '%Y-%m-%d')!='0000-00-00', new.prdReviewTime, new.releaseTime);
     set new.rspAcceptTime=new.rspRecievedTime;
@@ -376,13 +374,13 @@ on schedule
   starts '2023-12-07 12:00:00'
 	comment '定时更新项目的人天'
 do
-	begin
-	  update zt_project , ztv_projectdays set saasDays = round(consumed_saas), selfDays = round(consumed_self)
-      , lastEditedBy='system', lastEditedDate=now()
-      , `desc` = if ( `desc` REGEXP '<p>.*更新人天.*</p>', REGEXP_REPLACE(`desc`, '<p>.*更新人天.*</p>', concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") ), concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>", `desc`) )
-    where id = proj_id
-      and ( saasDays != round(consumed_saas) OR selfDays != round(consumed_self) );
-	end
+begin
+  update zt_project , ztv_projectdays set saasDays = round(consumed_saas), selfDays = round(consumed_self)
+    , lastEditedBy='system', lastEditedDate=now()
+    , `desc` = if ( `desc` REGEXP '<p>.*更新人天.*</p>', REGEXP_REPLACE(`desc`, '<p>.*更新人天.*</p>', concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") ), concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>", `desc`) )
+  where id = proj_id
+    and ( saasDays != round(consumed_saas) OR selfDays != round(consumed_self) );
+end
 $$
 delimiter ;
 -- select id,name,saasDays,selfDays,`desc` from zt_project where `desc` like '%更新人天%' and lastEditedDate > current_date limit 5;
