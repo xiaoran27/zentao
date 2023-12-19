@@ -34,7 +34,7 @@
 <?php js::set('beginLetterParent', $lang->project->beginLetterParent); ?>
 <?php js::set('endGreaterParent', $lang->project->endGreaterParent); ?>
 <?php js::set('ignore', $lang->project->ignore); ?>
-<?php $requiredFields = $config->project->create->requiredFields2; ?>
+<?php $requiredFields = $config->project->create->requiredFields; ?>
 <?php js::set('requiredFields', $requiredFields); ?>
 <?php js::set('copyType', ''); ?>
 <?php js::set('nameTips', $lang->project->copyProject->nameTips); ?>

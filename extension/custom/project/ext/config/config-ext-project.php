@@ -3,11 +3,11 @@
 global $lang, $app;
 
 
-#$config->project->list->allFields = $config->project->list->allFields . ", contractNo, devEvaluate, poDays, outerDays, selfDays, saasDays";
+// $config->project->list->allFields = $config->project->list->allFields . ", contractNo, devEvaluate, poDays, outerDays, selfDays, saasDays";
 
 $config->project->list->exportFields = $config->project->list->exportFields . ", contractNo, devEvaluate, poDays, outerDays, selfDays, saasDays, bd, sa, cs, deciders";
-$config->project->create->requiredFields2 = $config->project->create->requiredFields.',bd,deciders,PM';
-$config->project->edit->requiredFields2 = $config->project->edit->requiredFields.',bd,deciders,PM';
+$config->project->create->requiredFields = $config->project->create->requiredFields.",bd,deciders,PM";
+$config->project->edit->requiredFields = $config->project->edit->requiredFields.",bd,deciders,PM";
 
 $config->project->search['fields']['contractNo'] = $lang->project->contractNo;
 $config->project->search['params']['contractNo'] = array('operator' => '=', 'control' => 'input', 'values' => '');
