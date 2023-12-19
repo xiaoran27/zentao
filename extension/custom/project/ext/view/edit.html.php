@@ -201,7 +201,12 @@
                             <?php echo html::number('poDays', $project->poDays, "class='form-control' min='0'"); ?>
                         </div>
                     </td>
-                    <td></td>
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->outerPoDays; ?></span>
+                            <?php echo html::number('outerPoDays', $project->outerPoDays, "class='form-control' min='0'"); ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <th></th>

@@ -209,6 +209,13 @@ js::set('acl', $acl); ?>
                             <?php echo html::number('poDays', '0', "class='form-control' min='0'"); ?>
                         </div>
                     </td>
+                    <td>
+                        <div id="outerPoDays" class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->outerPoDays; ?></span>
+                            <?php echo html::number('outerPoDays', '0', "class='form-control' min='0'"); ?>
+                        </div>
+                    </td>
+
 
                 </tr>
                 <tr>

@@ -388,4 +388,12 @@ delimiter ;
 
 -- sql.end.banniu_rel20231206
 
+-- sql.start.banniu_rel20231219
+
+ALTER TABLE zt_project ADD outerPoDays int NULL default 0 comment '外包合同人天';
+
+-- sql.end.banniu_rel20231219
+
+
+
 

@@ -22,6 +22,8 @@ $config->project->search['fields']['outerDays'] = $lang->project->outerDays;
 $config->project->search['params']['outerDays'] = array('operator' => '=', 'control' => 'input', 'values' => '');
 $config->project->search['fields']['saasDays'] = $lang->project->saasDays;
 $config->project->search['params']['saasDays'] = array('operator' => '=', 'control' => 'input', 'values' => '');
+$config->project->search['fields']['outerPoDays'] = $lang->project->outerPoDays;
+$config->project->search['params']['outerPoDays'] = array('operator' => '=', 'control' => 'input', 'values' => '');
 
 $config->project->datatable->defaultField = array('id', 'name', 'status', 'PM', 'contractNo', 'devEvaluate', 'budget', 'begin', 'end', 'progress', 'actions');
 
@@ -56,6 +58,11 @@ $config->project->datatable->fieldList['saasDays']['title'] = 'saasDays';
 $config->project->datatable->fieldList['saasDays']['fixed'] = 'left';
 $config->project->datatable->fieldList['saasDays']['width'] = 'auto';
 $config->project->datatable->fieldList['saasDays']['required'] = 'no';
+
+$config->project->datatable->fieldList['outerPoDays']['title'] = 'outerPoDays';
+$config->project->datatable->fieldList['outerPoDays']['fixed'] = 'left';
+$config->project->datatable->fieldList['outerPoDays']['width'] = 'auto';
+$config->project->datatable->fieldList['outerPoDays']['required'] = 'no';
 
 $config->project->datatable->fieldList['sa']['title'] = 'sa';
 $config->project->datatable->fieldList['sa']['fixed'] = 'left';
