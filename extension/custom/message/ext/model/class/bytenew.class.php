@@ -215,6 +215,7 @@ class bytenewMessage extends messageModel
      */
     public function getToList($object, $objectType, $actionID = 0)
     {
+    
         $toList = '';
         if(!empty($object->assignedTo)) $toList = $object->assignedTo;
         if(empty($toList) and $objectType == 'product' ) $toList = "$object->PO,$object->QD,$object->RD,$object->reviewer";
@@ -246,8 +247,14 @@ class bytenewMessage extends messageModel
         {
             $action = $this->loadModel('action')->getById($actionID);
             list($toList, $ccList) = $this->loadModel($objectType)->getToAndCcList($object, $action->action);
-            $toList = $toList . $ccList;
+            $toList = $toList . ','. $ccList;  // 加分隔符号','
         }
+
+        if ( isset($object->openedBy) and strpos(','.$object->openedBy.',', ','.$toList.',') === FALSE ) {
+            $toList = $object->openedBy . ','. $toList;  // 加创建人
+        }
+        // $common = $this->loadModel('common');
+        // $common->log('getToList:'.json_encode(array('object' => $object, 'objectType' => $objectType, 'actionID' => $actionID, 'toList' => $toList, 'ccList' => $ccList), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         return $toList;
     }
