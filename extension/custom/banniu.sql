@@ -381,6 +381,18 @@ ALTER TABLE zt_project ADD outerPoDays int NULL default 0 comment '外包合同�
 -- set global event_scheduler = ON;
 
 -- 定时更新项目的人天 
+-- 此处忽略
+
+-- sql.end.banniu_rel20231219
+
+
+-- sql.start.banniu_rel20240118
+
+
+-- select @@event_scheduler;
+-- set global event_scheduler = ON;
+
+-- 定时更新项目的人天 
 drop event if exists event_upd_project_days ;
 delimiter $$
 create event event_upd_project_days
@@ -392,7 +404,7 @@ do
 begin
   update zt_project , ztv_projectdays set saasDays = round(consumed_saas), selfDays = round(consumed_self), outerDays = round(consumed_outer)
     , lastEditedBy='system', lastEditedDate=now()
-    , `desc` = if ( `desc` REGEXP '<p>.*更新人天.*</p>', REGEXP_REPLACE(`desc`, '<p>.*更新人天.*</p>', concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") ), concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>", `desc`) )
+    , `desc` = if ( `desc` REGEXP '<p>.*更新人天.*</p>', REGEXP_REPLACE(`desc`, '<p>.*更新人天.*</p>', concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),",outerDays=",round(consumed_outer),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") ), concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),",outerDays=",round(consumed_outer),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>", `desc`) )
   where id = proj_id
     and ( saasDays != round(consumed_saas) OR selfDays != round(consumed_self) OR outerDays != round(consumed_outer) );
 end
@@ -401,7 +413,7 @@ delimiter ;
 -- select id,name,saasDays,selfDays,outerDays,`desc` from zt_project where `desc` like '%更新人天%' and lastEditedDate > current_date limit 5;
 -- select id,name,saasDays,selfDays,outerDays,`desc` from zt_project WHERE `desc` REGEXP '<p>.*更新人天.*</p>'  and lastEditedDate > current_date  limit 5;
 
--- sql.end.banniu_rel20231219
+-- sql.end.banniu_rel20240118
 
 
 
