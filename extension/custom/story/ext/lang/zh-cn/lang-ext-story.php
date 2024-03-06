@@ -139,6 +139,14 @@ $lang->story->rspRejectTime = '拒绝时间';
 $lang->story->rspResearchTime = '调研时间';
 $lang->story->rspAcceptTime = '接受时间';
 
+
+$lang->story->rearDays = '后端工期';
+$lang->story->frontDays = '前端工期';
+$lang->story->testDays = '测试工期';
+
+
+
+
 $lang->story->responseResult0 = '处理结果';
 $lang->story->responseResultList0 = array();   // for产品需求
 $lang->story->responseResultList0['todo'] = '未处理';

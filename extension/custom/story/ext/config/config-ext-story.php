@@ -165,8 +165,22 @@ $config->story->datatable->fieldList['scoreNum']['title'] = 'scoreNum';
 $config->story->datatable->fieldList['scoreNum']['fixed'] = 'left';
 $config->story->datatable->fieldList['scoreNum']['width'] = '40';
 $config->story->datatable->fieldList['scoreNum']['required'] = 'no';
+
 $config->story->datatable->fieldList['workType']['title'] = 'workType';
 $config->story->datatable->fieldList['workType']['fixed'] = 'left';
 $config->story->datatable->fieldList['workType']['width'] = '50';
 $config->story->datatable->fieldList['workType']['required'] = 'no';
+
+$config->story->datatable->fieldList['rearDays']['title'] = 'rearDays';
+$config->story->datatable->fieldList['rearDays']['fixed'] = 'left';
+$config->story->datatable->fieldList['rearDays']['width'] = '50';
+$config->story->datatable->fieldList['rearDays']['required'] = 'no';
+$config->story->datatable->fieldList['frontDays']['title'] = 'frontDays';
+$config->story->datatable->fieldList['frontDays']['fixed'] = 'left';
+$config->story->datatable->fieldList['frontDays']['width'] = '50';
+$config->story->datatable->fieldList['frontDays']['required'] = 'no';
+$config->story->datatable->fieldList['testDays']['title'] = 'testDays';
+$config->story->datatable->fieldList['testDays']['fixed'] = 'left';
+$config->story->datatable->fieldList['testDays']['width'] = '50';
+$config->story->datatable->fieldList['testDays']['required'] = 'no';
 

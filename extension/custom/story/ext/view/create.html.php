@@ -89,7 +89,7 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
                 ?>
               </div>
             </td>
-          </tr>	  
+          </tr>
           <?php $hiddenSource = strpos(",$showFields,", ',source,') !== false ? '' : 'hidden';?>
           <?php if($type == 'story'):?>
           <tr class='<?php if(!$branches) echo 'hidden'; ?> switchBranch' >
@@ -226,6 +226,27 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
                   <?php echo html::input('uatDate', $uatDate, "class='form-control form-date' style='min-width: 90px;'");?>
               </div>
             </td>
+          </tr>
+          <tr>
+              <th></th>
+              <td>
+                  <div class="input-group">
+                      <div class="input-group-addon" ><?php echo $lang->story->rearDays;?></div>
+                      <?php echo html::number('rearDays', 0, "class='form-control' min='0'");?>
+                  </div>
+              </td>
+              <td>
+                  <div class="input-group">
+                      <div class="input-group-addon" ><?php echo $lang->story->frontDays;?></div>
+                      <?php echo html::number('frontDays', 0, "class='form-control' min='0'");?>
+                  </div>
+              </td>
+              <td>
+                  <div class="input-group">
+                      <div class="input-group-addon" ><?php echo $lang->story->testDays;?></div>
+                      <?php echo html::number('testDays', 0, "class='form-control' min='0'");?>
+                  </div>
+              </td>
           </tr>
           <tr>
             <th><?php echo $lang->story->bzCategory;?></th>

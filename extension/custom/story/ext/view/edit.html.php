@@ -345,6 +345,18 @@
                                 <th><?php echo $lang->story->estimate; ?></th>
                                 <td><?php echo $story->parent >= 0 ? html::input('estimate', $story->estimate, "class='form-control'") : $story->estimate; ?></td>
                             </tr>
+                            <tr>
+                                <th><?php echo $lang->story->rearDays; ?></th>
+                                <td><?php echo $story->parent >= 0 ? html::number('rearDays', $story->rearDays, "class='form-control'") : $story->rearDays; ?></td>
+                            </tr>
+                            <tr>
+                                <th><?php echo $lang->story->frontDays; ?></th>
+                                <td><?php echo $story->parent >= 0 ? html::number('frontDays', $story->frontDays, "class='form-control'") : $story->frontDays; ?></td>
+                            </tr>
+                            <tr>
+                                <th><?php echo $lang->story->testDays; ?></th>
+                                <td><?php echo $story->parent >= 0 ? html::number('testDays', $story->testDays, "class='form-control'") : $story->testDays; ?></td>
+                            </tr>
                             <tr class='feedbackBox <?php echo in_array($story->source, $config->story->feedbackSource) ? '' : 'hidden'; ?>'>
                                 <th><?php echo $lang->story->feedbackBy; ?></th>
                                 <td><?php echo html::input('feedbackBy', $story->feedbackBy, "class='form-control'"); ?></td>

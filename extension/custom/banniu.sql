@@ -415,6 +415,17 @@ delimiter ;
 
 -- sql.end.banniu_rel20240118
 
+-- sql.start.banniu_rel20240227
+ALTER TABLE zt_story ADD rearDays int default 0 comment '后端工期';
+ALTER TABLE zt_story ADD frontDays int default 0 comment '前端工期';
+ALTER TABLE zt_story ADD testDays int default 0 comment '测试工期';
+
+-- sql.start.banniu_rel20240227
+
+
+
+
+
 
 
 

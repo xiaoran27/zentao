@@ -424,6 +424,18 @@ js::set('bizProjectList', $bizProjectList);
                   <th><?php echo $lang->story->estimate;?></th>
                   <td title="<?php echo $story->estimate . ' ' . $lang->hourCommon;?>"><?php echo $story->estimate . $config->hourUnit;?></td>
                 </tr>
+                <tr>
+                    <th><?php echo $lang->story->rearDays;?></th>
+                    <td title="<?php echo $story->rearDays . ' ' . $lang->hourCommon;?>"><?php echo $story->rearDays . $config->hourUnit;?></td>
+                </tr>
+                <tr>
+                    <th><?php echo $lang->story->frontDays;?></th>
+                    <td title="<?php echo $story->frontDays . ' ' . $lang->hourCommon;?>"><?php echo $story->frontDays . $config->hourUnit;?></td>
+                </tr>
+                <tr>
+                    <th><?php echo $lang->story->testDays;?></th>
+                    <td title="<?php echo $story->testDays . ' ' . $lang->hourCommon;?>"><?php echo $story->testDays . $config->hourUnit;?></td>
+                </tr>
                 <?php if(in_array($story->source, $config->story->feedbackSource)):?>
                 <tr>
                   <th><?php echo $lang->story->feedbackBy;?></th>
