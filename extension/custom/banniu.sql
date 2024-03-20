@@ -355,23 +355,7 @@ ALTER TABLE zt_project ADD outerPoDays int NULL default 0 comment '外包合同�
 -- set global event_scheduler = ON;
 
 -- 定时更新项目的人天 
-drop event if exists event_upd_project_days ;
-delimiter $$
-create event event_upd_project_days
-on schedule 
-	every 60 minute
-  starts '2023-12-07 12:00:00'
-	comment '定时更新项目的人天'
-do
-begin
-  update zt_project , ztv_projectdays set saasDays = round(consumed_saas), selfDays = round(consumed_self), outerDays = round(consumed_outer)
-    , lastEditedBy='system', lastEditedDate=now()
-    , `desc` = if ( `desc` REGEXP '<p>.*更新人天.*</p>', REGEXP_REPLACE(`desc`, '<p>.*更新人天.*</p>', concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),",outerDays=",round(consumed_outer),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") ), concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas),",self=",round(consumed_self),",outerDays=",round(consumed_outer),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>", `desc`) )
-  where id = proj_id
-    and ( saasDays != round(consumed_saas) OR selfDays != round(consumed_self) OR outerDays != round(consumed_outer) );
-end
-$$
-delimiter ;
+-- ignore
 -- select id,name,saasDays,selfDays,outerDays,`desc` from zt_project where `desc` like '%更新人天%' and lastEditedDate > current_date limit 5;
 -- select id,name,saasDays,selfDays,outerDays,`desc` from zt_project WHERE `desc` REGEXP '<p>.*更新人天.*</p>'  and lastEditedDate > current_date  limit 5;
 
@@ -389,47 +373,7 @@ ALTER TABLE zt_story ADD testDays int default 0 comment '测试工期';
 -- sql.start.banniu_rel20240306
   
 -- 项目需求人天统计
-CREATE OR REPLACE VIEW ztv_projectstroy_days AS 
-  select zt_project.id as proj_id, zt_project.name as proj_name, zt_task.story as story_id
-      , sum(ifnull(zt_task.estimate,0) * (case when zt_task.status='wait' then 0 when zt_task.status='doing' then 0.5 else 1.0 end) )/8  as bcwp 
-      , sum(zt_task.estimate)/8 as estimate, sum(zt_task.consumed)/8 as consumed 
-      , sum(if(ifnull(zt_story.workType,"saas")="saas", zt_task.consumed,0))/8 as consumed_saas
-      , sum(if(ifnull(zt_story.workType,"saas")="self", zt_task.consumed,0))/8 as consumed_self
-      , sum(if(ifnull(zt_story.workType,"saas")="outer", zt_task.consumed,0))/8 as consumed_outer
-  from zt_project
-      join zt_projectstory on ( zt_project.id = zt_projectstory.project )
-      join zt_story on ( zt_story.id = zt_projectstory.story and zt_story.deleted = '0'  )
-      join zt_task on ( zt_task.story = zt_story.id and zt_task.story > 0 and zt_task.deleted = '0' and zt_task.parent > -1  )
-  where zt_project.deleted = '0'  and zt_project.path like  ',223,%' 
-      and zt_project.type = 'project' 
-      and DATEDIFF(NOW(), zt_project.begin) <= (365+183)
-  group by proj_id, story_id
- 
-  union all
-  
-  --  项目或迭代的未关联需求的任务
-  select zt_project.id as proj_id, zt_project.name as proj_name, zt_task.story as story_id
-      , sum(ifnull(zt_task.estimate,0) * (case when zt_task.status='wait' then 0 when zt_task.status='doing' then 0.5 else 1.0 end) )/8  as bcwp 
-      , sum(zt_task.estimate)/8 as estimate, sum(zt_task.consumed)/8 as consumed 
-      , sum(zt_task.consumed)/8 as consumed_saas
-      , 0 as consumed_self
-      , 0 as consumed_outer
-  from zt_project
-      join zt_task on ( zt_project.id = zt_task.project and zt_task.story = 0 and zt_task.deleted = '0' and zt_task.parent > -1 ) 
-      -- join zt_task on ( zt_project.id = zt_task.project and zt_task.story = 0 and zt_task.deleted = '0' and zt_task.parent <=0 )
-  where zt_project.deleted = '0'  and zt_project.path like  ',223,%' 
-      and zt_project.type = 'project' 
-      and DATEDIFF(NOW(), zt_project.begin) <= (365+183)
-  group by proj_id,story_id ;
- 
--- 项目人天统计
-CREATE OR REPLACE VIEW ztv_projectdays AS
-  select proj_id, proj_name
-    ,sum(bcwp) as bcwp
-    ,sum(estimate) as estimate, sum(consumed) as consumed
-    , sum(consumed_saas) as consumed_saas, sum(consumed_self) as consumed_self, sum(consumed_outer) as consumed_outer
-  from ztv_projectstroy_days
-  group by proj_id ;
+-- ignore
 
 -- sql.start.banniu_rel20240306
 
@@ -448,9 +392,82 @@ ALTER TABLE zt_story modify frontDays double default 0 comment '前端工期';
 ALTER TABLE zt_story modify testDays double default 0 comment '测试工期';
 
 
-
-
 -- sql.end.banniu_rel20240315
+
+
+-- sql.start.banniu_rel20240320
+
+-- 定时更新项目的人天 
+drop event if exists event_upd_project_days ;
+delimiter $$
+create event event_upd_project_days
+on schedule 
+	every 60 minute
+  starts '2023-12-07 12:00:00'
+	comment '定时更新项目的人天'
+do
+begin
+  update zt_project , ztv_projectdays set saasDays = round(consumed_saas,2), selfDays = round(consumed_self,2), outerDays = round(consumed_outer,2)
+    , lastEditedBy='system', lastEditedDate=now()
+    , `desc` = if ( `desc` REGEXP '<p>.*更新人天.*</p>', REGEXP_REPLACE(`desc`, '<p>.*更新人天.*</p>', concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas,2),",self=",round(consumed_self,2),",outerDays=",round(consumed_outer,2),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>") ), concat("<p>event_upd_project_days更新人天(saas=",round(consumed_saas,2),",self=",round(consumed_self,2),",outerDays=",round(consumed_outer,2),")@", date_format(now(),"%Y-%m-%d %H:%i:%S"), "</p>", `desc`) )
+  where id = proj_id
+    and ( saasDays != round(consumed_saas,2) OR selfDays != round(consumed_self,2) OR outerDays != round(consumed_outer,2) );
+end
+$$
+delimiter ;
+
+
+  
+-- 项目需求人天统计
+CREATE OR REPLACE VIEW ztv_projectstroy_days AS 
+  select zt_project.id as proj_id, zt_project.name as proj_name, zt_task.story as story_id
+      , sum(ifnull(zt_task.estimate,0) * (case when zt_task.status='wait' then 0 when (zt_task.status='doing'  or ( zt_task.status in ('cancel','pause') and ifnull(zt_task.consumed,0)>0 )) then 0.5 when zt_task.status in ('done','closed') then 1.0 else 0.0 end) )/8  as bcwp  
+      , sum(if(zt_task.status='cancel',0,ifnull(zt_task.estimate,0)))/8 as estimate   -- bcws_all
+      , sum(if(zt_task.estStarted>curdate() or zt_task.status='cancel',0,ifnull(zt_task.estimate,0)) ) /8 as bcws
+      , sum(zt_task.consumed)/8 as consumed   -- acwp_all,  acwp=consumed_self+consumed_outer
+      , sum(if(ifnull(zt_story.workType,"saas")="saas", zt_task.consumed,0))/8 as consumed_saas
+      , sum(if(ifnull(zt_story.workType,"saas")="self", zt_task.consumed,0))/8 as consumed_self
+      , sum(if(ifnull(zt_story.workType,"saas")="outer", zt_task.consumed,0))/8 as consumed_outer
+  from zt_project
+      join zt_projectstory on ( zt_project.id = zt_projectstory.project )
+      join zt_story on ( zt_story.id = zt_projectstory.story and zt_story.deleted = '0'  )
+      join zt_task on ( zt_task.story = zt_story.id and zt_task.story > 0 and zt_task.deleted = '0' and zt_task.parent > -1  )
+  where zt_project.deleted = '0'  and zt_project.path like  ',223,%' 
+      and zt_project.type = 'project' 
+      and DATEDIFF(NOW(), zt_project.begin) <= (365+183)
+  group by proj_id, story_id
+ 
+  union all
+  
+  --  项目或迭代的未关联需求的任务
+  select zt_project.id as proj_id, zt_project.name as proj_name, zt_task.story as story_id
+      , sum(ifnull(zt_task.estimate,0) * (case when zt_task.status='wait' then 0 when (zt_task.status='doing'  or ( zt_task.status in ('cancel','pause') and ifnull(zt_task.consumed,0)>0 )) then 0.5 when zt_task.status in ('done','closed') then 1.0 else 0.0 end) )/8  as bcwp  
+      , sum(if(zt_task.status='cancel',0,ifnull(zt_task.estimate,0)))/8 as estimate   -- bcws_all
+      , sum(if(zt_task.estStarted>curdate() or zt_task.status='cancel',0,ifnull(zt_task.estimate,0)) ) /8 as bcws
+      , sum(zt_task.consumed)/8 as consumed   -- acwp_all,  acwp=consumed_self+consumed_outer
+      , 0 as consumed_saas
+      , sum(zt_task.consumed)/8 as consumed_self
+      , 0 as consumed_outer
+  from zt_project
+      join zt_task on ( zt_project.id = zt_task.project and zt_task.story = 0 and zt_task.deleted = '0' and zt_task.parent > -1 ) 
+      -- join zt_task on ( zt_project.id = zt_task.project and zt_task.story = 0 and zt_task.deleted = '0' and zt_task.parent <=0 )
+  where zt_project.deleted = '0'  and zt_project.path like  ',223,%' 
+      and zt_project.type = 'project' 
+      and DATEDIFF(NOW(), zt_project.begin) <= (365+183)
+  group by proj_id,story_id ;
+ 
+-- 项目人天统计
+CREATE OR REPLACE VIEW ztv_projectdays AS
+  select proj_id, proj_name
+    ,sum(bcwp) as bcwp
+    ,sum(estimate) as estimate
+    ,sum(bcws) as bcws
+    , sum(consumed) as consumed
+    , sum(consumed_saas) as consumed_saas, sum(consumed_self) as consumed_self, sum(consumed_outer) as consumed_outer
+  from ztv_projectstroy_days
+  group by proj_id ;
+
+-- sql.end.banniu_rel20240320
 
 
 
