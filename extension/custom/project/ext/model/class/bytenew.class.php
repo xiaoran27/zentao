@@ -1270,6 +1270,7 @@ class bytenewProject  extends projectModel
      */
     public function create()
     {
+        $this->loadModel('common')->log('create start', __FILE__, __LINE__);
         $project = fixer::input('post')
             ->callFunc('name', 'trim')
             ->setDefault('status', 'wait')
@@ -1290,6 +1291,7 @@ class bytenewProject  extends projectModel
             ->remove('products,branch,plans,delta,newProduct,productName,future,contactListMenu,teamMembers')
             ->get();
         if(!isset($this->config->setCode) or $this->config->setCode == 0) unset($project->code);
+        $this->loadModel('common')->log('create start input after', __FILE__, __LINE__);
 
         /* Lean mode relation defaultProgram. */
         if($this->config->systemMode == 'light') $project->parent = $this->config->global->defaultProgram;
@@ -2423,6 +2425,9 @@ class bytenewProject  extends projectModel
                     break;
                 case 'outerPoDays':
                     echo $project->outerPoDays;
+                    break;
+                case 'discountPoDays':
+                    echo $project->discountPoDays;
                     break;
                 case 'teamCount':
                     echo $project->teamCount;

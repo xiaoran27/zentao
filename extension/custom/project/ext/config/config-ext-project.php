@@ -64,6 +64,11 @@ $config->project->datatable->fieldList['outerPoDays']['fixed'] = 'left';
 $config->project->datatable->fieldList['outerPoDays']['width'] = 'auto';
 $config->project->datatable->fieldList['outerPoDays']['required'] = 'no';
 
+$config->project->datatable->fieldList['discountPoDays']['title'] = 'discountPoDays';
+$config->project->datatable->fieldList['discountPoDays']['fixed'] = 'left';
+$config->project->datatable->fieldList['discountPoDays']['width'] = 'auto';
+$config->project->datatable->fieldList['discountPoDays']['required'] = 'no';
+
 $config->project->datatable->fieldList['sa']['title'] = 'sa';
 $config->project->datatable->fieldList['sa']['fixed'] = 'left';
 $config->project->datatable->fieldList['sa']['width'] = 'auto';

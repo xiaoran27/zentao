@@ -10,7 +10,7 @@
  * @link        http://www.zentao.net
  */
 ?>
-<?php include '../../common/view/header.html.php';?>
+<?php include '../../../../../module/common/view/header.html.php';?>
 <?php js::import($jsRoot . 'md5.js');?>
 <?php if(!isonlybody()):?>
 <style>
@@ -29,7 +29,7 @@
       </tr>
       <tr>
         <th><?php echo $lang->user->originalPassword;?></th>
-        <td><?php echo html::password('originalPassword', '', "class='form-control'");?></td>
+        <td><?php echo html::password('originalPassword', '', "class='form-control'  placeholder='初始密码 {$this->config->ding->defpwd} '");?></td>
       </tr>
       <tr>
         <th><?php echo $lang->user->newPassword;?></th>
@@ -70,4 +70,4 @@ function checkPassword(password)
     $('#passwordStrength').css('display', password == '' ? 'none' : 'table-cell');
 }
 </script>
-<?php include '../../common/view/footer.html.php';?>
+<?php include '../../../../../module/common/view/footer.html.php';?>

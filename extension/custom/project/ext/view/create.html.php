@@ -194,25 +194,31 @@ js::set('acl', $acl); ?>
                             <span class='input-group-addon'><?php echo $lang->execution->day; ?></span>
                         </div>
                     </td>
+                    <td>
+                        <div id="discountPoDaysBox" class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->discountPoDays; ?></span>
+                            <?php echo html::number('discountPoDays', '0', "class='form-control' min='0' step='0.01'"); ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <th></th>
                     <td>
                         <div id="devEvaluateBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->devEvaluate; ?></span>
-                            <?php echo html::number('devEvaluate', '0', "class='form-control' min='0'"); ?>
+                            <?php echo html::number('devEvaluate', '0', "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                     <td>
                         <div id="poDaysBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->poDays; ?></span>
-                            <?php echo html::number('poDays', '0', "class='form-control' min='0'"); ?>
+                            <?php echo html::number('poDays', '0', "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                     <td>
                         <div id="outerPoDays" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->outerPoDays; ?></span>
-                            <?php echo html::number('outerPoDays', '0', "class='form-control' min='0'"); ?>
+                            <?php echo html::number('outerPoDays', '0', "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
 
@@ -223,23 +229,22 @@ js::set('acl', $acl); ?>
                     <td>
                         <div id="outerDaysBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->outerDays; ?></span>
-                            <?php echo html::number('outerDays', '0', "class='form-control' min='0'"); ?>
+                            <?php echo html::number('outerDays', '0', "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                     <td>
                         <div id="selfDaysBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->selfDays; ?></span>
-                            <?php echo html::number('selfDays', '0', "class='form-control' min='0'"); ?>
+                            <?php echo html::number('selfDays', '0', "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
 
                     <td>
                         <div id="saasDaysBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->saasDays; ?></span>
-                            <?php echo html::number('saasDays', '0', "class='form-control' min='0'"); ?>
+                            <?php echo html::number('saasDays', '0', "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
-
                 </tr>
                 <?php if ($products): ?>
                     <?php $i = 0; ?>

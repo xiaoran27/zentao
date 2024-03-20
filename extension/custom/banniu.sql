@@ -434,6 +434,26 @@ CREATE OR REPLACE VIEW ztv_projectdays AS
 -- sql.start.banniu_rel20240306
 
 
+-- sql.start.banniu_rel20240315
+
+ALTER TABLE zt_project ADD discountPoDays double NULL default 0.00 comment '合同折算人天';
+alter table zt_project modify poDays double default 0 null comment '合同人天';
+alter table zt_project modify outerDays double default 0 null comment '外包人天';
+alter table zt_project modify selfDays double default 0 null comment '定开人天';
+alter table zt_project modify saasDays double default 0 null comment '标品人天';
+alter table zt_project modify outerPoDays double default 0 null comment '外包合同人天';
+alter table zt_project modify devEvaluate double null comment '产研评估人天';
+ALTER TABLE zt_story modify rearDays double default 0 comment '后端工期';
+ALTER TABLE zt_story modify frontDays double default 0 comment '前端工期';
+ALTER TABLE zt_story modify testDays double default 0 comment '测试工期';
+
+
+
+
+-- sql.end.banniu_rel20240315
+
+
+
 
 
 

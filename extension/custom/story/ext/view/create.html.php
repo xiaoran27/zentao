@@ -232,19 +232,19 @@ foreach(explode(',', $config->story->create->requiredFields) as $field)
               <td>
                   <div class="input-group">
                       <div class="input-group-addon" ><?php echo $lang->story->rearDays;?></div>
-                      <?php echo html::number('rearDays', 0, "class='form-control' min='0'");?>
+                      <?php echo html::number('rearDays', 0, "class='form-control' min='0' step='0.01'");?>
                   </div>
               </td>
               <td>
                   <div class="input-group">
                       <div class="input-group-addon" ><?php echo $lang->story->frontDays;?></div>
-                      <?php echo html::number('frontDays', 0, "class='form-control' min='0'");?>
+                      <?php echo html::number('frontDays', 0, "class='form-control' min='0' step='0.01'");?>
                   </div>
               </td>
               <td>
                   <div class="input-group">
                       <div class="input-group-addon" ><?php echo $lang->story->testDays;?></div>
-                      <?php echo html::number('testDays', 0, "class='form-control' min='0'");?>
+                      <?php echo html::number('testDays', 0, "class='form-control' min='0' step='0.01'");?>
                   </div>
               </td>
           </tr>

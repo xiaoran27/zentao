@@ -11,6 +11,8 @@ $lang->project->outerDays = '外包人天';
 $lang->project->selfDays = '定开人天';
 $lang->project->saasDays = '标品人天';
 $lang->project->outerPoDays = '外包合同人天';
+$lang->project->discountPoDays = '合同折算人天';
+
 
 $lang->project->bd = '商务';
 $lang->project->sa = '解决方案';

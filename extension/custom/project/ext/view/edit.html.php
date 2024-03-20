@@ -186,25 +186,31 @@
                             <span class='input-group-addon'><?php echo $lang->execution->day; ?></span>
                         </div>
                     </td>
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->discountPoDays; ?></span>
+                            <?php echo html::number('discountPoDays', $project->discountPoDays, "class='form-control' min='0' step='0.01'"); ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <th></th>
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->devEvaluate; ?></span>
-                            <?php echo html::number('devEvaluate', $project->devEvaluate, "class='form-control' min='0'"); ?>
+                            <?php echo html::number('devEvaluate', $project->devEvaluate, "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->poDays; ?></span>
-                            <?php echo html::number('poDays', $project->poDays, "class='form-control' min='0'"); ?>
+                            <?php echo html::number('poDays', $project->poDays, "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->outerPoDays; ?></span>
-                            <?php echo html::number('outerPoDays', $project->outerPoDays, "class='form-control' min='0'"); ?>
+                            <?php echo html::number('outerPoDays', $project->outerPoDays, "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                 </tr>
@@ -213,19 +219,19 @@
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->outerDays; ?></span>
-                            <?php echo html::number('outerDays', $project->outerDays, "class='form-control' min='0'"); ?>
+                            <?php echo html::number('outerDays', $project->outerDays, "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->selfDays; ?></span>
-                            <?php echo html::number('selfDays', $project->selfDays, "class='form-control' min='0'"); ?>
+                            <?php echo html::number('selfDays', $project->selfDays, "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                     <td>
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->saasDays; ?></span>
-                            <?php echo html::number('saasDays', $project->saasDays, "class='form-control' min='0'"); ?>
+                            <?php echo html::number('saasDays', $project->saasDays, "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                 </tr>
