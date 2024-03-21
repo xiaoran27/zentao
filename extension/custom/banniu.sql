@@ -416,11 +416,18 @@ end
 $$
 delimiter ;
 
+-- 项目需求人天统计
+-- IGNORE
 
+-- sql.end.banniu_rel20240320
+
+
+-- sql.start.banniu_rel20240321
   
 -- 项目需求人天统计
 CREATE OR REPLACE VIEW ztv_projectstroy_days AS 
-  select zt_project.id as proj_id, zt_project.name as proj_name, zt_task.story as story_id
+  select zt_project.id as proj_id, zt_project.name as proj_name
+      , zt_task.story as story_id, ifnull(zt_story.workType,"saas") as work_type
       , sum(ifnull(zt_task.estimate,0) * (case when zt_task.status='wait' then 0 when (zt_task.status='doing'  or ( zt_task.status in ('cancel','pause') and ifnull(zt_task.consumed,0)>0 )) then 0.5 when zt_task.status in ('done','closed') then 1.0 else 0.0 end) )/8  as bcwp  
       , sum(if(zt_task.status='cancel',0,ifnull(zt_task.estimate,0)))/8 as estimate   -- bcws_all
       , sum(if(zt_task.estStarted>curdate() or zt_task.status='cancel',0,ifnull(zt_task.estimate,0)) ) /8 as bcws
@@ -435,12 +442,13 @@ CREATE OR REPLACE VIEW ztv_projectstroy_days AS
   where zt_project.deleted = '0'  and zt_project.path like  ',223,%' 
       and zt_project.type = 'project' 
       and DATEDIFF(NOW(), zt_project.begin) <= (365+183)
-  group by proj_id, story_id
+  group by proj_id, story_id,work_type
  
   union all
   
   --  项目或迭代的未关联需求的任务
-  select zt_project.id as proj_id, zt_project.name as proj_name, zt_task.story as story_id
+  select zt_project.id as proj_id, zt_project.name as proj_name
+      , zt_task.story as story_id, "self" as work_type
       , sum(ifnull(zt_task.estimate,0) * (case when zt_task.status='wait' then 0 when (zt_task.status='doing'  or ( zt_task.status in ('cancel','pause') and ifnull(zt_task.consumed,0)>0 )) then 0.5 when zt_task.status in ('done','closed') then 1.0 else 0.0 end) )/8  as bcwp  
       , sum(if(zt_task.status='cancel',0,ifnull(zt_task.estimate,0)))/8 as estimate   -- bcws_all
       , sum(if(zt_task.estStarted>curdate() or zt_task.status='cancel',0,ifnull(zt_task.estimate,0)) ) /8 as bcws
@@ -454,7 +462,7 @@ CREATE OR REPLACE VIEW ztv_projectstroy_days AS
   where zt_project.deleted = '0'  and zt_project.path like  ',223,%' 
       and zt_project.type = 'project' 
       and DATEDIFF(NOW(), zt_project.begin) <= (365+183)
-  group by proj_id,story_id ;
+  group by proj_id,story_id,work_type ;
  
 -- 项目人天统计
 CREATE OR REPLACE VIEW ztv_projectdays AS
@@ -463,11 +471,15 @@ CREATE OR REPLACE VIEW ztv_projectdays AS
     ,sum(estimate) as estimate
     ,sum(bcws) as bcws
     , sum(consumed) as consumed
+    ,sum(if(work_type = 'saas',0,bcwp)) as notsaas_bcwp
+    ,sum(if(work_type = 'saas',0,estimate)) as notsaas_estimate
+    ,sum(if(work_type = 'saas',0,bcws)) as notsaas_bcws
+    , sum(if(work_type = 'saas',0,consumed)) as notsaas_consumed
     , sum(consumed_saas) as consumed_saas, sum(consumed_self) as consumed_self, sum(consumed_outer) as consumed_outer
   from ztv_projectstroy_days
   group by proj_id ;
 
--- sql.end.banniu_rel20240320
+-- sql.end.banniu_rel20240321
 
 
 
