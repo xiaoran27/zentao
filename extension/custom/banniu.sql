@@ -465,6 +465,14 @@ CREATE OR REPLACE VIEW ztv_projectstroy_days AS
   group by proj_id,story_id,work_type ;
  
 -- 项目人天统计
+-- IGNORE
+
+-- sql.end.banniu_rel20240321
+
+
+-- sql.start.banniu_rel20240322
+
+-- 项目人天统计
 CREATE OR REPLACE VIEW ztv_projectdays AS
   select proj_id, proj_name
     ,sum(bcwp) as bcwp
@@ -475,11 +483,17 @@ CREATE OR REPLACE VIEW ztv_projectdays AS
     ,sum(if(work_type = 'saas',0,estimate)) as notsaas_estimate
     ,sum(if(work_type = 'saas',0,bcws)) as notsaas_bcws
     , sum(if(work_type = 'saas',0,consumed)) as notsaas_consumed
+    ,sum(if(work_type != 'self',0,bcwp)) as self_bcwp
+    ,sum(if(work_type != 'self',0,estimate)) as self_estimate
+    ,sum(if(work_type != 'self',0,bcws)) as self_bcws
+    , sum(if(work_type != 'self',0,consumed)) as self_consumed
     , sum(consumed_saas) as consumed_saas, sum(consumed_self) as consumed_self, sum(consumed_outer) as consumed_outer
   from ztv_projectstroy_days
   group by proj_id ;
+  
+ALTER TABLE zt_project ADD poAmount double default 0.00 comment '合同金额';
 
--- sql.end.banniu_rel20240321
+-- sql.end.banniu_rel20240322
 
 
 
