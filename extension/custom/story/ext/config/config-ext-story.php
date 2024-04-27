@@ -50,7 +50,7 @@ $config->story->list->customBatchEditFields = 'purchaser,bzCategory,prCategory,u
 
 $config->story->custom->createFields = $config->story->list->customCreateFields;
 $config->story->custom->batchCreateFields = 'purchaser,bzCategory,prCategory,uatDate,spec,pri,%s';
-$config->story->custom->batchEditFields = 'purchaser,bzCategory,prCategory,uatDate,pri';
+$config->story->custom->batchEditFields = 'purchaser,bzCategory,prCategory,uatDate,pri,rearDays,frontDays,testDays';
 
 $config->story->datatable->defaultField = array('id', 'title', 'pri', 'plan', 'status', 'openedBy', 'warning', 'stage', 'assignedTo', 'taskCount', 'actions');
 if ($app->tab == 'execution') {

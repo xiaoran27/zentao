@@ -5,9 +5,9 @@ global $lang, $app;
 
 // $config->project->list->allFields = $config->project->list->allFields . ", contractNo, devEvaluate, poDays, outerDays, selfDays, saasDays";
 
-$config->project->list->exportFields = $config->project->list->exportFields . ", contractNo, devEvaluate, poDays, outerDays, selfDays, saasDays, bd, sa, cs, deciders";
-$config->project->create->requiredFields = $config->project->create->requiredFields.",bd,deciders,PM";
-$config->project->edit->requiredFields = $config->project->edit->requiredFields.",bd,deciders,PM";
+$config->project->list->exportFields = $config->project->list->exportFields . ", contractNo, devEvaluate, poDays, outerDays, selfDays, saasDays, bd, sa, cs, deciders, poAmount";
+$config->project->create->requiredFields = $config->project->create->requiredFields.",bd,deciders,PM,stage";
+$config->project->edit->requiredFields = $config->project->edit->requiredFields.",bd,deciders,PM,stage";
 
 $config->project->search['fields']['contractNo'] = $lang->project->contractNo;
 $config->project->search['params']['contractNo'] = array('operator' => '=', 'control' => 'input', 'values' => '');
@@ -24,6 +24,12 @@ $config->project->search['fields']['saasDays'] = $lang->project->saasDays;
 $config->project->search['params']['saasDays'] = array('operator' => '=', 'control' => 'input', 'values' => '');
 $config->project->search['fields']['outerPoDays'] = $lang->project->outerPoDays;
 $config->project->search['params']['outerPoDays'] = array('operator' => '=', 'control' => 'input', 'values' => '');
+
+$config->project->search['params']['stage']     = array('operator' => '='      , 'control' => 'select', 'values' => array('' => '') + $lang->project->stageList);
+
+
+$config->project->search['fields']['poAmount'] = $lang->project->poAmount;
+$config->project->search['params']['poAmount'] = array('operator' => '=', 'control' => 'input', 'values' => '');
 
 $config->project->datatable->defaultField = array('id', 'name', 'status', 'PM', 'contractNo', 'devEvaluate', 'budget', 'begin', 'end', 'progress', 'actions');
 
@@ -91,4 +97,14 @@ $config->project->datatable->fieldList['deciders']['title'] = 'deciders';
 $config->project->datatable->fieldList['deciders']['fixed'] = 'left';
 $config->project->datatable->fieldList['deciders']['width'] = 'auto';
 $config->project->datatable->fieldList['deciders']['required'] = 'no';
+
+$config->project->datatable->fieldList['poAmount']['title'] = 'poAmount';
+$config->project->datatable->fieldList['poAmount']['fixed'] = 'left';
+$config->project->datatable->fieldList['poAmount']['width'] = 'auto';
+$config->project->datatable->fieldList['poAmount']['required'] = 'no';
+
+$config->project->datatable->fieldList['stage']['title'] = 'stage';
+$config->project->datatable->fieldList['stage']['fixed'] = 'left';
+$config->project->datatable->fieldList['stage']['width'] = 'auto';
+$config->project->datatable->fieldList['stage']['required'] = 'no';
 

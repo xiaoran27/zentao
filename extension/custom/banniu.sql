@@ -362,9 +362,9 @@ ALTER TABLE zt_project ADD outerPoDays int NULL default 0 comment '外包合同�
 -- sql.end.banniu_rel20240118
 
 -- sql.start.banniu_rel20240227
-ALTER TABLE zt_story ADD rearDays int default 0 comment '后端工期';
-ALTER TABLE zt_story ADD frontDays int default 0 comment '前端工期';
-ALTER TABLE zt_story ADD testDays int default 0 comment '测试工期';
+ALTER TABLE zt_story ADD rearDays double default 0 comment '后端工期';
+ALTER TABLE zt_story ADD frontDays double default 0 comment '前端工期';
+ALTER TABLE zt_story ADD testDays double default 0 comment '测试工期';
 
 -- sql.start.banniu_rel20240227
 
@@ -496,9 +496,15 @@ ALTER TABLE zt_project ADD poAmount double default 0.00 comment '合同金额';
 -- sql.end.banniu_rel20240322
 
 
+-- sql.start.banniu_rel20240401
+
+ALTER TABLE zt_project ADD poAmount double default 0.00 comment '合同金额';
+-- sql.end.banniu_rel20240401
 
 
-
+-- sql.start.banniu_rel20240408
+ALTER TABLE zt_project ADD COLUMN stage varchar(20) default 'dev' comment '阶段';
+-- sql.end.banniu_rel20240408
 
 
 

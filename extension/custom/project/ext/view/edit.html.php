@@ -88,7 +88,17 @@
                 <?php endif; ?>
                 <tr>
                     <th id='projectType'><?php echo $lang->project->type; ?></th>
-                    <td colspan='3'><?php echo nl2br(html::radio('hasProduct', $lang->project->projectTypeList, $project->hasProduct, 'disabled')); ?></td>
+                    <td >
+                        <div id='hasProductBox' class='input-group'>
+                            <?php echo nl2br(html::radio('hasProduct', $lang->project->projectTypeList, $project->hasProduct, 'disabled')); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div id='stageBox' class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->stage; ?></span>
+                            <?php echo html::select('stage', $lang->project->stageList, $project->stage, "class='form-control chosen'" . (strpos($requiredFields, 'stage') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
                 </tr>
 
                 <tr>
@@ -190,6 +200,12 @@
                         <div class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->discountPoDays; ?></span>
                             <?php echo html::number('discountPoDays', $project->discountPoDays, "class='form-control' min='0' step='0.01'"); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->poAmount; ?></span>
+                            <?php echo html::number('poAmount', $project->poAmount, "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                 </tr>

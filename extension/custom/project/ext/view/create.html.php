@@ -104,6 +104,12 @@ js::set('acl', $acl); ?>
                         if ($copyProjectID) echo html::hidden('hasProduct', $hasProduct);
                         ?>
                     </td>
+                    <td>
+                        <div id='stageBox' class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->stage; ?></span>
+                            <?php echo html::select('stage', $lang->project->stageList,'dev', "class='form-control chosen'" . (strpos($requiredFields, 'stage') !== false ? ' required' : '')); ?>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <th><?php echo $lang->project->PM; ?></th>
@@ -198,6 +204,12 @@ js::set('acl', $acl); ?>
                         <div id="discountPoDaysBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->discountPoDays; ?></span>
                             <?php echo html::number('discountPoDays', '0', "class='form-control' min='0' step='0.01'"); ?>
+                        </div>
+                    </td>
+                    <td>
+                        <div id="poAmountBox" class='input-group'>
+                            <span class='input-group-addon'><?php echo $lang->project->poAmount; ?></span>
+                            <?php echo html::number('poAmount', '', "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                 </tr>
