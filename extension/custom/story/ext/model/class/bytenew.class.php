@@ -2365,11 +2365,12 @@ class bytenewStory extends StoryModel
 
                 $story->purchaser = implode(',', $data->purchaser[$storyID]);
                 $story->bizProject = $data->bizProject[$storyID];
-                $story->bzCategory = $data->bzCategory[$storyID];
+                $story->bzCategory = $data->bzCategories[$storyID];
                 $story->scoreNum = $oldStories[$storyID]->scoreNum;
-                $story->prCategory = $data->prCategory[$storyID];
+                $story->prCategory = $data->prCategories[$storyID];
                 $story->prLevel = $oldStories[$storyID]->prLevel;
                 $story->uatDate = $data->uatDate[$storyID];
+                $story->responseResult = $data->responseResultes[$storyID];
 
                 $story->warning = $data->warning[$storyID];
                 $story->planReleaseDate = $data->planReleaseDate[$storyID];
