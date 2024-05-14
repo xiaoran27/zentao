@@ -11,7 +11,11 @@
      */
     public function isOpenMethod($module, $method)
     {
+        // $this->log(json_encode(array('openMethods'=>$this->config->openMethods),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
         if(in_array("$module.$method", $this->config->openMethods)) return true;
+
+        if($module == 'dingtalk' and $method == 'login')  return true;
 
         if($module == 'block' and $method == 'main' and isset($_GET['hash'])) return true;
 

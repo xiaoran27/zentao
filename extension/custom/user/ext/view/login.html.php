@@ -8,7 +8,7 @@
  * @package     ZenTaoPMS
  * @version     $Id: login.html.php 5084 2013-07-10 01:31:38Z wyd621@gmail.com $
  */
-include '../../common/view/header.lite.html.php';
+include '../../../../../module/common/view/header.lite.html.php';
 if(empty($config->notMd5Pwd))js::import($jsRoot . 'md5.js');
 ?>
 <?php js::set('loginTimeoutTip', $lang->user->error->loginTimeoutTip);?>
@@ -66,6 +66,7 @@ if(empty($config->notMd5Pwd))js::import($jsRoot . 'md5.js');
                   <td class="form-actions">
                   <?php
                   echo html::submitButton($lang->login, '', 'btn btn-primary');
+                  /* 钉钉登录按钮 */ if($config->ding->ddturnon) echo html::linkButton($lang->user->dingBtn,"https://oapi.dingtalk.com/connect/qrconnect?appid=".$config->ding->appid."&response_type=code&scope=snsapi_login&state=".$this->loadModel('dingtalk')->updateSessionDing()."&redirect_uri=".urlencode($config->ding->redirect.$this->createLink('dingtalk','login')),'window','','btn btn-danger');
                   if($app->company->guest) echo html::linkButton($lang->user->asGuest, $this->createLink($config->default->module));
                   echo html::hidden('referer', $referer);
                   $resetLink = (isset($this->config->resetPWDByMail) and $this->config->resetPWDByMail) ? inlink('forgetPassword') : inlink('reset');
@@ -95,8 +96,8 @@ if(empty($config->notMd5Pwd))js::import($jsRoot . 'md5.js');
       <?php endif;?>
       <?php if(!empty($this->config->global->showDemoUsers)):?>
       <?php
-      $demoPassword = '123456';
-      $md5Password  = md5('123456');
+      $demoPassword = $this->config->ding->defpwd;
+      $md5Password  = md5($demoPassword);
       $demoUsers    = 'productManager,projectManager,dev1,dev2,dev3,tester1,tester2,tester3,testManager';
       $demoUsers    = $this->dao->select('account,password,realname')->from(TABLE_USER)->where('account')->in($demoUsers)->andWhere('deleted')->eq(0)->andWhere('password')->eq($md5Password)->fetchAll('account');
       ?>
@@ -148,4 +149,19 @@ if($unsafeSites and !empty($unsafeSites[$zentaodirName]))
     js::set('process4Safe', $process4Safe);
 }
 ?>
-<?php include '../../common/view/footer.lite.html.php';?>
+
+
+<script src="https://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
+<script>
+// https://open.dingtalk.com/document/isvapp/scan-qr-code-to-log-on-to-third-party-websites
+var obj = DDLogin({
+     id:"login_container",//这里需要你在自己的页面定义一个HTML标签并设置id，例如<div id="login_container"></div>或<span id="login_container"></span>
+     goto: "", //请参考注释里的方式
+     style: "border:none;background-color:#FFFFFF;",
+     width : "365",
+     height: "400"
+ });
+
+</script>
+
+<?php include '../../../../../module/common/view/footer.lite.html.php';?>

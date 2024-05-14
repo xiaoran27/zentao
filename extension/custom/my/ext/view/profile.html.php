@@ -10,7 +10,7 @@
  * @link        http://www.zentao.net
  */
 ?>
-<?php include '../../common/view/header.html.php';?>
+<?php include '../../../../../module/common/view/header.html.php';?>
 <?php js::set('avatar', $this->app->user->avatar);?>
 <?php js::set('userID', $this->app->user->id);?>
 <?php if(!zget($lang->user->roleList, $user->role, '')):?>
@@ -122,6 +122,7 @@
   <div class='main-actions'>
     <?php if(!isset($fromModule)):?>
     <div class='btn-toolbar'>
+      <?php /* 钉钉绑定按钮 */ if($config->ding->ddturnon) echo html::a("https://oapi.dingtalk.com/connect/qrconnect?appid=".$config->ding->appid."&response_type=code&scope=snsapi_login&state=".$this->loadModel('dingtalk')->updateSessionDing()."&redirect_uri=".urlencode($config->ding->redirect.$this->createLink('dingtalk','login')), $lang->user->dingBindBtn, 'window', "class='btn'");?>
       <?php common::printLink('my', 'changepassword', "", $lang->changePassword, '', "title={$lang->changePassword} class='btn'");?>
       <?php common::printLink('my', 'editprofile', "", $lang->user->editProfile, '', "title={$lang->user->editProfile} class='btn'");?>
       <?php if(common::hasPriv('my', 'uploadAvatar')) echo html::a('javascript:uploadAvatar();', $lang->my->uploadAvatar, '', "class='btn'");?>
@@ -129,4 +130,4 @@
     <?php endif;?>
   </div>
 </div>
-<?php include '../../common/view/footer.html.php';?>
+<?php include '../../../../../module/common/view/footer.html.php';?>
