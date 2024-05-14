@@ -46,11 +46,11 @@ $config->story->exportFields = '
 
 $config->story->list->customCreateFields = 'warning,planReleaseDate,purchaser,bzCategory,prCategory,uatDate,source,verify,pri';
 $config->story->list->customBatchCreateFields = 'purchaser,bzCategory,prCategory,uatDate,spec,source,verify,pri';
-$config->story->list->customBatchEditFields = 'purchaser,bzCategory,prCategory,uatDate, pri,assignedTo';
+$config->story->list->customBatchEditFields = 'purchaser,bzCategory,prCategory,uatDate,pri,assignedTo,rearDays,frontDays,testDays';
 
 $config->story->custom->createFields = $config->story->list->customCreateFields;
 $config->story->custom->batchCreateFields = 'purchaser,bzCategory,prCategory,uatDate,spec,pri,%s';
-$config->story->custom->batchEditFields = 'purchaser,bzCategory,prCategory,uatDate,pri,rearDays,frontDays,testDays';
+$config->story->custom->batchEditFields = 'purchaser,bzCategory,prCategory,uatDate,pri,assignedTo,rearDays,frontDays,testDays';
 
 $config->story->datatable->defaultField = array('id', 'title', 'pri', 'plan', 'status', 'openedBy', 'warning', 'stage', 'assignedTo', 'taskCount', 'actions');
 if ($app->tab == 'execution') {
