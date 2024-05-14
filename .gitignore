@@ -33,3 +33,5 @@ extension/banniu_rel*.sql
 /extension/custom/json2csv.py
 /extension/custom/demo
 /extension/custom/port
+
+Backup-.gitignore
