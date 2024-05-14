@@ -340,7 +340,8 @@ class bytenewSearch extends searchModel
                         }
                         $findInSetWhere .= "FIND_IN_SET('" . $v . "', `" . $this->post->$fieldName . "`) or "; 
                     }
-                    if ( !empty($findInSetWhere) ) $where .= " $andOr ( " .  $findInSetWhere . ' 0=1 ) ';
+                    $notin = $operator == '!=' || $operator == "notinclude" ;  // FIND_IN_SET支持!=和notinclude
+                    if ( !empty($findInSetWhere) ) $where .= " $andOr " . ($notin?"not":"") . " ( " .  $findInSetWhere . ' 0=1 ) ';
                     
                 }
                 else{
