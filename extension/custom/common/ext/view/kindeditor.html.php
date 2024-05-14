@@ -148,10 +148,11 @@ $uid = uniqid('');
             var i=0;
             $('textarea[id^="'+editorID+'"]').each(function() {
 
-                var changedId = this.id != editorID || this.id != editorID+'[]';
+                var oldId = this.id;
+                var changedId = this.id == editorID || this.id == editorID+'[]';
                 if (changedId) this.id = editorID+i;  //设置不同的ID值给KE用
                 setKindeditor('#' + this.id);
-                if (changedId) this.id = editorID;  //切回统一的ID值
+                if (changedId) this.id = oldId;  //切回原来的ID值
                 i=i+1;
 
                 console.log('changedId='+changedId+'; id='+this.id);
