@@ -1221,6 +1221,8 @@ class bytenewBug extends BugModel
             ->setDefault('lastEditedBy', $this->app->user->account)
             ->setDefault('lastEditedDate', $now)
             ->setDefault('assignedDate', $now)
+            ->setIF(helper::isZeroDate($this->post->feedbackTime), 'feedbackTime', $now)
+            ->setIF(helper::isZeroDate($this->post->collectTime), 'collectTime', $now)
             ->setDefault('mailto', '')
             ->stripTags($this->config->bug->editor->assignto['id'], $this->config->allowedTags)
             ->remove('comment,showModule')

@@ -10,6 +10,9 @@ $config->bug->create->requiredFields  = 'title,openedBuild,purchaser,occursEnv';
 $config->bug->edit->requiredFields    = $config->bug->create->requiredFields . ',feedbackTime,collectTime,comment';
 $config->bug->resolve->requiredFields = 'resolution,comment';
 
+$config->bug->assignto  = new stdclass();
+$config->bug->assignto->requiredFields = 'feedbackTime,collectTime,assignedTo';
+
 $config->bug->close  = new stdclass();
 $config->bug->close->requiredFields = 'type,resolution,comment';
 $config->bug->confirmbug  = new stdclass();
