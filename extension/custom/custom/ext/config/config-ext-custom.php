@@ -9,6 +9,9 @@ $config->custom->fieldList['project']['edit']        = $config->custom->fieldLis
 $config->custom->fieldList['story']['create']        = $config->custom->fieldList['story']['create'] . ',assignedTo';
 $config->custom->fieldList['story']['close']         =  $config->custom->fieldList['story']['close'] .',prdReviewTime,releaseTime';
 
+$config->custom->fieldList['task']['create']         = $config->custom->fieldList['task']['create'] . ',assignedTo';
+$config->custom->fieldList['task']['edit']           = $config->custom->fieldList['task']['create'];
+
 /*
 ## from custom/config.php
 $config->custom->fieldList['program']['create']      = 'budget,PM,desc';
