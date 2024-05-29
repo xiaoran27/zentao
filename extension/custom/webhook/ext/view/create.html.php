@@ -52,6 +52,11 @@
           <th><?php echo $lang->webhook->dingAppSecret;?></th>
           <td class='required'><?php echo html::input('appSecret', '', "class='form-control'");?></td>
         </tr>
+        <tr id='openConversationIdTR'>
+          <th><?php echo $lang->webhook->dingOpenConversationId;?></th>
+          <td><?php echo html::input('openConversationId', '', "class='form-control'");?></td>
+          <td><?php echo $lang->webhook->note->dingHelpJsapi10303;?></td>
+        </tr>
         <tr class="wechatTR">
           <th><?php echo $lang->webhook->wechatCorpId;?></th>
           <td class='required'><?php echo html::input('wechatCorpId', '', "class='form-control'")?></td>

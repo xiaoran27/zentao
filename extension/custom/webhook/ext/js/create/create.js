@@ -3,13 +3,14 @@ $(function()
     $('#type').change(function()
     {
         var type = $(this).val();
-        $('#sendTypeTR').toggle(type != 'dinggroup' && type != 'dinguser' && type != 'dingsingleuser' && type != 'wechatuser' && type != 'wechatgroup' && type != 'feishuuser' && type != 'feishugroup');
+        $('#sendTypeTR').toggle(type != 'dinggroup' && type != 'dinggroupapi' && type != 'dinguser' && type != 'dingsingleuser' && type != 'wechatuser' && type != 'wechatgroup' && type != 'feishuuser' && type != 'feishugroup');
         $('#secretTR').toggle(type == 'dinggroup' || type == 'feishugroup');
-        $('#urlTR').toggle(type != 'dinguser' && type != 'dingsingleuser' && type != 'wechatuser' && type != 'feishuuser');
-        $('.dinguserTR').toggle(type == 'dinguser' || type == 'dingsingleuser' );
+        $('#urlTR').toggle(type != 'dinguser' && type != 'dingsingleuser' && type != 'dinggroupapi' && type != 'wechatuser' && type != 'feishuuser');
+        $('.dinguserTR').toggle(type == 'dinguser' || type == 'dingsingleuser'  || type == 'dinggroupapi' );
+        $('#openConversationIdTR').toggle(type == 'dinggroupapi' );
         $('.wechatTR').toggle(type == 'wechatuser');
         $('.feishuTR').toggle(type == 'feishuuser');
-        $('#paramsTR').toggle(type != 'bearychat' && type != 'dinggroup' && type != 'dinguser' && type != 'dingsingleuser' && type != 'wechatuser' && type != 'wechatgroup' && type != 'feishuuser' && type != 'feishugroup');
+        $('#paramsTR').toggle(type != 'bearychat' && type != 'dinggroup' && type != 'dinggroupapi' && type != 'dinguser' && type != 'dingsingleuser' && type != 'wechatuser' && type != 'wechatgroup' && type != 'feishuuser' && type != 'feishugroup');
         $('#urlNote').html(urlNote[type]);
     });
 

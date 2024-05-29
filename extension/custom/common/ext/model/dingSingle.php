@@ -34,7 +34,7 @@ function sendSignle($accessToken, $robotCode, $userList, $message)
     $this->log(json_encode(array('resp'=>$resp, 'errors'=>$errors),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
 
-    if($resp) return array('result' => 'success');
+    if(empty($errors)) return array('result' => 'success','resp'=>$resp);
     return array('result' => 'fail', 'message' => $errors);
 
 }

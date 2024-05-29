@@ -45,6 +45,7 @@ $lang->webhook->deleted = '已删除';
 $lang->webhook->approval = '审批流推送';
 
 $lang->webhook->typeList[''] = '';
+$lang->webhook->typeList['dinggroupapi'] = '钉钉群通知机器人(api)';
 $lang->webhook->typeList['dinggroup'] = '钉钉群通知机器人';
 $lang->webhook->typeList['dinguser'] = '钉钉工作消息通知';
 $lang->webhook->typeList['dingsingleuser'] = '钉钉单聊消息通知';
@@ -60,6 +61,7 @@ $lang->webhook->sendTypeList['async'] = '异步';
 $lang->webhook->dingAgentId = '钉钉AgentId';
 $lang->webhook->dingAppKey = '钉钉AppKey';
 $lang->webhook->dingAppSecret = '钉钉AppSecret';
+$lang->webhook->dingOpenConversationId = '钉钉群ID';
 $lang->webhook->dingUserid = '钉钉用户';
 $lang->webhook->dingBindStatus = '钉钉绑定状态';
 $lang->webhook->chooseDeptAgain = '重选部门';
@@ -102,6 +104,7 @@ $lang->webhook->note->bind = '只有[钉钉/微信]工作通知类型才需要�
 $lang->webhook->note->product = "此项为空时所有{$lang->productCommon}的动作都会触发钩子，否则只有关联{$lang->productCommon}的动作才会触发。";
 $lang->webhook->note->execution = "此项为空时所有{$lang->execution->common}的动作都会触发钩子，否则只有关联{$lang->execution->common}的动作才会触发。";
 
+$lang->webhook->note->dingHelpJsapi10303 = " <a href='https://open.dingtalk.com/tools/explorer/jsapi?id=10303' target='_blank'><i class='icon-help'></i></a>";
 $lang->webhook->note->dingHelp = " <a href='http://www.zentao.net/book/zentaopmshelp/358.html' target='_blank'><i class='icon-help'></i></a>";
 $lang->webhook->note->wechatHelp = " <a href='http://www.zentao.net/book/zentaopmshelp/367.html' target='_blank'><i class='icon-help'></i></a>";
 

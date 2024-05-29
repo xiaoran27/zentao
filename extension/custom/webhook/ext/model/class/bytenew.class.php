@@ -79,11 +79,11 @@ class bytenewWebhook extends webhookModel
         }
         $action->text = $text;
 
-        if($webhook->type == 'dinggroup' or $webhook->type == 'dinguser'  )
+        if($webhook->type == 'dinggroup' or $webhook->type == 'dinguser' )
         {
             $data = $this->getDingdingData($title, $text, ( $webhook->type == 'dinguser'  ) ? '' : $mobile);
         }
-        elseif($webhook->type == 'dingsingleuser')  // 钉钉单聊markdown消息
+        elseif($webhook->type == 'dingsingleuser'or $webhook->type == 'dinggroupapi' )  // markdown消息
         {
             $data = new stdclass();
             $data->title = $title;
@@ -126,7 +126,7 @@ class bytenewWebhook extends webhookModel
 
         if(!extension_loaded('curl')) return print(helper::jsonEncode($this->lang->webhook->error->curl));
 
-        if($webhook->type == 'dinguser' || $webhook->type == 'wechatuser' || $webhook->type == 'feishuuser' || $webhook->type == 'dingsingleuser')
+        if($webhook->type == 'dinguser' || $webhook->type == 'wechatuser' || $webhook->type == 'feishuuser' || $webhook->type == 'dingsingleuser' )
         {
             if(is_string($webhook->secret)) $webhook->secret = json_decode($webhook->secret);
 
@@ -137,28 +137,28 @@ class bytenewWebhook extends webhookModel
                 $this->app->loadClass('dingapi', true);
                 $dingapi = new dingapi($webhook->secret->appKey, $webhook->secret->appSecret, $webhook->secret->agentId);
                 $result  = $dingapi->send($openIdList, $sendData);
-                return json_encode($result);
+                return json_encode($result,JSON_UNESCAPED_UNICODE);
             }
             elseif($webhook->type == 'wechatuser')
             {
                 $this->app->loadClass('wechatapi', true);
                 $wechatapi = new wechatapi($webhook->secret->appKey, $webhook->secret->appSecret, $webhook->secret->agentId);
                 $result  = $wechatapi->send($openIdList, $sendData);
-                return json_encode($result);
+                return json_encode($result,JSON_UNESCAPED_UNICODE);
             }
             elseif($webhook->type == 'feishuuser')
             {
                 $this->app->loadClass('feishuapi', true);
                 $feishuapi = new feishuapi($webhook->secret->appId, $webhook->secret->appSecret);
                 $result  = $feishuapi->send($openIdList, $sendData);
-                return json_encode($result);
+                return json_encode($result,JSON_UNESCAPED_UNICODE);
             }elseif($webhook->type == 'dingsingleuser')
             {
                 $this->app->loadClass('dingapi', true);
                 $dingapi = new dingapi($webhook->secret->appKey, $webhook->secret->appSecret, $webhook->secret->agentId);
                 $token = $dingapi->getToken();
                 $result = $this->loadModel('common')->sendSignle($token, $webhook->secret->appKey, $openIdList, $sendData);
-                return json_encode($result);
+                return json_encode($result,JSON_UNESCAPED_UNICODE);
 
             }
         }
@@ -168,14 +168,27 @@ class bytenewWebhook extends webhookModel
         $header[] = $contentType;
 
         $url = $webhook->url;
-        if($webhook->type == 'dinggroup' and $webhook->secret)
+        if($webhook->type == 'dinggroupapi' and $webhook->secret)
+        {
+            if(is_string($webhook->secret)) $webhook->secret = json_decode($webhook->secret);
+
+            $this->app->loadClass('dingapi', true);
+            $dingapi = new dingapi($webhook->secret->appKey, $webhook->secret->appSecret, $webhook->secret->agentId);
+            $token = $dingapi->getToken();
+
+            // if ( $token == false ) $this->loadModel('common')->log(json_encode(array('webhook->secret'=>$webhook->secret,'errors'=>$dingapi->getErrors()),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+            if(!isset($webhook->secret->openConversationId)) $webhook->secret->openConversationId='cidK7WHgleolZYw9ate7v4FNA==';
+            if(!isset($webhook->secret->robotCode)) $webhook->secret->robotCode=$webhook->secret->appKey;
+            $result = $this->loadModel('common')->dingRobotSendApi($token, $sendData,$webhook->secret->openConversationId, $webhook->secret->robotCode);
+            return json_encode($result);
+        }elseif($webhook->type == 'dinggroup' and $webhook->secret)
         {
             $timestamp = time() * 1000;
             $sign = $timestamp . "\n" . $webhook->secret;
             $sign = urlencode(base64_encode(hash_hmac('sha256', $sign, $webhook->secret, true)));
             $url .= "&timestamp={$timestamp}&sign={$sign}";
-        }
-        if($webhook->type == 'feishugroup' and $webhook->secret)
+        }elseif($webhook->type == 'feishugroup' and $webhook->secret)
         {
             $timestamp = time();
             $sign = $timestamp . "\n" . $webhook->secret;
@@ -222,13 +235,13 @@ class bytenewWebhook extends webhookModel
             ->join('products', ',')
             ->join('executions', ',')
             ->skipSpecial('url')
-            ->trim('agentId,appKey,appSecret,wechatAgentId,wechatCorpId,wechatCorpSecret,feishuAppId,feishuAppSecret')
+            ->trim('agentId,appKey,appSecret,openConversationId,wechatAgentId,wechatCorpId,wechatCorpSecret,feishuAppId,feishuAppSecret')
             ->remove('allParams, allActions')
             ->get();
         $webhook->domain = trim($webhook->domain, '/');
         $webhook->params = $this->post->params ? implode(',', $this->post->params) . ',text' : 'text';
 
-        if($webhook->type == 'dinguser' || $webhook->type == 'dingsingleuser')
+        if($webhook->type == 'dinguser' || $webhook->type == 'dingsingleuser'  || $webhook->type == 'dinggroupapi')
         {
             $webhook->secret = array();
             $webhook->secret['agentId']   = $webhook->agentId;
@@ -238,7 +251,11 @@ class bytenewWebhook extends webhookModel
             if(empty($webhook->agentId))   dao::$errors['agentId']   = sprintf($this->lang->error->notempty, $this->lang->webhook->dingAgentId);
             if(empty($webhook->appKey))    dao::$errors['appKey']    = sprintf($this->lang->error->notempty, $this->lang->webhook->dingAppKey);
             if(empty($webhook->appSecret)) dao::$errors['appSecret'] = sprintf($this->lang->error->notempty, $this->lang->webhook->dingAppSecret);
-            if(dao::isError()) return false;
+            
+            
+            $webhook->secret['openConversationId'] = $webhook->openConversationId;
+            if($webhook->type == 'dinggroupapi' && empty($webhook->openConversationId)) dao::$errors['openConversationId'] = sprintf($this->lang->error->notempty, $this->lang->webhook->dingOpenConversationId);
+            if(dao::isError()) return false;            
 
             $webhook->secret = json_encode($webhook->secret);
             $webhook->url    = $this->config->webhook->dingapiUrl;
@@ -272,7 +289,7 @@ class bytenewWebhook extends webhookModel
             $webhook->url    = $this->config->webhook->feishuApiUrl;
         }
 
-        $this->dao->insert(TABLE_WEBHOOK)->data($webhook, 'agentId,appKey,appSecret,wechatCorpId,wechatCorpSecret,wechatAgentId,feishuAppId,feishuAppSecret')
+        $this->dao->insert(TABLE_WEBHOOK)->data($webhook, 'agentId,appKey,appSecret,openConversationId,wechatCorpId,wechatCorpSecret,wechatAgentId,feishuAppId,feishuAppSecret')
             ->batchCheck($this->config->webhook->create->requiredFields, 'notempty')
             ->autoCheck()
             ->exec();
@@ -297,13 +314,13 @@ class bytenewWebhook extends webhookModel
             ->join('products', ',')
             ->join('executions', ',')
             ->skipSpecial('url')
-            ->trim('agentId,appKey,appSecret,wechatAgentId,wechatCorpId,wechatCorpSecret,feishuAppId,feishuAppSecret')
+            ->trim('agentId,appKey,appSecret,openConversationId,wechatAgentId,wechatCorpId,wechatCorpSecret,feishuAppId,feishuAppSecret')
             ->remove('allParams, allActions')
             ->get();
         $webhook->domain = trim($webhook->domain, '/');
         $webhook->params = $this->post->params ? implode(',', $this->post->params) . ',text' : 'text';
 
-        if($webhook->type == 'dinguser' || $webhook->type == 'dingsingleuser')
+        if($webhook->type == 'dinguser' || $webhook->type == 'dingsingleuser'  || $webhook->type == 'dinggroupapi')
         {
             $webhook->secret = array();
             $webhook->secret['agentId']   = $webhook->agentId;
@@ -313,6 +330,10 @@ class bytenewWebhook extends webhookModel
             if(empty($webhook->agentId))   dao::$errors['agentId']   = sprintf($this->lang->error->notempty, $this->lang->webhook->dingAgentId);
             if(empty($webhook->appKey))    dao::$errors['appKey']    = sprintf($this->lang->error->notempty, $this->lang->webhook->dingAppKey);
             if(empty($webhook->appSecret)) dao::$errors['appSecret'] = sprintf($this->lang->error->notempty, $this->lang->webhook->dingAppSecret);
+
+            $webhook->secret['openConversationId'] = $webhook->openConversationId;
+            if($webhook->type == 'dinggroupapi' && empty($webhook->openConversationId)) dao::$errors['openConversationId'] = sprintf($this->lang->error->notempty, $this->lang->webhook->dingOpenConversationId);
+            
             if(dao::isError()) return false;
 
             $webhook->secret = json_encode($webhook->secret);
@@ -344,7 +365,7 @@ class bytenewWebhook extends webhookModel
             $webhook->secret = json_encode($webhook->secret);
         }
 
-        $this->dao->update(TABLE_WEBHOOK)->data($webhook, 'agentId,appKey,appSecret,wechatCorpId,wechatCorpSecret,wechatAgentId,feishuAppId,feishuAppSecret')
+        $this->dao->update(TABLE_WEBHOOK)->data($webhook, 'agentId,appKey,appSecret,openConversationId,wechatCorpId,wechatCorpSecret,wechatAgentId,feishuAppId,feishuAppSecret')
             ->batchCheck($this->config->webhook->edit->requiredFields, 'notempty')
             ->autoCheck()
             ->where('id')->eq($id)
