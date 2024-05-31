@@ -576,7 +576,7 @@ class bytenewStory extends StoryModel
             foreach ($ids as $i => $id) {
                 $ids_md .= " [{$id}]({$webroot}/story-view-{$id}.html)";
                 if ($i >= 10) {
-                    $ids_md .= " [更多]({$webroot}/product-browse-1-all-bySearch-myQueryID-requirement.html)";
+                    $ids_md .= " [更多]({$webroot}/my-work-story.html)";
                     break;
                 }
             }
