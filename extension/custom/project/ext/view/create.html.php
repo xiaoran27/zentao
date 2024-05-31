@@ -196,7 +196,7 @@ js::set('acl', $acl); ?>
                     <th> <?php echo $lang->execution->days; ?></th>
                     <td >
                         <div class='input-group'>
-                            <?php echo html::input('days', '', "class='form-control'"); ?>
+                            <?php echo html::input('days', '1', "class='form-control'"); ?>
                             <span class='input-group-addon'><?php echo $lang->execution->day; ?></span>
                         </div>
                     </td>
@@ -209,7 +209,7 @@ js::set('acl', $acl); ?>
                     <td>
                         <div id="poAmountBox" class='input-group'>
                             <span class='input-group-addon'><?php echo $lang->project->poAmount; ?></span>
-                            <?php echo html::number('poAmount', '', "class='form-control' min='0' step='0.01'"); ?>
+                            <?php echo html::number('poAmount', '0', "class='form-control' min='0' step='0.01'"); ?>
                         </div>
                     </td>
                 </tr>
