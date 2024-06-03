@@ -20,6 +20,7 @@ class bytenewTask extends TaskModel
             $excludeUsers = '';
         }
         $excludeUsers .= ',admin,system,';
+        if (isset($this->config->excludeUsers)) $excludeUsers .= $this->config->excludeUsers.',';  //config-ext-user.php
         if (isset($this->config->task->excludeUsers)) $excludeUsers .= $this->config->task->excludeUsers.',';
         
 

@@ -495,7 +495,9 @@ class bytenewStory extends StoryModel
             $excludeUsers = '';
         }
         $excludeUsers .= ',admin,system,';
-        if (isset($this->config->task->excludeUsers)) $excludeUsers .= $this->config->task->excludeUsers.',';
+        
+        if (isset($this->config->excludeUsers)) $excludeUsers .= $this->config->excludeUsers.',';  //config-ext-user.php
+        if (isset($this->config->story->excludeUsers)) $excludeUsers .= $this->config->story->excludeUsers.',';
 
         $common = $this->loadModel('common');
         $common->log(json_encode(array('type' => $type, 'product' => $product, 'sla' => $sla, 'program' => $program, 'responseResult' => $responseResult, 'excludeUsers' => $excludeUsers), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);

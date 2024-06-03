@@ -1,4 +1,40 @@
 
+select
+        DATE_FORMAT(contract.sign_time,'%Y-%m') 月份,
+        product1.product_name 产品,
+				tag1.tag_name 版本,
+				count(DISTINCT product.customer_id) 客户数量,
+        count(distinct contract.id) 合同数量,
+        ifnull(sum(case when contract.id is not null then product.actually_price end),0) 合同金额
+        from (select a.contract_id,a.customer_id,a.receivables_id,a.module_id,a.product_id,sum(a.actually_price) actually_price
+        from (
+        SELECT receivables.contract_id,
+        receivables.customer_id,
+        product.receivables_id,
+        product.module_id,
+        product.product_id,
+        product.product_item_id,
+        actually_price
+        FROM t_salecrm_receivables_product product
+        left join t_salecrm_receivables receivables on product.receivables_id = receivables.id
+        where receivables.deleted = 0
+        GROUP BY receivables.contract_id, product.product_item_id) a group by a.contract_id, a.product_id) product
+        left join t_salecrm_contract contract on contract.id = product.contract_id
+        left join t_salecrm_customer customer on customer.id = product.customer_id
+				left join t_salecrm_product product1 on product1.id = product.product_id
+				left join t_salecrm_tags tag1 on product.module_id = tag1.id
+        left join (select contract_id,sum(payment_amount) as payment_amount from t_salecrm_payment where
+        deleted = 0
+        and exists(select id from t_salecrm_receivables where id = receivables_id and deleted = 0)
+        group by contract_id) payment on payment.contract_id = contract.id
+        where
+            contract.deleted = 0
+            and contract.status in (3,4,6)
+            and DATE_FORMAT(contract.sign_time,'%Y-%m') between '2023-01' and '2023-12'
+        group by DATE_FORMAT(contract.sign_time,'%Y-%m'),product.product_id,product.module_id
+
+
+
 -- 需求交付SLA
 --  业务需求|产品需求
 --  Y|-
