@@ -3,17 +3,40 @@
 
     /**
      * 用发布的应用中robot发送群聊消息
-     * $this->loadModel('common')->dingRobotSendApi($accessToken, $message, $openConversationId='cidK7WHgleolZYw9ate7v4FNA==', $robotCode='dingcrquldohmljagits');
+     * $this->loadModel('common')->dingRobotSendApi($message, $accessToken=null, $openConversationId=null, $robotCode=null);
      *
-     * @param  string $accessToken
-     * @param  string $message  //
-     * @param  string $openConversationId='cidK7WHgleolZYw9ate7v4FNA=='  see https://open.dingtalk.com/tools/explorer/jsapi?spm=ding_open_doc.document.0.0.1319388cuhWImJ&id=10303
-     * @param  string $robotCode='dingcrquldohmljagits'  //robotApi
+     * @param  string $message  // {"title":"myTitle","text":"mytext"}
+     * @param  string $accessToken=null  默认$config->ding->apps[$config->ding->default->app]的授权值
+     * @param  string $openConversationId=null 默认$config->ding->apps[$config->ding->default->app]的openConversationId @see https://open.dingtalk.com/tools/explorer/jsapi?spm=ding_open_doc.document.0.0.1319388cuhWImJ&id=10303
+     * @param  string $robotCode=null  默认$config->ding->apps[$config->ding->default->app]的robotCode或appKey
+     * 
      * @access public
      * @return string
      */
-public function dingRobotSendApi($accessToken, $message, $openConversationId='cidK7WHgleolZYw9ate7v4FNA==', $robotCode='dingcrquldohmljagits')  //robotApi 群=自用机器人
+public function dingRobotSendApi($message, $accessToken=null, $openConversationId=null, $robotCode=null)
 {
+
+    $type='ding';
+    if (empty($accessToken) ){
+        $accessToken = $this->getToken($type);
+    }
+    if ( $accessToken === false ) return false;
+
+    
+    if (!isset($this->config->$type)) return false;
+    $appname = $this->config->$type->default->app;
+    
+    if (empty($openConversationId) ){
+        $groupName = $this->config->$type->default->groupName;
+        $openConversationId = $this->config->$type->openConversationIds["$groupName"];
+    }
+    if (empty($robotCode) ){
+        $robotCode = $this->config->$type->apps["$appname"]['robotCode'];
+    }
+    if (empty($robotCode) ){
+        $robotCode = $this->config->$type->apps["$appname"]['appKey'];
+    }
+
 
     $url = "https://api.dingtalk.com/v1.0/robot/groupMessages/send";
 
@@ -38,15 +61,15 @@ public function dingRobotSendApi($accessToken, $message, $openConversationId='ci
 
     $this->log(json_encode(array('resp'=>$resp, 'errors'=>$errors),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
-    if(empty($errors)) return array('result' => 'success','resp'=>$resp);
-    return array('result' => 'fail', 'message' => $errors);
+    if(empty($errors)) return array('code' => 0,'resp'=>$resp);
+    return array('code' => 1, 'message' => $errors);
     
 
 }
 
     /**
      * 用发布的应用中robot发送群聊消息
-     * $this->loadModel('common')->dingRobotSendApi($text, $msgtype='sampleMarkdown', $mdTitle='通知', $agentId='1990383324', $appKey='dingooddxzzmdvlici1v', $appSecret='PF_vB11JWT3tE5SX6qGAAYCxNNx-LB2alF-0Mfu0WJLwZNxUzPMDfK6fTXFB6qEI',$robotCode='dingcrquldohmljagits',$openConversationId='cidK7WHgleolZYw9ate7v4FNA==');
+     * $this->loadModel('common')->dingRobotSendApi2($text, $msgtype='sampleMarkdown', $mdTitle='通知', $agentId='1990383324', $appKey='dingooddxzzmdvlici1v', $appSecret='PF_vB11JWT3tE5SX6qGAAYCxNNx-LB2alF-0Mfu0WJLwZNxUzPMDfK6fTXFB6qEI',$robotCode='dingcrquldohmljagits',$openConversationId='cidK7WHgleolZYw9ate7v4FNA==');
      *
      * @param  string $mdText
      * @param  string $msgtype=='sampleMarkdown'  see https://open.dingtalk.com/document/orgapp/types-of-messages-sent-by-robots?spm=ding_open_doc.document.0.0.263e1563DioTEL
@@ -101,9 +124,7 @@ public function dingRobotSendApi($accessToken, $message, $openConversationId='ci
 
         $this->app->loadClass('dingapi', true);
         $dingapi = new dingapi($appKey, $appSecret, $agentId);
-
-        global $app;
-        $app->loadClass('requests',true);
+    
 
         $accessToken=$dingapi->getToken();
         if ($accessToken == false) {
@@ -113,7 +134,6 @@ public function dingRobotSendApi($accessToken, $message, $openConversationId='ci
         }
         
         $url = "https://api.dingtalk.com/v1.0/robot/groupMessages/send";
-
 
         $headers = array('Content-Type' => 'application/json','Accept' => 'application/json','x-acs-dingtalk-access-token' => $accessToken);
         $data = array(
@@ -133,6 +153,8 @@ public function dingRobotSendApi($accessToken, $message, $openConversationId='ci
         $this->log($json_data, __FILE__, __LINE__);
         $options = array('timeout' => '10') ;
         
+        global $app;
+        $app->loadClass('requests',true);
         $resp = requests::post($url, $headers, $json_data, $options);
         $this->log(json_encode($resp,JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
     

@@ -22,7 +22,7 @@ function sendSignle($accessToken, $robotCode, $userList, $message)
 
     $data = array(
         'robotCode' => $robotCode,
-        'userIds' => explode(",", $userList),
+        'userIds' => is_string($userList)?explode(",", $userList) : $userList ,
         'msgKey' => 'officialMarkdownMsg',
         'msgParam' => $message
     );
@@ -34,7 +34,7 @@ function sendSignle($accessToken, $robotCode, $userList, $message)
     $this->log(json_encode(array('resp'=>$resp, 'errors'=>$errors),JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
 
-    if(empty($errors)) return array('result' => 'success','resp'=>$resp);
-    return array('result' => 'fail', 'message' => $errors);
+    if(empty($errors)) return array('code' => 0,'resp'=>$resp);
+    return array('code' => 1, 'message' => $errors);
 
 }

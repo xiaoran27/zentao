@@ -491,9 +491,14 @@ class bytenewStory extends StoryModel
         if (empty($responseResult)) {
             $responseResult = 'todo';
         }
+        if (empty($excludeUsers)) {
+            $excludeUsers = '';
+        }
+        $excludeUsers .= ',admin,system,';
+        if (isset($this->config->task->excludeUsers)) $excludeUsers .= $this->config->task->excludeUsers.',';
 
         $common = $this->loadModel('common');
-        $common->log(json_encode(array('type' => $type, 'product' => $product, 'sla' => $sla, 'program' => $program, 'responseResult' => $responseResult), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('type' => $type, 'product' => $product, 'sla' => $sla, 'program' => $program, 'responseResult' => $responseResult, 'excludeUsers' => $excludeUsers), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
 
         // // 获取产品-产品负责人 select id,po from zt_product where deleted = '0' ;
@@ -546,13 +551,9 @@ class bytenewStory extends StoryModel
         $common->log(json_encode(array('dingdingDatas' => $dingdingDatas), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
         if (empty($dingdingDatas)) return array();
 
-        $webroot = common::getSysUrl(). $this->config->webRoot;  // 直接用禅道自己的系统配置   有proxy就不可用
+        $webroot = common::getSysUrl(). $this->config->webRoot;  // 直接用禅道自己的系统配置   有nginx代理就不可用
         $webroot = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER["SERVER_PORT"] . $this->config->webRoot;  //  拼接可能不对
-        if (isset($this->config->story->baseurl)) $webroot = $this->config->story->baseurl;
-        
-
-        // 过滤名单
-        if ('admin' == $excludeUsers and isset($this->config->story->excludeUsers)) $excludeUsers = $this->config->story->excludeUsers;
+        if (isset($this->config->baseurl)) $webroot = $this->config->baseurl;
 
         $content = '';
         $contents = array();
@@ -561,13 +562,13 @@ class bytenewStory extends StoryModel
         $realnames = array();
         foreach ($dingdingDatas as $e) {
             // 忽略过滤名单
-            $ignore = !(strpos("," . $excludeUsers, $e->dingding) === false);
-            $ignore = $ignore || !(strpos("," . $excludeUsers, $e->account) === false);
-            $ignore = $ignore || !(strpos("," . $excludeUsers, $e->realname) === false);
+            $ignore = !(strpos($excludeUsers, ",$e->dingding,") === false);
+            $ignore = $ignore || !(strpos($excludeUsers, ",$e->account,") === false);
+            $ignore = $ignore || !(strpos($excludeUsers, ",$e->realname,") === false);
             if ($ignore) continue;
 
             //消息内容content中要带上"@手机号"，跟atMobiles参数结合使用，才有@效果，如上示例。
-            $str = "- @$e->dingding ($e->realname) 有 $e->total 个待处理或须跟踪的需求\n";
+            $str = "- @$e->dingding ($e->realname) 亲,抽空处理下这 [$e->total]({$webroot}/my-work-story.html) 个需求哦\n";
             $content .= $str;
             $contents[] = $str;
 

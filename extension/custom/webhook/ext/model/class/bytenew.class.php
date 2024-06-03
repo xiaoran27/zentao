@@ -2,7 +2,6 @@
 
 class bytenewWebhook extends webhookModel
 {
-
     
     /**
      * Build data.
@@ -180,7 +179,7 @@ class bytenewWebhook extends webhookModel
 
             if(!isset($webhook->secret->openConversationId)) $webhook->secret->openConversationId='cidK7WHgleolZYw9ate7v4FNA==';
             if(!isset($webhook->secret->robotCode)) $webhook->secret->robotCode=$webhook->secret->appKey;
-            $result = $this->loadModel('common')->dingRobotSendApi($token, $sendData,$webhook->secret->openConversationId, $webhook->secret->robotCode);
+            $result = $this->loadModel('common')->dingRobotSendApi($sendData,$token, $webhook->secret->openConversationId, $webhook->secret->robotCode);
             return json_encode($result);
         }elseif($webhook->type == 'dinggroup' and $webhook->secret)
         {
