@@ -498,6 +498,12 @@ class bytenewStory extends StoryModel
         
         if (isset($this->config->excludeUsers)) $excludeUsers .= $this->config->excludeUsers.',';  //config-ext-user.php
         if (isset($this->config->story->excludeUsers)) $excludeUsers .= $this->config->story->excludeUsers.',';
+        $excludeUsers = str_replace(",,",",",",$excludeUsers");
+
+        $includeUsers = ',';
+        if (isset($this->config->includeUsers)) $includeUsers .= $this->config->includeUsers.',';  //config-ext-user.php
+        if (isset($this->config->story->includeUsers)) $includeUsers .= $this->config->story->includeUsers.',';
+        $includeUsers = str_replace(",,",",",",$includeUsers");
 
         $common = $this->loadModel('common');
         $common->log(json_encode(array('type' => $type, 'product' => $product, 'sla' => $sla, 'program' => $program, 'responseResult' => $responseResult, 'excludeUsers' => $excludeUsers), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
@@ -563,11 +569,20 @@ class bytenewStory extends StoryModel
         $atMobiles = array();
         $realnames = array();
         foreach ($dingdingDatas as $e) {
-            // 忽略过滤名单
-            $ignore = !(strpos($excludeUsers, ",$e->dingding,") === false);
-            $ignore = $ignore || !(strpos($excludeUsers, ",$e->account,") === false);
-            $ignore = $ignore || !(strpos($excludeUsers, ",$e->realname,") === false);
-            if ($ignore) continue;
+
+            $onlyUsers = false;
+            if ($includeUsers!=','){
+                $onlyUsers = (strpos($includeUsers, ",$e->account,") !== false);
+                $onlyUsers = $onlyUsers || (strpos($includeUsers, ",$e->dingding,") !== false);
+                $onlyUsers = $onlyUsers || (strpos($includeUsers, ",$e->realname,") !== false);
+            }
+            if (!$onlyUsers){
+                // 忽略过滤名单
+                $ignore = (strpos($excludeUsers, ",$e->account,") !== false);
+                $ignore = $ignore || (strpos($excludeUsers, ",$e->dingding,") !== false);
+                $ignore = $ignore || (strpos($excludeUsers, ",$e->realname,") !== false);
+                if ($ignore) continue;
+            }
 
             //消息内容content中要带上"@手机号"，跟atMobiles参数结合使用，才有@效果，如上示例。
             $str = "- @$e->dingding ($e->realname) 亲,抽空处理下这 [$e->total]({$webroot}/my-work-story.html) 个需求哦\n";

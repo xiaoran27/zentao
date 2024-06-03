@@ -4,6 +4,7 @@ global $lang, $app, $config;
 
 
 /* 钉钉登录配置 https://open.dingtalk.com/document/orgapp/scan-qr-code-to-log-on-to-third-party-websites*/
+if(!isset($config->ding)) $config->ding = new stdclass();
 $config->ding->ddturnon = true;/* 是否开启钉钉登录 */
 $config->ding->logintype = 1;/* 钉钉登录方式,0仅允许绑定登录,1允许自动注册登录(建议新平台使用此方法,方便人员自行添加) */
 $config->ding->appid = 'dingooddxzzmdvlici1v';/* 如果是企业内部应用，appid则为应用的AppKey；如果是第三方企业应用，appid则为应用的SuiteKey */
@@ -12,14 +13,20 @@ $config->ding->redirect = 'http://127.0.0.1:81/';/* 回调地址域名,与钉钉
 
 $config->ding->defpwd = 'DingA1b2c3d4';
 
+if(!isset($config->safe)) $config->safe = new stdclass();
 $config->safe->loginCaptcha = false;
 
+if(!isset($config->sso)) $config->sso = new stdclass();
 $config->sso->turnon           = false;
 $config->sso->code = 'dingooddxzzmdvlici1v';
 $config->sso->key = 'PF_vB11JWT3tE5SX6qGAAYCxNNx-LB2alF-0Mfu0WJLwZNxUzPMDfK6fTXFB6qEI';
 $config->sso->addr = '';
 
-## 发送提醒消息时默认不发送给哪些用户
+
+## 仅对includeUsers发送提醒消息(会忽略excludeUsers)，支持手机号、禅道account、禅道realname
+$config->includeUsers = '';
+
+## 发送提醒消息时默认不发送给哪些用户 ，支持手机号、禅道account、禅道realname
 $config->excludeUsers = '';
 $config->excludeUsers .= 'xionger,yingsun,meiyangyang,shandian,nimo,manni,sanqing,tihu,xuelang,jiuyou,asong,timo,fenghuang,fenghuang,bake,zidiao,heluo,batianhu,caifendie,xianluo,xianfeng,kunpeng1,leiniao,banma1';
 $config->excludeUsers .= 'ruiqi,chuanshanjia,panlong,wolong,fengchu,jinniu,hundun';

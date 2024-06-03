@@ -22,6 +22,12 @@ class bytenewTask extends TaskModel
         $excludeUsers .= ',admin,system,';
         if (isset($this->config->excludeUsers)) $excludeUsers .= $this->config->excludeUsers.',';  //config-ext-user.php
         if (isset($this->config->task->excludeUsers)) $excludeUsers .= $this->config->task->excludeUsers.',';
+        $excludeUsers = str_replace(",,",",",",$excludeUsers");
+
+        $includeUsers = ',';
+        if (isset($this->config->includeUsers)) $includeUsers .= $this->config->includeUsers.',';  //config-ext-user.php
+        if (isset($this->config->task->includeUsers)) $includeUsers .= $this->config->task->includeUsers.',';
+        $includeUsers = str_replace(",,",",",",$includeUsers");
         
 
         $common = $this->loadModel('common');
@@ -40,7 +46,7 @@ class bytenewTask extends TaskModel
             ->orderby("total  DESC")
             ->fetchAll();
         $common->log(json_encode(array('dingdingDatas' => $dingdingDatas), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
-        // if (empty($dingdingDatas)) return array();
+        if (empty($dingdingDatas)) return array();
 
         $webroot = common::getSysUrl(). $this->config->webRoot;  // 直接用禅道自己的系统配置   有nginx代理就不可用
         $webroot = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER["SERVER_PORT"] . $this->config->webRoot;  //  拼接可能不对
@@ -53,11 +59,21 @@ class bytenewTask extends TaskModel
         $accounts = array();
         $realnames = array();
         foreach ($dingdingDatas as $e) {
-            // 忽略过滤名单
-            $ignore = !(strpos($excludeUsers, ",$e->dingding,") === false);
-            $ignore = $ignore || !(strpos($excludeUsers, ",$e->account,") === false);
-            $ignore = $ignore || !(strpos($excludeUsers, ",$e->realname,") === false);
-            if ($ignore) continue;
+
+            $onlyUsers = false;
+            if ($includeUsers!=','){
+                $onlyUsers = (strpos($includeUsers, ",$e->account,") !== false);
+                $onlyUsers = $onlyUsers || (strpos($includeUsers, ",$e->dingding,") !== false);
+                $onlyUsers = $onlyUsers || (strpos($includeUsers, ",$e->realname,") !== false);
+            }
+            if (!$onlyUsers){
+                // 忽略过滤名单
+                $ignore = (strpos($excludeUsers, ",$e->account,") !== false);
+                $ignore = $ignore || (strpos($excludeUsers, ",$e->dingding,") !== false);
+                $ignore = $ignore || (strpos($excludeUsers, ",$e->realname,") !== false);
+                if ($ignore) continue;
+            }
+            
 
             //消息内容content中要带上"@手机号"，跟atMobiles参数结合使用，才有@效果，如上示例。
             $str = "- @$e->dingding ($e->realname) 亲,抽空处理下这 [$e->total]({$webroot}/my-work-task.html) 个任务哦!";
@@ -163,7 +179,7 @@ class bytenewTask extends TaskModel
         if ($autoCancel)  $this->timeoutCancel($ltdays);
 
         $dingDatas = $this->getTextForDing($ltdays);
-        // if (empty($dingDatas)) return '无ding数据';
+        if (empty($dingDatas)) return '无ding数据';
 
         // array('content' => $content, 'atMobiles' => $atMobiles, 'realnames' => $realnames, 'contents' => $contents, 'contentMdIds' => $contentMdIds);
         $contentTitle = $dingDatas['content'];
