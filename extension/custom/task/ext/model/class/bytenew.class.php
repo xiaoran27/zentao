@@ -110,8 +110,8 @@ class bytenewTask extends TaskModel
     public function timeoutCancel($timeoutDays = 93)
     {
         $now    = helper::now();
-        $wait_date = substr($now,13).':00:00';
-        $doing_date = substr($now,13).':11:11';
+        $wait_date = substr($now,0,13).':00:00';
+        $doing_date = substr($now,0,13).':11:11';
         $sql = "update zt_task set status='cancel',canceledDate=if(status='wait','$wait_date','$doing_date'),canceledBy='system'
           where deleted = '0'
             and status in ('wait','doing')
