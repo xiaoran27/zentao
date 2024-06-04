@@ -198,7 +198,7 @@ class bytenewTask extends TaskModel
             $content = '';
             foreach ($contents as $i => $value) {
 
-                if ( $atMobiles[$i] != '13788992292' or  $realnames[$i] != '喜鹊'  ) continue;  //仅测试用
+                // if ( $atMobiles[$i] != '13788992292' or  $realnames[$i] != '喜鹊'  ) continue;  //仅测试用
 
                 $content = "$value **任务集**: $contentMdIds[$i]  \n";
 
@@ -209,7 +209,7 @@ class bytenewTask extends TaskModel
                     
                 
                 $tmp = $common->dingSingleSend($sendData, array($openIds["$accounts[$i]"]));
-                $result["single"]=$tmp;
+                $result["single-$accounts[$i]"]=$tmp;
             }
             
         }
