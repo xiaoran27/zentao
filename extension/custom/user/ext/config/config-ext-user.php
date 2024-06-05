@@ -1,6 +1,9 @@
 <?php
 
-global $lang, $app, $config;
+global $lang, $app;
+
+$config->user->create->requiredFields .= ',mobile';
+$config->user->edit->requiredFields   .= ',mobile';
 
 
 /* 钉钉登录配置 https://open.dingtalk.com/document/orgapp/scan-qr-code-to-log-on-to-third-party-websites*/

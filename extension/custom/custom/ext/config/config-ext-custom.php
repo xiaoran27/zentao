@@ -3,14 +3,15 @@
 global $lang, $app;
 
 # 
-$config->custom->fieldList['project']['create']      = $config->custom->fieldList['project']['create'] . ',devEvaluate,contractNo';
-$config->custom->fieldList['project']['edit']        = $config->custom->fieldList['project']['edit'] . ',devEvaluate,contractNo';
 
-$config->custom->fieldList['story']['create']        = $config->custom->fieldList['story']['create'] . ',assignedTo';
-$config->custom->fieldList['story']['close']         =  $config->custom->fieldList['story']['close'] .',prdReviewTime,releaseTime';
+$config->custom->fieldList['project']['create']      .= ',devEvaluate,contractNo';
+$config->custom->fieldList['project']['edit']        .= ',devEvaluate,contractNo';
 
-$config->custom->fieldList['task']['create']         = $config->custom->fieldList['task']['create'] . ',assignedTo';
-$config->custom->fieldList['task']['edit']           = $config->custom->fieldList['task']['create'];
+$config->custom->fieldList['story']['create']        .= ',assignedTo';
+$config->custom->fieldList['story']['close']         .= ',prdReviewTime,releaseTime';
+
+$config->custom->fieldList['task']['create']         .= ',assignedTo';
+$config->custom->fieldList['task']['edit']           .= $config->custom->fieldList['task']['create'];
 
 /*
 ## from custom/config.php
