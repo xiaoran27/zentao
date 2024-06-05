@@ -40,7 +40,7 @@ class bytenewTask extends TaskModel
             ->where('zt.deleted')->eq(0)
             ->andWhere('zt.assignedTo')->ne('')
             ->andWhere('zt.status')->in("wait,doing")
-            ->beginIF($ltdays > 0)->andWhere('datediff(now(), COALESCE(deadline,realStarted,estStarted,openedDate))')->between(0,$ltdays)->fi()
+            ->beginIF($ltdays > 0)->andWhere('datediff(now(), COALESCE(if(left(CONCAT("",ifnull(lastEditedDate,"0000-00-00")),4)="0000",realStarted,estStarted),deadline,openedDate))')->between(0,$ltdays)->fi()
             ->andWhere("datediff(now(), if(left(CONCAT('',ifnull(lastEditedDate,'0000-00-00')),4)='0000',openedDate,lastEditedDate))")->gt(0)
             ->groupby("realname , dingding ")
             ->orderby("total  DESC")

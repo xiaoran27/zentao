@@ -11,7 +11,7 @@ $config->custom->fieldList['story']['create']        .= ',assignedTo';
 $config->custom->fieldList['story']['close']         .= ',prdReviewTime,releaseTime';
 
 $config->custom->fieldList['task']['create']         .= ',assignedTo';
-$config->custom->fieldList['task']['edit']           .= $config->custom->fieldList['task']['create'];
+$config->custom->fieldList['task']['edit']           .= ',assignedTo';
 
 /*
 ## from custom/config.php
