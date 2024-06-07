@@ -3,6 +3,43 @@
 class bytenewTask extends TaskModel
 {
 
+    public function checkEstStartedAndDeadline($executionID, $estStarted, $deadline, $pre = '')
+    {
+
+        if(empty($estStarted) or helper::isZeroDate($estStarted) or empty($deadline) or helper::isZeroDate($deadline) or $deadline < $estStarted ){
+            dao::$errors['estStarted'][] = $pre . sprintf("[%s]不合法", $this->lang->task->estStarted );
+            dao::$errors['deadline'][] = $pre . sprintf("[%s]不合法或小于[%s]", $this->lang->task->deadline , $this->lang->task->estStarted);
+            return;
+        }
+
+        $d1 = DateTime::createFromFormat("Y-m-d", substr($estStarted,0,10));
+        $d2 = DateTime::createFromFormat("Y-m-d", substr($deadline,0,10));
+        // Set the start of the week to Sunday (default in many locales)
+        // Modify the date to the start of the week (Sunday)
+        $d1->modify('this week');
+        $d2->modify('this week');
+
+        // Set the time to the start of the day to avoid time comparisons
+        $d1->setTime(0, 0, 0);
+        $d2->setTime(0, 0, 0);
+
+        // Compare the start of the weeks
+        $sameweek = $d1->format('Y-m-d') === $d2->format('Y-m-d') ;
+        if ( $sameweek === false ){
+            dao::$errors['estStarted'][] = $pre . sprintf("[%s]和[%s]必须在同一周内", $this->lang->task->estStarted , $this->lang->task->deadline );
+            return;
+        }
+
+
+        $execution = $this->loadModel('execution')->getByID($executionID);
+        if(empty($execution) or empty($this->config->limitTaskDate)) return false;
+        if(empty($execution->multiple)) $this->lang->execution->common = $this->lang->project->common;
+
+        if(!empty($estStarted) and !helper::isZeroDate($estStarted) and $estStarted < $execution->begin) dao::$errors['estStarted'][] = $pre . sprintf($this->lang->task->error->beginLtExecution, $this->lang->execution->common, $execution->begin);
+        if(!empty($estStarted) and !helper::isZeroDate($estStarted) and $estStarted > $execution->end)   dao::$errors['estStarted'][] = $pre . sprintf($this->lang->task->error->beginGtExecution, $this->lang->execution->common, $execution->end);
+        if(!empty($deadline) and !helper::isZeroDate($deadline) and $deadline > $execution->end)       dao::$errors['deadline'][]   = $pre . sprintf($this->lang->task->error->endGtExecution, $this->lang->execution->common, $execution->end);
+        if(!empty($deadline) and !helper::isZeroDate($deadline) and $deadline < $execution->begin)     dao::$errors['deadline'][]   = $pre . sprintf($this->lang->task->error->endLtExecution, $this->lang->execution->common, $execution->begin);
+    }
 
     /**
      * 获取doing或wait的任务构建ding消息
@@ -40,7 +77,7 @@ class bytenewTask extends TaskModel
             ->where('zt.deleted')->eq(0)
             ->andWhere('zt.assignedTo')->ne('')
             ->andWhere('zt.status')->in("wait,doing")
-            ->beginIF($ltdays > 0)->andWhere('datediff(now(), COALESCE(if(left(CONCAT("",ifnull(lastEditedDate,"0000-00-00")),4)="0000",realStarted,estStarted),deadline,openedDate))')->between(0,$ltdays)->fi()
+            ->beginIF($ltdays > 0)->andWhere('datediff(now(), COALESCE(if(left(CONCAT("",ifnull(realStarted,"0000-00-00")),4)="0000",estStarted,realStarted),deadline,openedDate))')->between(0,$ltdays)->fi()
             ->andWhere("datediff(now(), if(left(CONCAT('',ifnull(lastEditedDate,'0000-00-00')),4)='0000',openedDate,lastEditedDate))")->gt(0)
             ->groupby("realname , dingding ")
             ->orderby("total  DESC")
