@@ -142,9 +142,25 @@ endif;
   .gantt .bar-label {
       fill: rebeccapurple !important;
   } */
+
+  .gantt-container .popup-wrapper {
+    /* width: 500px; */
+    padding: 0 5px;
+  }
   .gantt .bar-progress {
       fill: gray !important;
   }
+  .gantt .bar-label {
+    text-align: left !important;
+    /* fill: rebeccapurple !important;
+    font-size: 12px !important;
+    font-weight: bold !important; */
+  }
+  .gantt .arrow {
+    stroke: yellowgreen !important;
+    stroke-width: 1px !important;
+  }
+
 </style>
 <script>
 <?php if(!empty($taskList)):?>
@@ -194,6 +210,7 @@ endif;
               const progress = task.progress == undefined ? ( (/^\d+$/.test(consumed) && /^\d+$/.test(estimate) && estimate>0)?(consumed/estimate*100).toFixed(2):'NA'):task.progress;
               return `
                   <p>ID: ${task.id} (${task.dependencies})</p>
+                  <p>资源: ${task.realname}(${task.owner})</p>
                   <p>起止日期: ${begin_date}~${end_date}</p>
                   <p>进度: ${progress}%</p>
                   <p>预估: ${estimate}h,消耗: ${consumed}h</p>

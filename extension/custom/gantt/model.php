@@ -21,12 +21,12 @@ class ganttModel extends model
      */
     public function getTaskList(
         $programId = '223' //
-        , $projectId='2000'  // 1,2,3
+        , $projectId=''  // 1,2,3
         , $projectEnd='' // yyyy-mm-dd
         , $task_assignTo=''  //a,b,c
         , $projectPM=''  //a,b,c
         , $projectStatus = 'wait,doing'  // wait|doing|suspended|closed|unclosed
-        , $rowtype = ''  //project|execution|task
+        , $rowtype = 'project'  //project|execution|task
         , $excutionId='' //1,2,3
         , $storyId='' //1,2,3
         , $task_finishedBy=''  // 1,2,3
@@ -162,7 +162,7 @@ class ganttModel extends model
         from t_proj_exec_task
         join t_task_proj_exec on ( locate( concat(',',project,','),fullpath )>0 )
         where 1=1
-            ". ( empty($rowtype)?"":" and ( 1=1 ") . "
+            ". ( empty($rowtype)?"":" and ( 1=0 ") . "
             ". ( empty($rowtype)?"":" or ( ( '$rowtype'='project' or '$rowtype'='execution' ) and type = '$rowtype' )  ") . "
             ". ( empty($rowtype)?"":" or ( '$rowtype'='task' and type not in ('project' , 'execution') )   ") . "
             ". ( empty($rowtype)?"":" or ( ('$rowtype'='project,execution' or '$rowtype'='execution,project' ) and type in ('project' ,'execution') )    ") . "

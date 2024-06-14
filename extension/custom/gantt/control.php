@@ -50,7 +50,7 @@ class gantt extends control
         , $task_assignTo=''  //a,b,c
         , $projectPM=''  //a,b,c
         , $projectStatus = 'wait,doing'  // wait|doing|suspended|closed|unclosed
-        , $rowtype = ''  //project|execution|task
+        , $rowtype = 'project'  //project|execution|task
         , $excutionId=null //1,2,3
         , $storyId=null //1,2,3
         , $task_finishedBy=null  // 1,2,3
@@ -73,6 +73,8 @@ class gantt extends control
             , $task_estStarted // yyyy-mm-dd
             , $limit );
 
+        $this->loadModel('user');
+        $users   = $this->user->getPairs('noletter');
         
         $taskKeys = array();
         $taskList = array();
@@ -130,6 +132,8 @@ class gantt extends control
                 $_->parent = $value->parent;
                 $_->dependencies = empty($value->parent)?"":$parentPre.$value->parent;
                 $_->duration = $value->estimate.'h';
+                $_->owner = $value->pm;
+                $_->realname = $users[$value->pm];
 
                 $_->custom_class = ' bar-bytenew ';
                 if ($value->tocLevel <= 2){  // project|execution
@@ -158,8 +162,7 @@ class gantt extends control
         $this->view->task_estStarted =  $task_estStarted;
 
         $this->view->taskList     = $taskList;
-        $this->loadModel('user');
-        $this->view->users        = $this->user->getPairs('noletter');
+        $this->view->users     = $users;
         $this->view->userIdPairs  = $this->user->getPairs('noletter|showid');
         $this->view->usersAvatar  = $this->user->getAvatarPairs('');
 
