@@ -1,11 +1,5 @@
 <?php
 
-
-    public function dbhFetchAll($sql, $table='__table__', $keyField = '')
-    {
-        return $this->loadExtension('bytenew')->dbhFetchAll($sql, $table, $keyField );
-    }
-
     /**
      * 获取所有记录。
      * Fetch all records.
@@ -18,7 +12,7 @@
      * @access public
      * @return array the records
      */
-    public function dbhFetchAll0($sql, $table='__table__', $keyField = '', $reload=false)
+    public function dbhFetchAll($sql, $table='__table__', $keyField = '', $reload=false)
     {
         $table=empty($table)?'__table__':$table;
 
@@ -64,4 +58,4 @@
         }
 
         return $rows;
-    }
+    } 
