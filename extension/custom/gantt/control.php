@@ -60,7 +60,7 @@ class gantt extends control
 
         $projectStatus = empty($projectStatus)? 'doing,wait' : $projectStatus;
         $projectStatus = $projectStatus == 'unclosed' ? 'doing,suspended,wait' : $projectStatus;
-        $taskList = $this->gantt->getTaskList($programId
+        $result = $this->gantt->getTaskList($programId
             , $projectId  // 1,2,3
             , $projectEnd // yyyy-mm-dd
             , $task_assignTo  //a,b,c
@@ -72,6 +72,78 @@ class gantt extends control
             , $task_finishedBy  // 1,2,3
             , $task_estStarted // yyyy-mm-dd
             , $limit );
+
+        
+        $taskKeys = array();
+        $taskList = array();
+        if(!empty($result))
+        {
+
+            $taskList = array();    
+            foreach($result as $key => $value)
+            {
+                if (helper::isZeroDate($value->myBegin) or helper::isZeroDate($value->myEnd)) continue;
+
+                $_ = new stdclass();
+                $_->raw = $value;
+
+                if (substr($value->myEnd, 0, 4) == '2059') $value->myEnd = date("Y").substr($value->myEnd, 4);
+                $value->myEnd = (helper::isZeroDate($value->myEnd) or $value->myBegin > $value->myEnd)?$value->myBegin:$value->myEnd;
+                
+
+                $selfPre = '';
+                $parentPre = '';
+                switch($value->tocLevel)
+                {
+                    case 1:
+                        $selfPre = 'P_';
+                        $parentPre = '';
+                        break;
+                    case 2:
+                        $selfPre = 'E_';
+                        $parentPre = 'P_';
+                        break;
+                    case 3:
+                        $selfPre = 'T_';
+                        $parentPre = 'E_';
+                        $ids = array_filter(explode(',',$value->fullpath));
+                        $value->parent = $ids[count($ids)-1];
+                        break;
+                    default:
+                        $selfPre = 'T_';
+                        $parentPre = 'T_';
+                        break;
+                }
+
+                $resetParent =  empty($value->parent) or empty($parentPre) or !in_array("{$parentPre}{$value->parent}", $taskKeys);
+                if ($resetParent){
+                    $value->parent = '';
+                }
+
+
+                $_->id = $selfPre.$value->id;
+                $_->name = $value->name;
+                $_->important = $value->milestone > 0;
+                $_->start = $value->myBegin;
+                $_->end = $value->myEnd;
+                $_->progress = $value->progress;
+                $_->parent = $value->parent;
+                $_->dependencies = empty($value->parent)?"":$parentPre.$value->parent;
+                $_->duration = $value->estimate.'h';
+
+                $_->custom_class = ' bar-bytenew ';
+                if ($value->tocLevel <= 2){  // project|execution
+                    $_->custom_class .= " bar-$value->type ";
+                }elseif ($value->tocLevel == 3){  // task
+                    $_->custom_class .= " bar-task-primary ";
+                }else{
+                    $_->custom_class .= " bar-task ";
+                }
+
+                $taskList[] = $_;
+                $taskKeys[] = $_->id;
+            }
+        }
 
         $this->view->programId = $programId ;
         $this->view->projectId =  $projectId; 

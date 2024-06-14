@@ -151,7 +151,7 @@ endif;
   let gantt = null;
   let date_utils = Gantt.date_utils;
 
-  console.log(taskList);
+  // console.log(taskList);
  
   // 等待 DOM 加载完成
   document.addEventListener('DOMContentLoaded', function() {
@@ -185,8 +185,8 @@ endif;
               // dates and progress value
               console.log(task);
               
-              const begin_date = (task.start).substring(5,10);
-              const end_date = (task.end).substring(5,10);
+              const begin_date = (task.start).substring(2,10);
+              const end_date = (task.end).substring(2,10);
               // const begin_date = date_utils.format(task._start,'MM-DD');
               // const end_date = date_utils.format(task._end,'MM-DD');
               const estimate = task.estimate == undefined ? 'NA':task.estimate;
@@ -197,7 +197,6 @@ endif;
                   <p>起止日期: ${begin_date}~${end_date}</p>
                   <p>进度: ${progress}%</p>
                   <p>预估: ${estimate}h,消耗: ${consumed}h</p>
-                  <p>ID: ${task.custom_class}</p>
               `;
           },
           on_click: function (task) {
