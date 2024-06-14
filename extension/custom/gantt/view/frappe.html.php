@@ -150,8 +150,9 @@ endif;
   .gantt .bar-progress {
       fill: gray !important;
   }
-  .gantt .bar-label {
+  .bar-label {
     text-align: left !important;
+    fill: #111  !important;
     /* fill: rebeccapurple !important;
     font-size: 12px !important;
     font-weight: bold !important; */
