@@ -105,7 +105,7 @@ function query()
     var params = {
         'programId' : $('#conditions').find('#programId').val(),
         'projectId' : $('#conditions').find('#projectId').val(),
-        'projectEnd' : $('#conditions').find('#projectEnd').val(),
+        'projectEnd' : $('#conditions').find('#projectEnd').val().replaceAll('-',','),
         'task_assignTo' : $('#conditions').find('#task_assignTo').val(),
         'projectPM' : $('#conditions').find('#projectPM').val(),
         'projectStatus' : $('#conditions').find('#projectStatus').val(),
@@ -113,7 +113,7 @@ function query()
         'excutionId' : $('#conditions').find('#excutionId').val(),
         'storyId' : $('#conditions').find('#storyId').val(),
         'task_finishedBy' : $('#conditions').find('#task_finishedBy').val(),
-        'task_estStarted'   : $('#conditions').find('#task_estStarted').val(),
+        'task_estStarted'   : $('#conditions').find('#task_estStarted').val().replaceAll('-',','),
     };
 
     // 去除多选的首个逗号
