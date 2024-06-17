@@ -115,13 +115,29 @@ function query()
         'task_finishedBy' : $('#conditions').find('#task_finishedBy').val(),
         'task_estStarted'   : $('#conditions').find('#task_estStarted').val(),
     };
-    
+
+    var keys = Object.keys(params);
+    keys.forEach(e => {
+        var value = params[e];
+        var empty = value === null || value === undefined || value === '';
+        if (!empty){
+            if (Array.isArray(value)){
+                params[e] = value.filter(Boolean);
+            }else if(typeof value === 'string' && value.substring(0,1) === ',') {
+                params[e] = value.substring(1,value.length);
+            }else{
+
+            }
+        } 
+    });
+
     var keyValuePairs = Object.keys(params)
         .map(function(key) {
             var value = params[key];
             // 如果值存在且不为空字符串，则拼接为 k=v 格式，否则忽略
             // return value !== null && value !== undefined && value !== '' ? key + '=' + encodeURIComponent(value) : null;
-            return value !== null && value !== undefined && value !== '' ? key + '=' + value : key + '=';
+            var empty = value === null || value === undefined || value === '';
+            return key + '=' + (empty ? '':value);
         })
         // 过滤掉null值，确保只有有效的k=v对被包含
         .filter(Boolean);

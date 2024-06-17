@@ -52,7 +52,7 @@ endif;
         <div class='col-sm-4'>
           <div class='input-group'>
             <span class='input-group-addon'><?php echo $lang->gantt->query->projectStatus;?></span>
-            <?php echo html::select('projectStatus', $lang->gantt->projectStatusList, empty($projectStatus)?'wait,doing':$projectStatus, "class='form-control chosen' multiple");?>
+            <?php echo html::select('projectStatus', $lang->gantt->projectStatusList, empty($projectStatus)?'unclosed':$projectStatus, "class='form-control chosen' multiple");?>
           </div>
         </div>
         <div class='col-sm-4'>

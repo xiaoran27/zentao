@@ -66,7 +66,7 @@ class ganttModel extends model
                 ". ( empty($program)?"":" and path like '%,$program,%'") ."
                 ". ( (empty($program) or $program !== 223) ?"":" and ( path like ',$program,965,%' or path like ',$program,371,%' )") ."
                 ". ( helper::isZeroDate($projectEnd)?"":" and COALESCE(if(left(CONCAT('',ifnull(realEnd,'0000-00-00')),4)='0000',null,realEnd), end) >= '$projectEnd'") ."
-                ". ( empty($projectId)?"":" and zt_project.id in ( $projectId )") ."
+                ". ( empty($projectId) ?"":" and zt_project.id in ( $projectId )") ."
                 ". ( empty($projectStatus)?"":" and zt_project.status in ( '".str_replace(',',"','",$projectStatus)."' )") ."
                 ". ( empty($projectPM)?"":" and zt_project.pm in ( '".str_replace(',',"','",$projectPM)."' )") ."
         ) ,
