@@ -25,13 +25,13 @@ endif;
         <div class='col-sm-4'>
           <div class='input-group'>
             <span class='input-group-addon'><?php echo $lang->gantt->query->programId;?></span>
-            <?php echo html::select('programId', $programPairs, $programId, "class='form-control chosen searchSelect' ");?>
+            <?php echo html::select('programId', array(''=>'')+$programPairs, $programId, "class='form-control chosen searchSelect' ");?>
           </div>
         </div>
         <div class='col-sm-4'>
           <div class='input-group'>
             <span class='input-group-addon'><?php echo $lang->gantt->query->projectId;?></span>
-            <?php echo html::select('projectId', $projectPairs, $projectId, "class='form-control chosen searchSelect' multiple ");?>
+            <?php echo html::select('projectId', array(''=>'')+$projectPairs, $projectId, "class='form-control chosen searchSelect' multiple ");?>
           </div>
         </div>
         <div class='col-sm-4'>

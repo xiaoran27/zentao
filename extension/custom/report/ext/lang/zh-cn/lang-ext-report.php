@@ -3,6 +3,7 @@ global $config;
 
 
 $lang->report->menu->gantt     = array('link' => "{$lang->gantt->common}|gantt|frappe");
+$lang->report->menu->gantt     = array('link' => "甘特图|gantt|frappe");
 
 $lang->report->gantt = $lang->gantt->common;
 

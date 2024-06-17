@@ -36,7 +36,7 @@ class gantt extends control
      * @param  string  $projectEnd=null yyyy-mm-dd 
      * @param  string  $task_assignTo=''  多个用','分隔
      * @param  string  $projectPM=''  多个用','分隔
-     * @param  string  $projectStatus='wait,doing'  多个用','分隔 wait|doing|suspended|closed 
+     * @param  string  $projectStatus='unclosed'  多个用','分隔 wait|doing|suspended|closed|unclosed 
      * @param  string  $rowtype=''  多个用','分隔 project|execution|task
      * @param  string  $projectPM=''  多个用','分隔
      * @param  string  $excutionId=''  多个用','分隔
@@ -53,7 +53,7 @@ class gantt extends control
         , $projectEnd=null // yyyy-mm-dd
         , $task_assignTo=''  //a,b,c
         , $projectPM=''  //a,b,c
-        , $projectStatus = 'wait,doing'  // wait|doing|suspended|closed|unclosed
+        , $projectStatus = 'unclosed'  // wait|doing|suspended|closed|unclosed
         , $rowtype = 'project'  //project|execution|task
         , $excutionId=null //1,2,3
         , $storyId=null //1,2,3
@@ -62,7 +62,7 @@ class gantt extends control
         , $limit = 500 )
     {
 
-        $projectStatus = empty($projectStatus)? 'doing,wait' : $projectStatus;
+        $projectStatus = empty($projectStatus)? 'unclosed' : $projectStatus;
         $projectStatus = $projectStatus == 'unclosed' ? 'doing,suspended,wait' : $projectStatus;
         $result = $this->gantt->getTaskList($programId
             , $projectId  // 1,2,3
@@ -78,7 +78,7 @@ class gantt extends control
             , $limit );
 
         
-        $users   = $this->user->getPairs('noletter');
+        $users   = $this->user->getPairs('noletter|noclosed');
         
         $taskKeys = array();
         $taskList = array();
@@ -191,6 +191,9 @@ class gantt extends control
         $this->view->userIdPairs  = $this->user->getPairs('noletter|showid');
         $this->view->usersAvatar  = $this->user->getAvatarPairs('');
 
+        $this->view->title      = $this->lang->gantt->common;
+        $this->view->position[] = $this->lang->gantt->common;
+        $this->view->submenu    = 'gantt';
         $this->display();
    }
 

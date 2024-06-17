@@ -16,7 +16,7 @@ class ganttModel extends model
      * @param  string  $projectEnd=null yyyy-mm-dd 
      * @param  string  $task_assignTo=''  多个用','分隔
      * @param  string  $projectPM=''  多个用','分隔
-     * @param  string  $projectStatus='wait,doing'  多个用','分隔 wait|doing|suspended|closed 
+     * @param  string  $projectStatus='unclosed'  多个用','分隔 wait|doing|suspended|closed|unclosed  
      * @param  string  $rowtype=''  多个用','分隔 project|execution|task
      * @param  string  $projectPM=''  多个用','分隔
      * @param  string  $excutionId=''  多个用','分隔
@@ -33,7 +33,7 @@ class ganttModel extends model
         , $projectEnd='' // yyyy-mm-dd
         , $task_assignTo=''  //a,b,c
         , $projectPM=''  //a,b,c
-        , $projectStatus = 'wait,doing'  // wait|doing|suspended|closed|unclosed
+        , $projectStatus = 'wait,doing,suspended'  // wait|doing|suspended|closed
         , $rowtype = 'project'  //project|execution|task
         , $excutionId='' //1,2,3
         , $storyId='' //1,2,3
