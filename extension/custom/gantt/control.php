@@ -178,8 +178,8 @@ class gantt extends control
         $projectPairs = array();
         foreach($programs as $programId_)
         {
-            $projectPairs_ = $this->project->getPairsByModel('all', $programId_);
-            $projectPairs = array_merge($projectPairs, $projectPairs_);
+            $projectPairs_ = $this->project->getPairsByProgram($programId_, $status = 'all', $isQueryAll = true, $orderBy = 'order_asc', $excludedModel = '', $model = '', $param = '');
+            $projectPairs = $projectPairs + $projectPairs_;
         }
         
 

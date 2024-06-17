@@ -68,7 +68,7 @@ function validate()
         var b = value !== null && value !== undefined && value !== '';
         if (b){
             b = isNumericWithCommas(value);
-            console.log(value+' isNumericWithCommas:'+b);
+            // console.log(value+' isNumericWithCommas:'+b);
             if(!b){
                 // alert(value+' 不是数字格式(数字[,数字])的串!!!' );
                 var v = $('#conditions').find('#'+e+"Label");
@@ -116,20 +116,21 @@ function query()
         'task_estStarted'   : $('#conditions').find('#task_estStarted').val(),
     };
 
-    var keys = Object.keys(params);
-    keys.forEach(e => {
-        var value = params[e];
-        var empty = value === null || value === undefined || value === '';
-        if (!empty){
-            if (Array.isArray(value)){
-                params[e] = value.filter(Boolean);
-            }else if(typeof value === 'string' && value.substring(0,1) === ',') {
-                params[e] = value.substring(1,value.length);
-            }else{
+    // 去除多选的首个逗号
+    // var keys = Object.keys(params);
+    // keys.forEach(e => {
+    //     var value = params[e];
+    //     var empty = value === null || value === undefined || value === '';
+    //     if (!empty){
+    //         if (Array.isArray(value)){
+    //             params[e] = value.filter(Boolean);
+    //         }else if(typeof value === 'string' && value.substring(0,1) === ',') {
+    //             params[e] = value.substring(1,value.length);
+    //         }else{
 
-            }
-        } 
-    });
+    //         }
+    //     } 
+    // });
 
     var keyValuePairs = Object.keys(params)
         .map(function(key) {
@@ -143,7 +144,8 @@ function query()
         .filter(Boolean);
     
     var queryString = keyValuePairs.join('&');
-    // console.log(queryString);
+    queryString = queryString.replaceAll('=,','='); // 去除多选的首个逗号
+    console.log(queryString);
 
     var link = createLink('gantt', 'frappe', queryString);
     // console.log(queryString+' => '+link);
