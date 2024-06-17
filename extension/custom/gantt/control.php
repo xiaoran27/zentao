@@ -153,6 +153,13 @@ class gantt extends control
             }
         }
 
+
+        if( $this->app->getViewType() == 'json')
+        {
+            $this->send(array('status' => 'success', 'data' => $taskList));
+            return;
+        }
+
         $programPairs = $this->program->getpairs(true);
 
         $programs = explode(',', trim($programId));
