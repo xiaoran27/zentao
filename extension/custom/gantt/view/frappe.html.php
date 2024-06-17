@@ -38,6 +38,8 @@ endif;
           <div class='input-group'>
             <span class='input-group-addon'><?php echo $lang->gantt->query->projectEnd;?></span>
             <div class='datepicker-wrapper datepicker-date'><?php echo html::input('projectEnd', $projectEnd, "class='form-control form-date' ");?></div>
+            <span class='input-group-addon'><?php echo $lang->gantt->query->task_estStarted;?></span>
+            <div class='datepicker-wrapper datepicker-date'><?php echo html::input('task_estStarted', $task_estStarted, "class='form-control form-date' ");?></div>
           </div>
         </div>
       </div>
@@ -68,7 +70,6 @@ endif;
           <div class='input-group'>
             <span class='input-group-addon'><?php echo $lang->gantt->query->task_assignTo;?></span>
             <?php echo html::select('task_assignTo', $users, $task_assignTo, "class='form-control chosen searchSelect' multiple");?>
-            <?php echo html::hidden('task_estStarted', $task_estStarted);?>
             <?php echo html::hidden('task_finishedBy', $task_finishedBy);?>
           </div>
         </div>
