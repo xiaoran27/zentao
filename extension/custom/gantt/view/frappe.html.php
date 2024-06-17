@@ -200,8 +200,10 @@ endif;
           custom_popup_html: function(task) {
               // the task object will contain the updated
               // dates and progress value
-              console.log(task);
+              // console.log(task);
               
+              const resources = task.owner == undefined || task.owner == '' ? '':task.realname+'('+task.owner+')';
+              const dependencies = task.dependencies == undefined || task.dependencies == '' ? '':'('+task.dependencies+')';
               const begin_date = (task.start).substring(2,10);
               const end_date = (task.end).substring(2,10);
               // const begin_date = date_utils.format(task._start,'MM-DD');
@@ -210,16 +212,16 @@ endif;
               const consumed = task.consumed == undefined ? 'NA':task.consumed;
               const progress = task.progress == undefined ? ( (/^\d+$/.test(consumed) && /^\d+$/.test(estimate) && estimate>0)?(consumed/estimate*100).toFixed(2):'NA'):task.progress;
               return `
-                  <p>ID: ${task.id} (${task.dependencies})</p>
-                  <p>资源: ${task.realname}(${task.owner})</p>
+                  <p>ID: ${task.id} ${dependencies}</p>
+                  <p>资源: ${resources}</p>
                   <p>起止日期: ${begin_date}~${end_date}</p>
                   <p>进度: ${progress}%</p>
                   <p>预估: ${estimate}h,消耗: ${consumed}h</p>
               `;
           },
-          on_click: function (task) {
-              console.log(task);
-          },
+          // on_click: function (task) {
+          //     console.log(task);
+          // },
           // on_date_change: function(task, start, end) {
           //     console.log(task, start, end);
           // },

@@ -62,13 +62,13 @@ function validate()
         };
     });   
 
-    ['programId','projectId','excutionId','storyId'].forEach(e => {
+    ['programId','excutionId','storyId'].forEach(e => {
 
         var value = params[e];
         var b = value !== null && value !== undefined && value !== '';
         if (b){
             b = isNumericWithCommas(value);
-            // console.log(value+' isNumericWithCommas:'+b);
+            console.log(value+' isNumericWithCommas:'+b);
             if(!b){
                 // alert(value+' 不是数字格式(数字[,数字])的串!!!' );
                 var v = $('#conditions').find('#'+e+"Label");
@@ -130,19 +130,21 @@ function query()
     // console.log(queryString);
 
     var link = createLink('gantt', 'frappe', queryString);
-    console.log(queryString+' => '+link);
+    // console.log(queryString+' => '+link);
     location.href = link;
 }
 
 function reset()
 {
-    $('#conditions').find('#programId').val('223');
+    $('#conditions').find('#programId').val('');
+    $('#conditions').find('#programId').val('').trigger('chosen:updated');
     $('#conditions').find('#projectId').val('');
+    $('#conditions').find('#projectId').val('').trigger('chosen:updated');
     $('#conditions').find('#projectEnd').val('');
     $('#conditions').find('#task_assignTo').val('').trigger('chosen:updated');
     $('#conditions').find('#projectPM').val('').trigger('chosen:updated');
-    $('#conditions').find('#projectStatus').val('').trigger('chosen:updated');
-    $('#conditions').find('#rowtype').val('').trigger('chosen:updated');
+    $('#conditions').find('#projectStatus').val('unclosed').trigger('chosen:updated');
+    $('#conditions').find('#rowtype').val('project').trigger('chosen:updated');
     $('#conditions').find('#excutionId').val('');
     $('#conditions').find('#storyId').val('');
     $('#conditions').find('#task_finishedBy').val('');

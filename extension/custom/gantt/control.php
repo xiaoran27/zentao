@@ -61,6 +61,17 @@ class gantt extends control
         , $task_estStarted=null // yyyy-mm-dd
         , $limit = 500 )
     {
+        $this->view->programId = $programId ;
+        $this->view->projectId =  $projectId; 
+        $this->view->projectEnd =  $projectEnd;
+        $this->view->task_assignTo =  $task_assignTo;
+        $this->view->projectPM =  $projectPM;
+        $this->view->projectStatus =  $projectStatus;  // wait|doing|suspended|closed|unclosed
+        $this->view->rowtype =  $rowtype;
+        $this->view->excutionId =  $excutionId;
+        $this->view->storyId =  $storyId;
+        $this->view->task_finishedBy =  $task_finishedBy;
+        $this->view->task_estStarted =  $task_estStarted;
 
         $projectStatus = empty($projectStatus)? 'unclosed' : $projectStatus;
         $projectStatus = $projectStatus == 'unclosed' ? 'doing,suspended,wait' : $projectStatus;
@@ -91,7 +102,7 @@ class gantt extends control
                 if (helper::isZeroDate($value->myBegin) or helper::isZeroDate($value->myEnd)) continue;
 
                 $_ = new stdclass();
-                $_->raw = $value;
+                $_->raw = clone $value  ;
 
                 if (substr($value->myEnd, 0, 4) == '2059') $value->myEnd = date("Y").substr($value->myEnd, 4);
                 $value->myEnd = (helper::isZeroDate($value->myEnd) or $value->myBegin > $value->myEnd)?$value->myBegin:$value->myEnd;
@@ -104,6 +115,7 @@ class gantt extends control
                     case 1:
                         $selfPre = 'P_';
                         $parentPre = '';
+                        $value->parent = '';
                         break;
                     case 2:
                         $selfPre = 'E_';
@@ -173,18 +185,6 @@ class gantt extends control
 
         $this->view->programPairs = $programPairs ;
         $this->view->projectPairs = $projectPairs ;
-
-        $this->view->programId = $programId ;
-        $this->view->projectId =  $projectId; 
-        $this->view->projectEnd =  $projectEnd;
-        $this->view->task_assignTo =  $task_assignTo;
-        $this->view->projectPM =  $projectPM;
-        $this->view->projectStatus =  $projectStatus;  // wait|doing|suspended|closed|unclosed
-        $this->view->rowtype =  $rowtype;
-        $this->view->excutionId =  $excutionId;
-        $this->view->storyId =  $storyId;
-        $this->view->task_finishedBy =  $task_finishedBy;
-        $this->view->task_estStarted =  $task_estStarted;
 
         $this->view->taskList     = $taskList;
         $this->view->users     = $users;
