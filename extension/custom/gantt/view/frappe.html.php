@@ -207,11 +207,9 @@ endif;
 
               console.log(task);
 
-              <?php $days = helper::diffDate($value->myEnd, $value->myBegin); ?>
-              const days = <?php echo $days;?>;
               const dateChanged = task.start !== task.start__ || task.end !== task.end__;
               const resources = task.owner == undefined || task.owner == '' ? '':task.realname+'('+task.owner+')';
-              const dependencies = task.dependencies == undefined || task.dependencies == '' ? '':'('+task.dependencies+')';
+              const dependencies = task.dependencies == undefined || task.dependencies == '' ? '':task.dependencies;
               const begin_date = (task.start).substring(2,10);
               const end_date = (task.end).substring(2,10);
               const begin_date__ = (task.start__).substring(2,10);
@@ -222,13 +220,11 @@ endif;
               const consumed = task.consumed == undefined ? 'NA':task.consumed;
               const progress = task.progress == undefined ? ( (/^\d+$/.test(consumed) && /^\d+$/.test(estimate) && estimate>0)?(consumed/estimate*100).toFixed(2):'NA'):task.progress;
               return `
-                  <p>ID: ${task.id} ${dependencies}</p>
-                  <p>资源: ${resources}</p>
-                  <p>起止日期: ${begin_date}~${end_date}</p>`
-                  +((dateChanged || days>=93 )?`<p>实际起止: ${begin_date__}~${end_date__}</p>`:'')
-                  +`
-                  <p>进度: ${progress}%</p>
-                  <p>预估: ${estimate}h,消耗: ${consumed}h</p>
+                  <p>ID:${task.id} 状态:${task.status} 依赖:${dependencies}</p>
+                  <p>资源: ${resources} </p>
+                  <p>起止日期: ${begin_date}~${end_date}</p>
+                  ` +(dateChanged?`<p>实际起止: ${begin_date__}~${end_date__}</p>`:'') +`
+                  <p>进度: ${progress}% 预估: ${estimate}h,消耗: ${consumed}h</p>
               `;
           },
           // on_click: function (task) {

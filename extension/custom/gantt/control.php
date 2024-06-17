@@ -224,6 +224,10 @@ class gantt extends control
                     $_->custom_class .= " bar-task ";
                 }
 
+                $_->type = $value->type;
+                $_->status = $value->status;
+                $_->stage = $value->stage;
+
                 $taskList[] = $_;
                 $taskKeys[] = $_->id;
             }
