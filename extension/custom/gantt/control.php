@@ -23,28 +23,32 @@ class gantt extends control
         parent::__construct($moduleName, $methodName);
         $this->loadModel('common');
         $this->loadModel('user');
+        $this->loadModel('program');
+        $this->loadModel('project');
     }
 
     
     /**
      * project/execution/task list.
      *
-     * @param  int  $ltdays=93  
-     * @param  string  $status='wait,doing'  多个用','分隔 wait|doing|suspended|closed 
-     * @param  string  $type=''  多个用','分隔 project|execution|task
-     * @param  string  $projectId=''多个用','分隔
+     * @param  int  $programId=223  
+     * @param  string  $projectId='' 多个用','分隔
+     * @param  string  $projectEnd=null yyyy-mm-dd 
+     * @param  string  $task_assignTo=''  多个用','分隔
+     * @param  string  $projectPM=''  多个用','分隔
+     * @param  string  $projectStatus='wait,doing'  多个用','分隔 wait|doing|suspended|closed 
+     * @param  string  $rowtype=''  多个用','分隔 project|execution|task
      * @param  string  $projectPM=''  多个用','分隔
      * @param  string  $excutionId=''  多个用','分隔
      * @param  string  $storyId=''  多个用','分隔
-     * @param  string  $task_assignTo=''  多个用','分隔
-     * @param  string  $task_estStarted=''  多个用','分隔
      * @param  string  $task_finishedBy=''  多个用','分隔
-     * @param  int     $queryID 搜索ID
+     * @param  string  $task_estStarted=''  yyyy-mm-dd 
+     * @param  int     $limit = 500
      * @access public
      * @return void
      */
     public function frappe(
-        $programId = '223' //
+        $programId = 223 //
         , $projectId=''  // 1,2,3
         , $projectEnd=null // yyyy-mm-dd
         , $task_assignTo=''  //a,b,c
@@ -73,7 +77,7 @@ class gantt extends control
             , $task_estStarted // yyyy-mm-dd
             , $limit );
 
-        $this->loadModel('user');
+        
         $users   = $this->user->getPairs('noletter');
         
         $taskKeys = array();
@@ -148,6 +152,20 @@ class gantt extends control
                 $taskKeys[] = $_->id;
             }
         }
+
+        $programPairs = $this->program->getpairs(true);
+
+        $programs = explode(',', trim($programId));
+        $projectPairs = array();
+        foreach($programs as $programId_)
+        {
+            $projectPairs_ = $this->project->getPairsByModel('all', $programId_);
+            $projectPairs = array_merge($projectPairs, $projectPairs_);
+        }
+        
+
+        $this->view->programPairs = $programPairs ;
+        $this->view->projectPairs = $projectPairs ;
 
         $this->view->programId = $programId ;
         $this->view->projectId =  $projectId; 

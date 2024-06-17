@@ -9,18 +9,26 @@ class ganttModel extends model
 
 
     /**
-     * Get program list.
+     * project/execution/task list.
      *
-     * @param  string $status
-     * @param  string $orderBy
-     * @param  object $pager
-     * @param  string $type       top|child
-     * @param  array  $topIdList
+     * @param  int  $programId=223  
+     * @param  string  $projectId='' 多个用','分隔
+     * @param  string  $projectEnd=null yyyy-mm-dd 
+     * @param  string  $task_assignTo=''  多个用','分隔
+     * @param  string  $projectPM=''  多个用','分隔
+     * @param  string  $projectStatus='wait,doing'  多个用','分隔 wait|doing|suspended|closed 
+     * @param  string  $rowtype=''  多个用','分隔 project|execution|task
+     * @param  string  $projectPM=''  多个用','分隔
+     * @param  string  $excutionId=''  多个用','分隔
+     * @param  string  $storyId=''  多个用','分隔
+     * @param  string  $task_finishedBy=''  多个用','分隔
+     * @param  string  $task_estStarted=''  yyyy-mm-dd 
+     * @param  int     $limit = 500
      * @access public
      * @return array
      */
     public function getTaskList(
-        $programId = '223' //
+        $programId = 223 //
         , $projectId=''  // 1,2,3
         , $projectEnd='' // yyyy-mm-dd
         , $task_assignTo=''  //a,b,c
