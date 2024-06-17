@@ -87,7 +87,7 @@ $('.form-control').on('focus', function() {
     $('#'+$(this).attr('id')+'Label').remove();
 });
 
-function query()
+function query(viewtype)
 {
 
     var programId   = $('#conditions').find('#programId').val();
@@ -145,11 +145,17 @@ function query()
     
     var queryString = keyValuePairs.join('&');
     queryString = queryString.replaceAll('=,','='); // 去除多选的首个逗号
-    console.log(queryString);
+    // console.log(queryString);
 
-    var link = createLink('gantt', 'frappe', queryString);
-    // console.log(queryString+' => '+link);
-    location.href = link;
+    var empty = viewtype === null || viewtype === undefined || viewtype === '';
+    var link = empty?createLink('gantt', 'frappe', queryString):createLink('gantt', 'frappe', queryString, viewtype);
+    console.log(queryString+' => '+link);
+    
+    if(empty){
+        location.href = link;
+    }else{
+        window.open(link,'blank');
+    }
 }
 
 function reset()

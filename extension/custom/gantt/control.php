@@ -107,6 +107,7 @@ class gantt extends control
             $PROJECT_PRE = 'P_';
             $EXECUTION_PRE = 'E_';
             $TASK_PRE = 'T_';
+            $MAX_DAYS = 93;
 
             $taskList = array();    
             foreach($result as $key => $value)
@@ -116,8 +117,33 @@ class gantt extends control
                 $_ = new stdclass();
                 $_->raw = clone $value  ;
 
-                if (substr($value->myEnd, 0, 4) == '2059') $value->myEnd = date("Y").substr($value->myEnd, 4);
-                $value->myEnd = (helper::isZeroDate($value->myEnd) or $value->myBegin > $value->myEnd)?$value->myBegin:$value->myEnd;
+                $value->myBegin__ = $value->myBegin;
+                $value->myEnd__ = $value->myEnd;
+                // 起止日期的处理： 超过93天，则限制在当前的-31、+62天内呈现
+                $days = helper::diffDate($value->myBegin, helper::today());
+                if ($days>$MAX_DAYS or $days<-$MAX_DAYS) {
+                    $value->myBegin__ = $value->myBegin;
+                    $date = new DateTime(helper::today()); // 创建一个DateTime对象，表示2023年4月1日
+                    $date->modify(($days>0?"+":"-")."$MAX_DAYS days");
+                    $value->myBegin = $date->format('Y-m-d');
+                }
+                $days = helper::diffDate($value->myEnd, helper::today());
+                if ($days>$MAX_DAYS or $days<-$MAX_DAYS) {
+                    $value->myEnd__ = $value->myEnd;
+                    $date = new DateTime(helper::today()); // 创建一个DateTime对象，表示2023年4月1日
+                    $date->modify(($days>0?"+":"-")."$MAX_DAYS days");
+                    $value->myEnd = $date->format('Y-m-d');
+                }
+                $days = helper::diffDate($value->myEnd, $value->myBegin);
+                if ($days>$MAX_DAYS or $days<-$MAX_DAYS) {
+                    $date = new DateTime(helper::today()); 
+                    $date->modify("-31 days");
+                    $value->myBegin = $date->format('Y-m-d');
+                    $date->modify("+$MAX_DAYS days");
+                    $value->myEnd = $date->format('Y-m-d');
+                }                
+                $value->myEnd = ($value->myBegin > $value->myEnd)?$value->myBegin:$value->myEnd;
+                
                 
                 $ids = array_filter(explode(',',$value->fullpath));
                 $selfPre = '';
@@ -180,6 +206,8 @@ class gantt extends control
                 $_->important = $value->milestone > 0;
                 $_->start = $value->myBegin;
                 $_->end = $value->myEnd;
+                $_->start__ = $value->myBegin__;
+                $_->end__ = $value->myEnd__;
                 $_->progress = $value->progress;
                 $_->parent = $value->parent;
                 $_->dependencies = empty($value->parent)?"":$parentPre.$value->parent;

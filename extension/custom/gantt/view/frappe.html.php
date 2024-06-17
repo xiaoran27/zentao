@@ -99,6 +99,9 @@ endif;
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <span class='input-group-addon'></span>
             <?php echo html::commonButton($label = '重置', $misc = " id='reset' onclick='reset();'", $class = 'btn', $icon = '');?>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span class='input-group-addon'></span>
+            <?php echo html::commonButton($label = '导出', $misc = " id='export' onclick='if (validate()) query(\"json\");'", $class = 'btn', $icon = '');?>
           </div>
         </div>
       </div>
@@ -201,12 +204,18 @@ endif;
           custom_popup_html: function(task) {
               // the task object will contain the updated
               // dates and progress value
-              // console.log(task);
-              
+
+              console.log(task);
+
+              <?php $days = helper::diffDate($value->myEnd, $value->myBegin); ?>
+              const days = <?php echo $days;?>;
+              const dateChanged = task.start !== task.start__ || task.end !== task.end__;
               const resources = task.owner == undefined || task.owner == '' ? '':task.realname+'('+task.owner+')';
               const dependencies = task.dependencies == undefined || task.dependencies == '' ? '':'('+task.dependencies+')';
               const begin_date = (task.start).substring(2,10);
               const end_date = (task.end).substring(2,10);
+              const begin_date__ = (task.start__).substring(2,10);
+              const end_date__ = (task.end__).substring(2,10);
               // const begin_date = date_utils.format(task._start,'MM-DD');
               // const end_date = date_utils.format(task._end,'MM-DD');
               const estimate = task.estimate == undefined ? 'NA':task.estimate;
@@ -215,7 +224,9 @@ endif;
               return `
                   <p>ID: ${task.id} ${dependencies}</p>
                   <p>资源: ${resources}</p>
-                  <p>起止日期: ${begin_date}~${end_date}</p>
+                  <p>起止日期: ${begin_date}~${end_date}</p>`
+                  +((dateChanged || days>=93 )?`<p>实际起止: ${begin_date__}~${end_date__}</p>`:'')
+                  +`
                   <p>进度: ${progress}%</p>
                   <p>预估: ${estimate}h,消耗: ${consumed}h</p>
               `;
