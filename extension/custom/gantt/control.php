@@ -61,6 +61,10 @@ class gantt extends control
         , $task_estStarted=null // yyyy-mm-dd
         , $limit = 500 )
     {
+
+        $projectEnd = str_replace(',','-',$projectEnd);
+        $task_estStarted = str_replace(',','-',$task_estStarted);
+
         $this->view->programId = $programId ;
         $this->view->projectId =  $projectId; 
         $this->view->projectEnd =  $projectEnd;
@@ -73,11 +77,15 @@ class gantt extends control
         $this->view->task_finishedBy =  $task_finishedBy;
         $this->view->task_estStarted =  $task_estStarted;
 
+
+
         $projectStatus = empty($projectStatus)? 'unclosed' : $projectStatus;
         $projectStatus = $projectStatus == 'unclosed' ? 'doing,suspended,wait' : $projectStatus;
+
+
         $result = $this->gantt->getTaskList($programId
             , $projectId  // 1,2,3
-            , $projectEnd // yyyy-mm-dd
+            , $projectEnd // yyyy,mm,dd
             , $task_assignTo  //a,b,c
             , $projectPM  //a,b,c
             , $projectStatus   // wait|doing|suspended|closed|unclosed
@@ -85,7 +93,7 @@ class gantt extends control
             , $excutionId //1,2,3
             , $storyId //1,2,3
             , $task_finishedBy  // 1,2,3
-            , $task_estStarted // yyyy-mm-dd
+            , $task_estStarted // yyyy,mm,dd
             , $limit );
 
         
@@ -95,6 +103,10 @@ class gantt extends control
         $taskList = array();
         if(!empty($result))
         {
+
+            $PROJECT_PRE = 'P_';
+            $EXECUTION_PRE = 'E_';
+            $TASK_PRE = 'T_';
 
             $taskList = array();    
             foreach($result as $key => $value)
@@ -107,32 +119,56 @@ class gantt extends control
                 if (substr($value->myEnd, 0, 4) == '2059') $value->myEnd = date("Y").substr($value->myEnd, 4);
                 $value->myEnd = (helper::isZeroDate($value->myEnd) or $value->myBegin > $value->myEnd)?$value->myBegin:$value->myEnd;
                 
-
+                $ids = array_filter(explode(',',$value->fullpath));
                 $selfPre = '';
                 $parentPre = '';
                 switch($value->tocLevel)
                 {
-                    case 1:
-                        $selfPre = 'P_';
+                    case 1:  //project 忽略父节点
+                        $selfPre = $PROJECT_PRE;
                         $parentPre = '';
                         $value->parent = '';
                         break;
-                    case 2:
-                        $selfPre = 'E_';
-                        $parentPre = 'P_';
+                    case 2:   //execution 有project&有父才显示父节点
+                        $selfPre = $EXECUTION_PRE;
+                        if ( (empty($rowtype) or strpos(','.$rowtype.',',',project,') !== false) and in_array("{$PROJECT_PRE}{$ids[count($ids)-1]}", $taskKeys) ){
+                            $parentPre = $PROJECT_PRE;
+                            $value->parent = $ids[count($ids)-1];
+                        }else{
+                            $parentPre = '';
+                            $value->parent = '';
+                        }
                         break;
-                    case 3:
-                        $selfPre = 'T_';
-                        $parentPre = 'E_';
-                        $ids = array_filter(explode(',',$value->fullpath));
-                        $value->parent = $ids[count($ids)-1];
+                    case 3:   //task 有(execution或project)&有父才显示父节点
+                        $selfPre = $TASK_PRE;
+                        if ( (empty($rowtype) or strpos(','.$rowtype.',',',execution,') !== false) and in_array("{$EXECUTION_PRE}{$ids[count($ids)-1]}", $taskKeys) ){
+                            $parentPre = $EXECUTION_PRE;
+                            $value->parent = $ids[count($ids)-1];
+                        }elseif ( (empty($rowtype) or strpos(','.$rowtype.',',',project,') !== false) and in_array("{$PROJECT_PRE}{$ids[count($ids)-2]}", $taskKeys) ){
+                            $parentPre = $PROJECT_PRE;
+                            $value->parent = $ids[count($ids)-2];
+                        }else{
+                            $parentPre = '';
+                            $value->parent = '';
+                        }
                         break;
-                    default:
-                        $selfPre = 'T_';
-                        $parentPre = 'T_';
+                    default:    //task 有(task或execution或project)&有父才显示父节点
+                        $selfPre = $TASK_PRE;
+                        if ( (empty($rowtype) or strpos(','.$rowtype.',',',task,') !== false) and in_array("{$TASK_PRE}{$ids[count($ids)-1]}", $taskKeys) ){
+                            $parentPre = $TASK_PRE;
+                            $value->parent = $ids[count($ids)-1];
+                        }elseif ( (empty($rowtype) or strpos(','.$rowtype.',',',execution,') !== false) and in_array("{$EXECUTION_PRE}{$ids[count($ids)-2]}", $taskKeys) ){
+                            $parentPre = $EXECUTION_PRE;
+                            $value->parent = $ids[count($ids)-2];
+                        }elseif ( (empty($rowtype) or strpos(','.$rowtype.',',',project,') !== false) and in_array("{$PROJECT_PRE}{$ids[count($ids)-3]}", $taskKeys) ){
+                            $parentPre = $PROJECT_PRE;
+                            $value->parent = $ids[count($ids)-3];
+                        }else{
+                            $parentPre = '';
+                            $value->parent = '';
+                        }
                         break;
                 }
-
                 $resetParent =  empty($value->parent) or empty($parentPre) or !in_array("{$parentPre}{$value->parent}", $taskKeys);
                 if ($resetParent){
                     $value->parent = '';

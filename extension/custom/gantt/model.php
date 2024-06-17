@@ -110,7 +110,7 @@ class ganttModel extends model
             join t_exec on ( execution = t_exec.id ) 
             where deleted='0' and project > 0 
                 ". ( empty($task_assignTo)?"":" and ( case when zt_task.assignedTo = 'closed' then zt_task.finishedBy else zt_task.assignedTo end ) in ( '".str_replace(',',"','",$task_assignTo)."' )") ."
-                ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."' )") ."
+                ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."'") ."
                 ". ( empty($task_finishedBy)?"":" and zt_task.finishedBy in ( '".str_replace(',',"','",$task_finishedBy)."' )") ."
         ),
         t_task as (
@@ -132,7 +132,7 @@ class ganttModel extends model
             join (select id as exec_id, path as exec_path, fullpath as _fullpath, parent as exec_parent from t_exec) as _exec on ( zt_task.execution = exec_id )  -- 迭代的未关联产品需求的任务
             where deleted='0' and zt_task.story = 0
                 ". ( empty($task_assignTo)?"":" and ( case when zt_task.assignedTo = 'closed' then zt_task.finishedBy else zt_task.assignedTo end ) in ( '".str_replace(',',"','",$task_assignTo)."' )") ."
-                ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."' )") ."
+                ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."'") ."
                 ". ( empty($task_finishedBy)?"":" and zt_task.finishedBy in ( '".str_replace(',',"','",$task_finishedBy)."' )") ."
             
             union 
@@ -155,7 +155,7 @@ class ganttModel extends model
             join t_execstory on ( zt_task.story = story_id ) -- 项目关联需求下的任务
             where deleted='0' 
                 ". ( empty($task_assignTo)?"":" and ( case when zt_task.assignedTo = 'closed' then zt_task.finishedBy else zt_task.assignedTo end ) in ( '".str_replace(',',"','",$task_assignTo)."' )") ."
-                ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."' )") ."
+                ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."'") ."
                 ". ( empty($task_finishedBy)?"":" and zt_task.finishedBy in ( '".str_replace(',',"','",$task_finishedBy)."' )") ."
         ),
         t_proj_exec_task as (
