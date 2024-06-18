@@ -109,7 +109,7 @@ function query(viewtype)
 
     var empty = viewtype === null || viewtype === undefined || viewtype === '';
     var link = empty?createLink('gantt', 'frappe', queryString):createLink('gantt', 'frappe', queryString, viewtype);
-    console.log(queryString+' => '+link);
+    // console.log(queryString+' => '+link);
     
     if(empty){
         location.href = link;

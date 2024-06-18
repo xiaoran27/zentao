@@ -210,7 +210,7 @@ endif;
               // the task object will contain the updated
               // dates and progress value
 
-              console.log(task);
+              // console.log(task);
 
               const dateChanged = task.start !== task.start__ || task.end !== task.end__;
               const resources = task.owner == undefined || task.owner == '' ? '':task.realname+'('+task.owner+')';
