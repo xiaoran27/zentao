@@ -50,10 +50,10 @@ class ganttModel extends model
         t_dept_user as (
             select zt_user.account, zt_user.realname, zt_dept.id as dept_id, zt_dept.name as dept_name, zt_dept.path as dept_path
             from zt_user
-            join zt_dept on ( zt_user.dept = zt_dept.id )
+            left join zt_dept on ( zt_user.dept = zt_dept.id ) 
         ),
         t_proj as (
-            select id,name,milestone,0 as story, realname, dept_id,dept_name,dept_path
+            select id,name,milestone,0 as story, realname, dept_id,dept_name,dept_path , id as projId, 0 as execId
                 -- ,devEvaluate*8 as estimate, poDays*8 as consumed
                 -- ,estimate*8 as estimate, consumed*8 as consumed
                 ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress
@@ -79,7 +79,7 @@ class ganttModel extends model
                 ". ( empty($projectPM)?"":" and zt_project.pm in ( '".str_replace(',',"','",$projectPM)."' )") ."
         ) ,
         t_exec as (
-            select id,name,milestone,0 as story, realname, dept_id,dept_name,dept_path
+            select id,name,milestone,0 as story, realname, dept_id,dept_name,dept_path , parent as projId, id as execId
                 -- ,devEvaluate*8 as estimate, poDays*8 as consumed
                 -- ,estimate*8 as estimate, consumed*8 as consumed
                 ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress
@@ -99,6 +99,7 @@ class ganttModel extends model
             join (select id as proj_id, path as proj_path, fullpath as _fullpath from t_proj) as _project on ( zt_project.parent = _project.proj_id )
             where deleted='0' and project > 0
                 and type in ('sprint','stage')
+            ". ( empty($projectId) ?"":" and zt_project.parent in ( $projectId )") ."
             ". ( empty($excutionId)?"":" and zt_project.id in( $excutionId )") ."        
         ),
         t_projstory as (
@@ -110,7 +111,8 @@ class ganttModel extends model
         t_execstory as (
             select id as exec_id, path as exec_path, parent as exec_parent, fullpath as _fullpath , zt_projectstory.story as story_id
             from t_exec , zt_projectstory
-            where ( id = project or parent = project)
+            -- where ( id = project or parent = project)
+             where ( id = project )
             ". ( empty($storyId)?"":" and  locate( concat(',',zt_projectstory.story,','),concat(',','$storyId',',') )>0 " )."
         ),
         t_task_proj_exec as (
@@ -123,7 +125,7 @@ class ganttModel extends model
                 ". ( empty($task_finishedBy)?"":" and zt_task.finishedBy in ( '".str_replace(',',"','",$task_finishedBy)."' )") ."
         ),
         t_task as (
-            select distinct id,name, if (pri<=1,1,0) as milestone,zt_task.story, realname, dept_id,dept_name,dept_path
+            select distinct id,name, if (pri<=1,1,0) as milestone,zt_task.story, realname, dept_id,dept_name,dept_path , project as projId, execution as execId
                 ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress
                 ,COALESCE(if(left(CONCAT('',ifnull(realStarted,'0000-00-00')),4)='0000',null,realStarted), estStarted) AS myBegin
                 ,COALESCE(if(left(CONCAT('',ifnull(finishedDate,'0000-00-00')),4)='0000',null,finishedDate), if(left(CONCAT('',ifnull(canceledDate,'0000-00-00')),4)='0000',null,canceledDate), if(left(CONCAT('',ifnull(closedDate,'0000-00-00')),4)='0000',null,closedDate), deadline) AS myEnd
@@ -147,7 +149,7 @@ class ganttModel extends model
             
             union 
             
-            select distinct id,name, if (pri<=1,1,0) as milestone,zt_task.story, realname, dept_id,dept_name,dept_path
+            select distinct id,name, if (pri<=1,1,0) as milestone,zt_task.story, realname, dept_id,dept_name,dept_path , project as projId, execution as execId
                 ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress
                 ,COALESCE(if(left(CONCAT('',ifnull(realStarted,'0000-00-00')),4)='0000',null,realStarted), estStarted) AS myBegin
                 ,COALESCE(if(left(CONCAT('',ifnull(finishedDate,'0000-00-00')),4)='0000',null,finishedDate), if(left(CONCAT('',ifnull(canceledDate,'0000-00-00')),4)='0000',null,canceledDate), if(left(CONCAT('',ifnull(closedDate,'0000-00-00')),4)='0000',null,closedDate), deadline) AS myEnd
@@ -164,6 +166,7 @@ class ganttModel extends model
             join t_dept_user on ( ( case when assignedTo = 'closed' then finishedBy else assignedTo end ) = t_dept_user.account )
             -- join t_projstory on ( zt_task.story = story_id ) -- 项目关联需求下的任务
             join t_execstory on ( zt_task.story = story_id ) -- 项目关联需求下的任务
+            -- join t_execstory on ( zt_task.execution = exec_id and zt_task.story = story_id ) 
             where deleted='0' 
                 ". ( empty($task_assignTo)?"":" and ( case when zt_task.assignedTo = 'closed' then zt_task.finishedBy else zt_task.assignedTo end ) in ( '".str_replace(',',"','",$task_assignTo)."' )") ."
                 ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."'") ."
@@ -204,7 +207,7 @@ class ganttModel extends model
         $result = $this->common->dbhFetchAll($sql);
         $error = $this->dao->getError();
 
-        $this->common->log(json_encode(array('dbhFetchAll: error' => $error), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $this->common->log(json_encode(array('rows'=>count($result),'dbhFetchAll: error' => $error), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         
         return $result;

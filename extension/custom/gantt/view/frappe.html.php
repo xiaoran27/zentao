@@ -150,19 +150,21 @@ endif;
       fill: rebeccapurple !important;
   } */
 
-  .gantt-container .popup-wrapper {
-    /* width: 500px; */
+  /* .gantt .bar.important {
+    fill: #94c4f4;
+  } */
+  /* .gantt-container .popup-wrapper {
     padding: 0 5px;
-  }
+  } */
+  /* .gantt .bar {
+      fill: lightgray !important;
+  } */
   .gantt .bar-progress {
-      fill: gray !important;
+      fill: lightseagreen !important;
   }
+  
   .bar-label {
-    text-align: left !important;
-    fill: #111  !important;
-    /* fill: rebeccapurple !important;
-    font-size: 12px !important;
-    font-weight: bold !important; */
+    fill: #000  !important;
   }
   .gantt .arrow {
     stroke: yellowgreen !important;
@@ -223,7 +225,7 @@ endif;
               const consumed = task.consumed == undefined ? 'NA':task.consumed;
               const progress = task.progress == undefined ? ( (/^\d+$/.test(consumed) && /^\d+$/.test(estimate) && estimate>0)?(consumed/estimate*100).toFixed(2):'NA'):task.progress;
               return `
-                  <p><strong>ID:</strong> ${task.id} <strong>状态:</strong> ${task.status} <strong>依赖:</strong> ${dependencies}</p>
+                  <p><strong>ID:</strong> ${task.id} <strong>状态:</strong> ${task.status} <strong>依赖:</strong> ${dependencies} <strong>需求:</strong> ${task.story}</p>
                   <p><strong>资源:</strong> ${resources} <strong>部门:</strong> ${task.deptname}</p>
                   <p><strong>起止日期` +(dateChanged?'':`(${task.duration})`)+`:</strong> ${begin_date}~${end_date}</p>
                   ` +(dateChanged?`<p><strong>实际起止(${task.duration}):</strong> ${begin_date__}~${end_date__}</p>`:'') +`

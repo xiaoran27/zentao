@@ -235,7 +235,9 @@ class gantt extends control
                 $_->type = $value->type;
                 $_->status = $value->status;
                 $_->stage = $value->stage;
+                $_->story = $value->story;
 
+                if (in_array($_->id, $taskKeys)) continue;  // 去除重复的task
                 $taskList[] = $_;
                 $taskKeys[] = $_->id;
             }
