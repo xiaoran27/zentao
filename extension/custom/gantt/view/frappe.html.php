@@ -71,6 +71,9 @@ endif;
             <span class='input-group-addon'><?php echo $lang->gantt->query->task_assignTo;?></span>
             <?php echo html::select('task_assignTo', $users, $task_assignTo, "class='form-control chosen searchSelect' multiple");?>
             <?php echo html::hidden('task_finishedBy', $task_finishedBy);?>
+            <span class='input-group-addon'><?php echo $lang->gantt->query->dept_id;?></span>
+            <?php echo html::select('dept_id', array(''=>'')+$depts, $dept_id, "class='form-control chosen searchSelect'");?>
+            
           </div>
         </div>
         <div class='col-sm-4'>
@@ -220,11 +223,11 @@ endif;
               const consumed = task.consumed == undefined ? 'NA':task.consumed;
               const progress = task.progress == undefined ? ( (/^\d+$/.test(consumed) && /^\d+$/.test(estimate) && estimate>0)?(consumed/estimate*100).toFixed(2):'NA'):task.progress;
               return `
-                  <p>ID:${task.id} 状态:${task.status} 依赖:${dependencies}</p>
-                  <p>资源: ${resources} </p>
-                  <p>起止日期: ${begin_date}~${end_date}</p>
-                  ` +(dateChanged?`<p>实际起止: ${begin_date__}~${end_date__}</p>`:'') +`
-                  <p>进度: ${progress}% 预估: ${estimate}h,消耗: ${consumed}h</p>
+                  <p><strong>ID:</strong> ${task.id} <strong>状态:</strong> ${task.status} <strong>依赖:</strong> ${dependencies}</p>
+                  <p><strong>资源:</strong> ${resources} <strong>部门:</strong> ${task.deptname}</p>
+                  <p><strong>起止日期` +(dateChanged?'':`(${task.duration})`)+`:</strong> ${begin_date}~${end_date}</p>
+                  ` +(dateChanged?`<p><strong>实际起止(${task.duration}):</strong> ${begin_date__}~${end_date__}</p>`:'') +`
+                  <p><strong>进度:</strong> ${progress}% <strong>预估:</strong> ${estimate}h,<strong>消耗:</strong> ${consumed}h</p>
               `;
           },
           // on_click: function (task) {

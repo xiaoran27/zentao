@@ -21,7 +21,12 @@ $lang->gantt->typeList = array( 'project' => '项目', 'execution' => '迭代', 
 /* Fields. */
 $lang->gantt->id             = '项目ID';
 $lang->gantt->name           = '名称';
+$lang->gantt->milestone        = '里程碑';
 $lang->gantt->story       = '产品需求ID';
+$lang->gantt->realname        = '姓名';
+$lang->gantt->dept_id        = '部门ID';
+$lang->gantt->dept_name        = '部门';
+$lang->gantt->dept_path        = '部门路径';
 $lang->gantt->estimate       = '预估';
 $lang->gantt->consumed           = '消耗';
 $lang->gantt->progress         = '进度';
@@ -55,6 +60,7 @@ $lang->gantt->query->programId             = '项目集ID';
 $lang->gantt->query->projectId             = '项目ID';
 $lang->gantt->query->projectEnd             = '项目结束';
 $lang->gantt->query->task_assignTo             = '任务指派给';
+$lang->gantt->query->dept_id             = '指派部门';
 $lang->gantt->query->projectPM             = 'PM';
 $lang->gantt->query->projectStatus             = '项目状态';
 $lang->gantt->query->rowtype             = $lang->gantt->type;

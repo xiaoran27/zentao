@@ -23,6 +23,7 @@ class gantt extends control
         parent::__construct($moduleName, $methodName);
         $this->loadModel('common');
         $this->loadModel('user');
+        $this->loadModel('dept');
         $this->loadModel('program');
         $this->loadModel('project');
     }
@@ -34,6 +35,7 @@ class gantt extends control
      * @param  int  $programId=223  
      * @param  string  $projectId='' 多个用','分隔
      * @param  string  $projectEnd=null yyyy-mm-dd 
+     * @param  int $dept_id=0  
      * @param  string  $task_assignTo=''  多个用','分隔
      * @param  string  $projectPM=''  多个用','分隔
      * @param  string  $projectStatus='unclosed'  多个用','分隔 wait|doing|suspended|closed|unclosed 
@@ -51,6 +53,7 @@ class gantt extends control
         $programId = 223 //
         , $projectId=''  // 1,2,3
         , $projectEnd=null // yyyy-mm-dd
+        , $dept_id=0  
         , $task_assignTo=''  //a,b,c
         , $projectPM=''  //a,b,c
         , $projectStatus = 'unclosed'  // wait|doing|suspended|closed|unclosed
@@ -68,6 +71,7 @@ class gantt extends control
         $this->view->programId = $programId ;
         $this->view->projectId =  $projectId; 
         $this->view->projectEnd =  $projectEnd;
+        $this->view->dept_id =  $dept_id;
         $this->view->task_assignTo =  $task_assignTo;
         $this->view->projectPM =  $projectPM;
         $this->view->projectStatus =  $projectStatus;  // wait|doing|suspended|closed|unclosed
@@ -77,8 +81,6 @@ class gantt extends control
         $this->view->task_finishedBy =  $task_finishedBy;
         $this->view->task_estStarted =  $task_estStarted;
 
-
-
         $projectStatus = empty($projectStatus)? 'unclosed' : $projectStatus;
         $projectStatus = $projectStatus == 'unclosed' ? 'doing,suspended,wait' : $projectStatus;
 
@@ -86,6 +88,7 @@ class gantt extends control
         $result = $this->gantt->getTaskList($programId
             , $projectId  // 1,2,3
             , $projectEnd // yyyy,mm,dd
+            , $dept_id
             , $task_assignTo  //a,b,c
             , $projectPM  //a,b,c
             , $projectStatus   // wait|doing|suspended|closed|unclosed
@@ -96,9 +99,9 @@ class gantt extends control
             , $task_estStarted // yyyy,mm,dd
             , $limit );
 
-        
         $users   = $this->user->getPairs('noletter|noclosed');
-        
+        $depts   = $this->dept->getDeptPairs();
+       
         $taskKeys = array();
         $taskList = array();
         if(!empty($result))
@@ -208,12 +211,17 @@ class gantt extends control
                 $_->end = $value->myEnd;
                 $_->start__ = $value->myBegin__;
                 $_->end__ = $value->myEnd__;
+                $_->estimate = $value->estimate;
+                $_->consumed = $value->consumed;
                 $_->progress = $value->progress;
                 $_->parent = $value->parent;
                 $_->dependencies = empty($value->parent)?"":$parentPre.$value->parent;
-                $_->duration = $value->estimate.'h';
+                $_->duration = (helper::diffDate($_->end__, $_->start__)+1).'d';
+
                 $_->owner = $value->pm;
-                $_->realname = $users[$value->pm];
+                $_->realname = empty($value->realname)?$users[$value->pm]:$value->realname;
+                $_->deptid = empty($value->dept_id)?'':$value->dept_id;
+                $_->deptname = empty($value->dept_name)?'':$value->dept_name;
 
                 $_->custom_class = ' bar-bytenew ';
                 if ($value->tocLevel <= 2){  // project|execution
@@ -240,8 +248,8 @@ class gantt extends control
             return;
         }
 
+        
         $programPairs = $this->program->getpairs(true);
-
         $programs = explode(',', trim($programId));
         $projectPairs = array();
         foreach($programs as $programId_)
@@ -250,11 +258,10 @@ class gantt extends control
             $projectPairs = $projectPairs + $projectPairs_;
         }
         
-
+        $this->view->taskList     = $taskList;
         $this->view->programPairs = $programPairs ;
         $this->view->projectPairs = $projectPairs ;
-
-        $this->view->taskList     = $taskList;
+        $this->view->depts     = $depts;
         $this->view->users     = $users;
         $this->view->userIdPairs  = $this->user->getPairs('noletter|showid');
         $this->view->usersAvatar  = $this->user->getAvatarPairs('');

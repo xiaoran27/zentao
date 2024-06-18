@@ -16,23 +16,11 @@ function isDateString(dateString) {
 
 function validate()
 {
-
-    var programId   = $('#conditions').find('#programId').val();
-    var projectId     = $('#conditions').find('#projectId').val();
-    var projectEnd = $('#conditions').find('#projectEnd').val();
-    var task_assignTo    = $('#conditions').find('#task_assignTo').val();
-    var projectPM  = $('#conditions').find('#projectPM').val();
-    var projectStatus   = $('#conditions').find('#projectStatus').val();
-    var rowtype     = $('#conditions').find('#rowtype').val();
-    var excutionId = $('#conditions').find('#excutionId').val();
-    var storyId    = $('#conditions').find('#storyId').val();
-    var task_finishedBy  = $('#conditions').find('#task_finishedBy').val();
-    var task_estStarted  = $('#conditions').find('#task_estStarted').val();
-
     var params = {
         'programId' : $('#conditions').find('#programId').val(),
         'projectId' : $('#conditions').find('#projectId').val(),
         'projectEnd' : $('#conditions').find('#projectEnd').val(),
+        'dept_id' : $('#conditions').find('#dept_id').val(),
         'task_assignTo' : $('#conditions').find('#task_assignTo').val(),
         'projectPM' : $('#conditions').find('#projectPM').val(),
         'projectStatus' : $('#conditions').find('#projectStatus').val(),
@@ -62,7 +50,7 @@ function validate()
         };
     });   
 
-    ['programId','excutionId','storyId'].forEach(e => {
+    ['excutionId','storyId'].forEach(e => {
 
         var value = params[e];
         var b = value !== null && value !== undefined && value !== '';
@@ -89,23 +77,11 @@ $('.form-control').on('focus', function() {
 
 function query(viewtype)
 {
-
-    var programId   = $('#conditions').find('#programId').val();
-    var projectId     = $('#conditions').find('#projectId').val();
-    var projectEnd = $('#conditions').find('#projectEnd').val();
-    var task_assignTo    = $('#conditions').find('#task_assignTo').val();
-    var projectPM  = $('#conditions').find('#projectPM').val();
-    var projectStatus   = $('#conditions').find('#projectStatus').val();
-    var rowtype     = $('#conditions').find('#rowtype').val();
-    var excutionId = $('#conditions').find('#excutionId').val();
-    var storyId    = $('#conditions').find('#storyId').val();
-    var task_finishedBy  = $('#conditions').find('#task_finishedBy').val();
-    var task_estStarted  = $('#conditions').find('#task_estStarted').val();
-
     var params = {
         'programId' : $('#conditions').find('#programId').val(),
         'projectId' : $('#conditions').find('#projectId').val(),
         'projectEnd' : $('#conditions').find('#projectEnd').val().replaceAll('-',','),
+        'dept_id' : $('#conditions').find('#dept_id').val(),
         'task_assignTo' : $('#conditions').find('#task_assignTo').val(),
         'projectPM' : $('#conditions').find('#projectPM').val(),
         'projectStatus' : $('#conditions').find('#projectStatus').val(),
@@ -115,22 +91,6 @@ function query(viewtype)
         'task_finishedBy' : $('#conditions').find('#task_finishedBy').val(),
         'task_estStarted'   : $('#conditions').find('#task_estStarted').val().replaceAll('-',','),
     };
-
-    // 去除多选的首个逗号
-    // var keys = Object.keys(params);
-    // keys.forEach(e => {
-    //     var value = params[e];
-    //     var empty = value === null || value === undefined || value === '';
-    //     if (!empty){
-    //         if (Array.isArray(value)){
-    //             params[e] = value.filter(Boolean);
-    //         }else if(typeof value === 'string' && value.substring(0,1) === ',') {
-    //             params[e] = value.substring(1,value.length);
-    //         }else{
-
-    //         }
-    //     } 
-    // });
 
     var keyValuePairs = Object.keys(params)
         .map(function(key) {
@@ -166,6 +126,7 @@ function reset()
     $('#conditions').find('#projectId').val('').trigger('chosen:updated');
     $('#conditions').find('#projectEnd').val('');
     $('#conditions').find('#task_assignTo').val('').trigger('chosen:updated');
+    $('#conditions').find('#dept_id').val('').trigger('chosen:updated'),
     $('#conditions').find('#projectPM').val('').trigger('chosen:updated');
     $('#conditions').find('#projectStatus').val('unclosed').trigger('chosen:updated');
     $('#conditions').find('#rowtype').val('project').trigger('chosen:updated');
@@ -173,15 +134,6 @@ function reset()
     $('#conditions').find('#storyId').val('');
     $('#conditions').find('#task_finishedBy').val('');
     $('#conditions').find('#task_estStarted').val('');
-
-
-    // if(!$searchForm.find('#value' + i).hasClass('picker-select')) $searchForm.find('#value' + i).val('').trigger('chosen:updated');
-    // if($searchForm.find('#value' + i).hasClass('picker-select'))  $searchForm.find('#value' + i).data('zui.picker').setValue('');
-    // $searchForm.find('#value' + i + '.date').val('').attr('placeholder', '');
-    
-
-    // var link = createLink('gantt', 'frappe', "programId=223&projectStatus=wait,doing");
-    // location.href = link;
 
 }
 
