@@ -227,8 +227,8 @@ endif;
               return `
                   <p><strong>ID:</strong> ${task.id} <strong>状态:</strong> ${task.status} <strong>依赖:</strong> ${dependencies} <strong>需求:</strong> ${task.story}</p>
                   <p><strong>资源:</strong> ${resources} <strong>部门:</strong> ${task.deptname}</p>
-                  <p><strong>起止日期` +(dateChanged?'':`(${task.duration})`)+`:</strong> ${begin_date}~${end_date}</p>
-                  ` +(dateChanged?`<p><strong>实际起止(${task.duration}):</strong> ${begin_date__}~${end_date__}</p>`:'') +`
+                  <p><strong>起止日期` +(dateChanged?'':`(${task.duration__})`)+`:</strong> ${begin_date}~${end_date}</p>
+                  ` +(dateChanged?`<p><strong>实际起止(${task.duration__}):</strong> ${begin_date__}~${end_date__}</p>`:'') +`
                   <p><strong>进度:</strong> ${progress}% <strong>预估:</strong> ${estimate}h,<strong>消耗:</strong> ${consumed}h</p>
               `;
           },

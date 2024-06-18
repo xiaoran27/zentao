@@ -216,7 +216,7 @@ class gantt extends control
                 $_->progress = $value->progress;
                 $_->parent = $value->parent;
                 $_->dependencies = empty($value->parent)?"":$parentPre.$value->parent;
-                $_->duration = (helper::diffDate($_->end__, $_->start__)+1).'d';
+                $_->duration__ = (helper::diffDate($_->end__, $_->start__)+1).'d';
 
                 $_->owner = $value->pm;
                 $_->realname = empty($value->realname)?$users[$value->pm]:$value->realname;
