@@ -237,6 +237,9 @@ class gantt extends control
                 $_->stage = $value->stage;
                 $_->story = $value->story;
 
+                // $_->name = "$_->name ($_->status,$_->realname)";
+                $_->progress = ( ( $_->status === 'closed' or $_->status === 'done' or $_->status === 'cancel'  ) and $_->progress < 100 ) ? 100: $_->progress;
+
                 if (in_array($_->id, $taskKeys)) continue;  // 去除重复的task
                 $taskList[] = $_;
                 $taskKeys[] = $_->id;
