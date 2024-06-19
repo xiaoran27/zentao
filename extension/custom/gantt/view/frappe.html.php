@@ -102,9 +102,11 @@ endif;
             <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <span class='input-group-addon'></span>
             <?php echo html::commonButton($label = '重置', $misc = " id='reset' onclick='reset();'", $class = 'btn', $icon = '');?>
+            <?php if(!empty($taskList)):?>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <span class='input-group-addon'></span>
-            <?php echo html::commonButton($label = '导出', $misc = " id='export' onclick='if (validate()) query(\"json\");'", $class = 'btn', $icon = '');?>
+            <span class='input-group-addon'></span>            
+            <?php echo html::commonButton($label = '导出', $misc = " id='export' onclick='html2img(\"gantt\");'", $class = 'btn', $icon = '');?>
+            <?php endif;?>
           </div>
         </div>
       </div>
@@ -117,7 +119,7 @@ endif;
   <?php if(empty($taskList)):?>
       <p><span class="text-muted"><?php echo $lang->error->noData;?></span></p>
   <?php else:?>
-      <div><svg id="gantt" class="gantt"></svg></div>
+      <div id="gantt" class="gantt"></div><?php //html2canvas 不支持svg ?>
   <?php endif;?>
   </div>
   </div>
@@ -183,18 +185,24 @@ endif;
   document.addEventListener('DOMContentLoaded', function() {
       
       gantt = new Gantt("#gantt", taskList, {
-          header_height: 50,
-          column_width: 30,
-          step: 24,
+          // header_height: 65,
+          // column_width: 30,
+          // step: 24,
           view_modes: ["Day", "Week", "Month"],
-          bar_height: 20,
-          bar_corner_radius: 3,
-          arrow_curve: 5,
-          padding: 18,
-          view_mode: "Day",
+          // bar_height: 30,
+          // bar_corner_radius: 3,
+          // arrow_curve: 5,
+          // padding: 18,
+          // view_mode: "Day",
           date_format: "YYYY-MM-DD",
           language: "zh",
-          view_mode_select: true,
+          readonly: true,
+          // highlight_weekend: true,
+          // scroll_to: 'today',  // start, today, yyyy-mm-dd
+          // lines: 'both',
+          // auto_move_label: true,
+          today_button: false,
+          // view_mode_select: true,
           view_mode_padding: {
             HOUR: ["7d", "7d"],
             QUARTER_DAY: ["7d", "7d"],

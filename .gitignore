@@ -35,3 +35,5 @@ extension/banniu_rel*.sql
 /extension/custom/port
 
 Backup-.gitignore
+extension/custom/gantt/js/lib
+extension/custom/newModule
