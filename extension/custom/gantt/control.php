@@ -255,12 +255,17 @@ class gantt extends control
 
         
         $programPairs = $this->program->getpairs(true);
-        $programs = explode(',', trim($programId));
         $projectPairs = array();
-        foreach($programs as $programId_)
+        $programs = explode(',', trim($programId));
+        if (empty($programId) or empty($programs) or count($programs)<1)
         {
-            $projectPairs_ = $this->project->getPairsByProgram($programId_, $status = 'all', $isQueryAll = true, $orderBy = 'order_asc', $excludedModel = '', $model = '', $param = '');
-            $projectPairs = $projectPairs + $projectPairs_;
+            $projectPairs = $this->project->getPairsByProgram($programId, $status = 'all', $isQueryAll = true, $orderBy = 'order_asc', $excludedModel = '', $model = '', $param = '');
+        }else{
+            foreach($programs as $programId_)
+            {
+                $projectPairs_ = $this->project->getPairsByProgram($programId_, $status = 'all', $isQueryAll = true, $orderBy = 'order_asc', $excludedModel = '', $model = '', $param = '');
+                $projectPairs = $projectPairs + $projectPairs_;
+            }
         }
         
         $this->view->taskList     = $taskList;
