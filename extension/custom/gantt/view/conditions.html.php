@@ -1,3 +1,4 @@
+<div id='mainContent' class='main-row'>
 <div class='main-col' id='conditions'>
     <div class='cell'>
       <div class="row">
@@ -83,10 +84,11 @@
             <?php if(!empty($taskList)):?>
             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <span class='input-group-addon'></span>            
-            <?php echo html::commonButton($label = '导出', $misc = " id='export' onclick='html2img(\"gantt\");'", $class = 'btn', $icon = '');?>
+            <?php echo html::commonButton($label = '导出', $misc = " id='export' onclick='exportGantt();'", $class = 'btn', $icon = '');?>
             <?php endif;?>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>

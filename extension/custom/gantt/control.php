@@ -107,9 +107,9 @@ class gantt extends control
         if(!empty($result))
         {
 
-            $PROJECT_PRE = 'P_';
-            $EXECUTION_PRE = 'E_';
-            $TASK_PRE = 'T_';
+            $PROJECT_PRE = 'P';
+            $EXECUTION_PRE = 'E';
+            $TASK_PRE = 'T';
             $MAX_DAYS = 93;
 
             $taskList = array();    
@@ -207,15 +207,15 @@ class gantt extends control
                 $_->id = $selfPre.$value->id;
                 $_->name = $value->name;
                 $_->important = $value->milestone > 0;
-                $_->start = $value->myBegin;
-                $_->end = $value->myEnd;
+                $_->start = substr($value->myBegin,0,10);
+                $_->end = substr($value->myEnd,0,10);
                 $_->start__ = $value->myBegin__;
                 $_->end__ = $value->myEnd__;
                 $_->estimate = $value->estimate;
                 $_->consumed = $value->consumed;
                 $_->progress = $value->progress;
-                $_->parent = $value->parent;
-                $_->dependencies = empty($value->parent)?"":$parentPre.$value->parent;
+                $_->parent = empty($value->parent)?"":$parentPre.$value->parent;
+                $_->dependencies = $_->parent;
                 $_->duration__ = (helper::diffDate($_->end__, $_->start__)+1).'d';
 
                 $_->owner = $value->pm;
@@ -236,15 +236,27 @@ class gantt extends control
                 $_->status = $value->status;
                 $_->stage = $value->stage;
                 $_->story = $value->story;
+                $_->url = $value->url;
 
                 // $_->name = "$_->name ($_->status,$_->realname)";
                 $_->progress = ( ( $_->status === 'closed' or $_->status === 'done' or $_->status === 'cancel'  ) and $_->progress < 100 ) ? 100: $_->progress;
 
                 if (in_array($_->id, $taskKeys)) continue;  // 去除重复的task
-                $taskList[] = $_;
-                $taskKeys[] = $_->id;
+
+                $_->milestone = $value->milestone;
+                $_->children = 0;
+                if (!empty($_->parent) and !empty($taskList[$_->parent]))  {
+                    $taskList[$_->parent]->children += 1;
+                }
+
+                $taskList[$_->id] = $_;
+                $taskKeys[$_->id] = $_->id;
+
             }
         }
+
+        $taskListKeys = array_keys($taskList);
+        $taskList = array_values($taskList);
 
 
         if( $this->app->getViewType() == 'json')
@@ -259,7 +271,7 @@ class gantt extends control
         $programs = explode(',', trim($programId));
         if (empty($programId) or empty($programs) or count($programs)<1)
         {
-            $projectPairs = $this->project->getPairsByProgram($programId, $status = 'all', $isQueryAll = true, $orderBy = 'order_asc', $excludedModel = '', $model = '', $param = '');
+            $projectPairs = $this->project->getPairsByProgram('', $status = 'all', $isQueryAll = true, $orderBy = 'order_asc', $excludedModel = '', $model = '', $param = '');
         }else{
             foreach($programs as $programId_)
             {
@@ -268,6 +280,7 @@ class gantt extends control
             }
         }
         
+        $this->view->taskListKeys     = $taskListKeys;
         $this->view->taskList     = $taskList;
         $this->view->programPairs = $programPairs ;
         $this->view->projectPairs = $projectPairs ;

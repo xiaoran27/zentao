@@ -1,4 +1,5 @@
 
+
 /**
   * Load project list.
   *
@@ -104,7 +105,6 @@ function validate()
 
 $('.form-control').on('focus', function() {
   $('#'+$(this).attr('id')+'Label').remove();
-  $('#'+$(this).attr('id')).selectText();
 });
 
 function query(viewtype)
@@ -167,6 +167,16 @@ function reset()
   $('#conditions').find('#task_finishedBy').val('');
   $('#conditions').find('#task_estStarted').val('');
 
+}
+
+function exportGantt() 
+{
+  var isExpJson = $('#showTable').hasClass('btn-active-text');
+  if (isExpJson){
+    query('json');
+  }else{
+    html2img("gantt");
+  }
 }
 
 /**

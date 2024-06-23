@@ -17,21 +17,117 @@ endif;
 <style>#mainContent > .side-col.col-lg{width: 235px}</style>
 <style>.hide-sidebar #sidebar{width: 0 !important}</style>
 <?php endif;?>
-<style>#mainContent > .row{height: 235px}</style>
-<div id='mainContent' class='main-row'>
-  <?php include 'conditions.html.php';?>
-</div>
+<style>#mainContent > .side-col.col-lg{width: 0px}</style>
+<style>.hide-sidebar #sidebar{width: 0 !important}</style>
+<style>.clearfix{width: 300 !important}</style>
+<!-- <style>#mainContent > .row{height: 235px}</style> -->
+
+<?php include 'conditions.html.php';?>
 <br />
-<div id='dataContent' class='main-row'>
-  <div class='main-col'><div class='cell'>
-  <?php if(empty($taskList)):?>
+
+<?php if(!empty($taskList)):?>
+<div id='menuContent' class='main-row'><div class='main-col'><div class='cell'>
+<div class="row"><div class='col-sm-4'><div class='input-group'>
+  <div id='showMenu' class="btn-toolbar pull-left">
+    <div id="showGantt" class="btn btn-link btn-active-text"><span class="text">甘特图</span></div>
+    <div id="showTable" class="btn btn-link "><span class="text">数据表</span></div>
+  </div>
+</div></div></div>
+</div></div></div>
+<?php endif;?>
+
+<?php if(empty($taskList)):?>
+  <div id='dataContent' class='main-row'><div class='main-col'><div class='cell'>
+    <div class="table-empty-tip">
       <p><span class="text-muted"><?php echo $lang->error->noData;?></span></p>
-  <?php else:?>
-      <div id="gantt" class="gantt"></div><?php //html2canvas 不支持svg ?>
-  <?php endif;?>
-  </div>
-  </div>
-</div>
+    </div>
+  </div></div></div>
+<?php else:?>
+  <div id='ganttContent' class='main-row' ><div class='main-col'><div class='cell'>
+    <div id="gantt" class="gantt"></div><?php //html2canvas 不支持svg ?>
+  </div></div></div>
+  <div id='dataContent' class='main-row' style="display:none"><div class='main-col'><div class='cell'>
+    <form class="main-table table-task skip-iframe-modal" method="post" id='ganttTaskForm'>
+    <div class="table-responsive">
+      <table class=' main-table table datatable table-hover table-fixed data-fixed-left-width=550 data-fixed-right-width=180' id='taskList'>
+        <thead>
+          <tr class='text-center'>
+            <th class='c-id'> <?php echo $lang->gantt->id;?></th>
+            <th class='c-name'> <?php echo $lang->gantt->name;?></th>
+            <th class='c-status'> <?php echo $lang->gantt->status;?></th>
+            <th class='c-myBegin'> <?php echo $lang->gantt->myBegin;?></th>
+            <th class='c-myEnd'> <?php echo $lang->gantt->myEnd;?></th>
+            <th class='c-progress'> <?php echo $lang->gantt->progress;?></th>
+            <th class='c-milestone'> <?php echo $lang->gantt->milestone;?></th>
+            <th class='c-realname'> <?php echo $lang->gantt->realname;?></th>
+            <th class='c-dept_name'> <?php echo $lang->gantt->dept_name;?></th>
+            <th class='c-estimate'> <?php echo $lang->gantt->estimate;?></th>
+            <th class='c-consumed'> <?php echo $lang->gantt->consumed;?></th>
+            <th class='c-type'> <?php echo $lang->gantt->type;?></th>
+            <th class='c-parent' > <?php echo $lang->gantt->parent;?></th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php $i = 0; $children=0;
+            $isParent = false;
+            $isParent = $isParent or empty($rowtype) or ($rowtype == 'all') ;
+            $isParent = $isParent or ( strpos(",$rowtype,", ',project,') !== false and strpos(",$rowtype,", ',execution,') !== false and strpos(",$rowtype,", ',task,') !== false );
+          ?>
+          <?php foreach($taskList as $task):?>
+            <?php 
+            $id = substr($task->id,0); $parent=substr($task->parent,0);
+            $dataleft=1;
+            $trClass = "text-center";
+            // $isParent_ = ( !( $isParent and $parent=='P') and $task->children>0 );
+            $isParent_ = ( $task->children>0 );
+            if ( $isParent_ ){
+              $children=$task->children;
+              $dataleft=8;
+              $trClass .= " table-parent ";
+            }
+            if(!empty($task->parent)){
+              $dataleft=4;
+              $i += 1;
+              $trClass .=  " table-children parent-{$parent}";
+              if ($i == 1 and $i==$children){
+                $i = 0; $children=0;
+                $trClass .=  " table-child-top table-child-bottom";
+              }elseif ($i < $children){
+                $trClass .=  " table-child-top";
+              }elseif ($i==$children){
+                $i = 0; $children=0;
+                $trClass .=  " table-child-bottom";
+              }
+            }
+            echo "<tr class='{$trClass}' data-left='{$dataleft}'  data-id='{$id}' data-status='{$task->status}' data-estimate='{$task->estimate}' data-consumed='{$task->consumed}' >";
+            ?>
+            <td><?php echo $task->id;?></td>
+            <td class='c-name text-left <?php echo ( $isParent_ )?'has-child':'';?>' title='<?php echo $task->name;?>'>
+              <a class="iframe" data-width="90%" href="<?php echo "{$this->config->webRoot}".$task->url; ?>"><?php echo $task->name;?></a>
+              <?php if( $isParent_ ) echo "<a class='task-toggle' data-id='{$id}'><i class='icon icon-angle-double-right'></i></a>";?></td>
+            <td ><?php echo $task->status;?></td>
+            <td ><?php echo $task->start;?></td>
+            <td ><?php echo $task->end;?></td>
+            <td ><?php echo $task->progress;?></td>
+            <td ><?php echo $task->milestone;?></td>
+            <td ><?php echo $task->realname;?></td>
+            <td><?php echo $task->deptname;?></td>
+            <td ><?php echo $task->estimate;?></td>
+            <td ><?php echo $task->consumed;?></td>
+            <td ><?php echo $task->type;?></td>
+            <td><?php  "{$task->parent}({$task->children})" ;?></td>
+            
+          </tr>
+          <?php endforeach;?>
+        </tbody>
+      </table>
+    </div>
+  </form>
+  </div></div></div>
+
+
+<?php endif;?>
+  
 
 <style>
   /* .gantt .bar-project  {
@@ -91,6 +187,8 @@ endif;
  
   // 等待 DOM 加载完成
   document.addEventListener('DOMContentLoaded', function() {
+
+
       
       gantt = new Gantt("#gantt", taskList, {
           // header_height: 65,

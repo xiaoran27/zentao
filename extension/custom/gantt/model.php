@@ -86,7 +86,7 @@ class ganttModel extends model
                 ,COALESCE(if(left(CONCAT('',ifnull(realBegan,'0000-00-00')),4)='0000',null,realBegan), begin) AS myBegin
                 ,COALESCE(if(left(CONCAT('',ifnull(realEnd,'0000-00-00')),4)='0000',null,realEnd), end) AS myEnd
                 ,pm,bd,sa,cs,status,stage
-                , concat('execution-view-',id,'.html') as url
+                , concat('execution-task-',id,'.html') as url
                 ,begin,end,realBegan,realEnd
                 , 'execution' as type,parent,zt_project.path
                 -- , replace(zt_project.path,concat(',',parent,','),proj_path) as fullpath
