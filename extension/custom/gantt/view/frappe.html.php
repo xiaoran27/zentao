@@ -65,6 +65,7 @@ endif;
             <th class='c-consumed'> <?php echo $lang->gantt->consumed;?></th>
             <th class='c-type'> <?php echo $lang->gantt->type;?></th>
             <th class='c-parent' > <?php echo $lang->gantt->parent;?></th>
+            <th class='c-parent' > <?php echo $lang->gantt->children;?></th>
           </tr>
         </thead>
         <tbody>
@@ -108,14 +109,15 @@ endif;
             <td ><?php echo $task->status;?></td>
             <td ><?php echo $task->start;?></td>
             <td ><?php echo $task->end;?></td>
-            <td ><?php echo $task->progress;?></td>
+            <td ><?php echo "{$task->progress}%";?></td>
             <td ><?php echo $task->milestone;?></td>
             <td ><?php echo $task->realname;?></td>
             <td><?php echo $task->deptname;?></td>
-            <td ><?php echo $task->estimate;?></td>
-            <td ><?php echo $task->consumed;?></td>
+            <td ><?php echo "{$task->estimate}h(".round($task->estimate/8,1).'d)';?></td>
+            <td ><?php echo "{$task->consumed}h(".round($task->consumed/8,1).'d)';?></td>
             <td ><?php echo $task->type;?></td>
-            <td><?php  "{$task->parent}({$task->children})" ;?></td>
+            <td><?php  echo $task->parent;?></td>
+            <td><?php  echo $task->children;?></td>
             
           </tr>
           <?php endforeach;?>

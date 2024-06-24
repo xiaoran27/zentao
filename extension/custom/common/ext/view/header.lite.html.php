@@ -83,9 +83,35 @@ if(file_exists($xuanExtFile)) include $xuanExtFile;
 <?php
    js::import($jsRoot . 'html2canvas\min.js');
    js::import($jsRoot . 'pdfjs\min.js');
+  //  js::import($jsRoot . 'jquery-table2excel\jquery.table2excel.min.js');
+   js::import($jsRoot . 'jquery-table2excel\jquery.table2excel.js');
 ?>
    
 <script>
+
+
+  $(function(){
+
+    // 给table加导出popup菜单
+    // $('table').contextMenu({
+    //   menu: [
+    //     {title: "导出Excel", icon: "fa-file-excel-o", callback: function(itemKey, opt, e){
+    //       // console.log(itemKey, opt, e);
+    //       console.log(this);
+    //       // console.log(this.innerHTML);
+    //       // console.log(this.outerHTML);
+    //       //console.log(this.outerHTML.replace())
+    //     }}
+    //   ]
+    // });
+
+    $expTable = $('table');
+    if ($expTable.length>0){
+      console.log("has table="+$expTable.attr('id'));
+    }
+
+  });
+
   const HTML2CANVAS_WATERMARK_TEXT = '班牛 ByteNew';
   const HTML2CANVAS_WATERMARK_FILLSTYLE = 'rgba(100,100,100, 0.1)';
   const HTML2CANVAS_OPTIONS = {

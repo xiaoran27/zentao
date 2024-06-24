@@ -169,15 +169,6 @@ function reset()
 
 }
 
-function exportGantt() 
-{
-  var isExpJson = $('#showTable').hasClass('btn-active-text');
-  if (isExpJson){
-    query('json');
-  }else{
-    html2img("gantt");
-  }
-}
 
 /**
 * Convert a date string to date object in js.

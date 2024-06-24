@@ -1,6 +1,31 @@
+
+function tableToExcel(ele) {
+    const _ele = ( typeof ele === 'string' ) ? document.querySelector("#"+ele): ele;
+    $ele = $(_ele);
+    var tableName = $ele.attr('id')+"_"+Date.now();
+    $ele.table2excel({
+        exclude : ".noExl", //过滤位置的 css 类名
+        filename : tableName+".xls", //文件名称
+        name: "Excel Document Name.xlsx",
+        exclude_img: false,//是否导出图片 false导出
+        exclude_links: false,//是否导出链接 false导出
+        exclude_inputs: true//是否导出输入框的值 true导出
+    });
+}
+function exportGantt() 
+{
+    var isExpJson = $('#showTable').hasClass('btn-active-text');
+    if (isExpJson){
+        // query('json');
+        tableToExcel('taskList');
+    }else{
+        html2img("gantt");
+    }
+}
+
 $(function()
 {
-
+    
     $('#showGantt, #showTable').click(function() {
         if ($(this).hasClass('btn-active-text')) return false;
 
@@ -37,26 +62,27 @@ $(function()
     function toggleFold()
     {
         $table     = $('#taskList');
-        $parentTd = $table.find('td.has-child');
-        if($parentTd.length == 0) return false;
+        $parentTds = $table.find('td.has-child');
+        if($parentTds.length == 0) return false;
 
         var toggleClass = 'task-toggle';
         var nameClass   = 'c-name';
-        $table.find('th.' + nameClass).addClass('clearfix').append("<span id='toggleFold'><i  class='icon icon-angle-double-right'></i></span>");
-        // $('#toggleFold').addClass('collapsed');
-        $parentTd.each(function()
+        $table.find('th.' + nameClass).addClass('clearfix').append("<span id='toggleFold' ><i  class='icon icon-angle-double-right'></i></span>");
+        $('#toggleFold').addClass('collapsed');
+        $parentTds.each(function()
         {
             var dataID = $(this).closest('tr').attr('data-id');
             $table.find('tr.parent-' + dataID).hide();
-            // $(this).find('a.' + toggleClass).addClass('collapsed');
+            $(this).find('a.' + toggleClass).addClass('collapsed');
             // $(this).find('a.' + toggleClass).toggleClass('collapsed', true);
         })
         // $table.find('th.' + nameClass + ' #toggleFold').toggleClass('collapsed', true);
+        
 
-        $(document).on('click', '#toggleFold', function()
+        $('#toggleFold').on('click', function()
         {
             var collapsed   = $(this).hasClass('collapsed');
-            $parentTd.each(function()
+            $parentTds.each(function()
             {
                 var dataID = $(this).closest('tr').attr('data-id');
                 $table.find('tr.parent-' + dataID).toggle(!collapsed);
@@ -66,7 +92,7 @@ $(function()
             $(this).toggleClass('collapsed', !collapsed);
         });
 
-        $parentTd.find('a.' + toggleClass).click(function()
+        $parentTds.find('a.' + toggleClass).click(function()
         {
             var collapsed   = $(this).hasClass('collapsed');
             var dataID      = $(this).closest('tr').attr('data-id');
@@ -104,6 +130,6 @@ $(function()
         });
     }
 
-    // $('#toggleFold').trigger('click');
+    $('#toggleFold').trigger('click');
 
 });

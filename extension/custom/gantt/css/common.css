@@ -1,5 +1,9 @@
 .mgr-5px {margin-right: 5px;}
 
+#toggleFold {float: right;}
+#toggleFold > .icon {display: inline-block; color: #838a9d; font-size: 16px; transition: transform .2s; transform: rotate(-90deg);}
+#toggleFold.collapsed > .icon {transform: rotate(90deg);}
+
 .table-children {border-left: 2px solid #cbd0db; border-right: 2px solid #cbd0db;}
 .table tbody > tr.table-children.table-child-top {border-top: 2px solid #cbd0db;}
 .table tbody > tr.table-children.table-child-bottom {border-bottom: 2px solid #cbd0db;}

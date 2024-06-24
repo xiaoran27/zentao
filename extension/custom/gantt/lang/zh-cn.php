@@ -48,6 +48,7 @@ $lang->gantt->realEnd        = '实际完成';
 
 $lang->gantt->type           = '类型';
 $lang->gantt->parent         = '父项';
+$lang->gantt->children         = '子数';
 $lang->gantt->path   = '父PATH';
 $lang->gantt->fullpath       = '全路径';
 $lang->gantt->tocLevel     = '层级';
