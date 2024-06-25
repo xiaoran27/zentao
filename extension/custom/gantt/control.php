@@ -102,6 +102,10 @@ class gantt extends control
         $users   = $this->user->getPairs('noletter|noclosed');
         $depts   = $this->dept->getDeptPairs();
        
+        $deptHours = array();  // 部门工时
+        $DEPTSUM = '小计';
+        $deptHours[$DEPTSUM]->estimate = 0;
+        $deptHours[$DEPTSUM]->consumed = 0;
         $taskKeys = array();
         $taskList = array();
         if(!empty($result))
@@ -252,6 +256,19 @@ class gantt extends control
                 $taskList[$_->id] = $_;
                 $taskKeys[$_->id] = $_->id;
 
+
+                if ( $value->tocLevel < 3 or $_->children > 0 ) continue;
+                // 计算部门工时
+                $depykey = empty($_->deptname)?'未知':$_->deptname;                
+                if ( !in_array($depykey, array_keys($deptHours))){
+                    $deptHours[$depykey]->estimate = 0;
+                    $deptHours[$depykey]->consumed = 0;
+                }
+                $deptHours[$depykey]->estimate += $_->estimate;
+                $deptHours[$depykey]->consumed += $_->consumed;
+                $deptHours[$DEPTSUM]->estimate += $_->estimate;
+                $deptHours[$DEPTSUM]->consumed += $_->consumed;
+
             }
         }
 
@@ -264,7 +281,7 @@ class gantt extends control
             $this->send(array('status' => 'success', 'data' => $taskList));
             return;
         }
-
+        
         
         $programPairs = $this->program->getpairs(true);
         $projectPairs = array();
@@ -280,6 +297,8 @@ class gantt extends control
             }
         }
         
+        $this->view->DEPTSUM     = $DEPTSUM;
+        $this->view->deptHours     = $deptHours;
         $this->view->taskListKeys     = $taskListKeys;
         $this->view->taskList     = $taskList;
         $this->view->programPairs = $programPairs ;

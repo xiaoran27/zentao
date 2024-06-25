@@ -43,6 +43,34 @@ endif;
     </div>
   </div></div></div>
 <?php else:?>
+  <?php if(!empty($deptHours)):?>
+  <div id='hoursContent'>
+    <div class='main-row'><div class='main-col'><div class='cell'>
+        <div class='input-group'>
+        <span ><?php echo "<strong>总预估</strong>:{$deptHours[$DEPTSUM]->estimate}h(".round($deptHours[$DEPTSUM]->estimate/8,1).'d); 其中: ';?>
+          <?php 
+          foreach($deptHours as $key => $value ) {
+            if($key == $DEPTSUM) continue;
+            echo "<strong>{$key}</strong>:{$value->estimate}h(".round($value->estimate/8,1).'d);';
+          };
+          ?>
+        </span>
+        </div>
+    </div></div></div>
+    <div class='main-row'><div class='main-col'><div class='cell'>
+        <div class='input-group'>
+        <span ><?php echo "<strong>总消耗</strong>:{$deptHours[$DEPTSUM]->consumed}h(".round($deptHours[$DEPTSUM]->consumed/8,1).'d); 其中: ';?>
+          <?php 
+          foreach($deptHours as $key => $value ) {
+            if($key == $DEPTSUM) continue;
+            echo "<strong>{$key}</strong>:{$value->consumed}h(".round($value->consumed/8,1).'d);';
+          };
+          ?>
+        </span>
+        </div>
+    </div></div></div>
+  </div>
+  <?php endif;?>
   <div id='ganttContent' class='main-row' ><div class='main-col'><div class='cell'>
     <div id="gantt" class="gantt"></div><?php //html2canvas 不支持svg ?>
   </div></div></div>
@@ -65,7 +93,8 @@ endif;
             <th class='c-consumed'> <?php echo $lang->gantt->consumed;?></th>
             <th class='c-type'> <?php echo $lang->gantt->type;?></th>
             <th class='c-parent' > <?php echo $lang->gantt->parent;?></th>
-            <th class='c-parent' > <?php echo $lang->gantt->children;?></th>
+            <th class='c-children' > <?php echo $lang->gantt->children;?></th>
+            <th class='c-story' > <?php echo $lang->gantt->story;?></th>
           </tr>
         </thead>
         <tbody>
@@ -118,6 +147,7 @@ endif;
             <td ><?php echo $task->type;?></td>
             <td><?php  echo $task->parent;?></td>
             <td><?php  echo $task->children;?></td>
+            <td><?php  echo $task->story;?></td>
             
           </tr>
           <?php endforeach;?>

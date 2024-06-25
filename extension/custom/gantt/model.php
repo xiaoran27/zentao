@@ -56,7 +56,7 @@ class ganttModel extends model
             select id,name,milestone,0 as story, realname, dept_id,dept_name,dept_path , id as projId, 0 as execId
                 -- ,devEvaluate*8 as estimate, poDays*8 as consumed
                 -- ,estimate*8 as estimate, consumed*8 as consumed
-                ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress
+                ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress, `left`
                 ,COALESCE(if(left(CONCAT('',ifnull(realBegan,'0000-00-00')),4)='0000',null,realBegan), begin) AS myBegin
                 ,COALESCE(if(left(CONCAT('',ifnull(realEnd,'0000-00-00')),4)='0000',null,realEnd), end) AS myEnd
                 ,pm,bd,sa,cs,status,stage
@@ -82,7 +82,7 @@ class ganttModel extends model
             select id,name,milestone,0 as story, realname, dept_id,dept_name,dept_path , parent as projId, id as execId
                 -- ,devEvaluate*8 as estimate, poDays*8 as consumed
                 -- ,estimate*8 as estimate, consumed*8 as consumed
-                ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress
+                ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress, `left`
                 ,COALESCE(if(left(CONCAT('',ifnull(realBegan,'0000-00-00')),4)='0000',null,realBegan), begin) AS myBegin
                 ,COALESCE(if(left(CONCAT('',ifnull(realEnd,'0000-00-00')),4)='0000',null,realEnd), end) AS myEnd
                 ,pm,bd,sa,cs,status,stage
@@ -128,7 +128,7 @@ class ganttModel extends model
         ),
         t_task as (
             select distinct id,name, if (pri<=1,1,0) as milestone,zt_task.story, realname, dept_id,dept_name,dept_path , project as projId, execution as execId
-                ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress
+                ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress, `left`
                 ,COALESCE(if(left(CONCAT('',ifnull(realStarted,'0000-00-00')),4)='0000',null,realStarted), estStarted) AS myBegin
                 ,COALESCE(if(left(CONCAT('',ifnull(finishedDate,'0000-00-00')),4)='0000',null,finishedDate), if(left(CONCAT('',ifnull(canceledDate,'0000-00-00')),4)='0000',null,canceledDate), if(left(CONCAT('',ifnull(closedDate,'0000-00-00')),4)='0000',null,closedDate), deadline) AS myEnd
                 ,( case when assignedTo = 'closed' then finishedBy else assignedTo end ) as pm , openedby as bd, canceledBy as sa, closedby as cs,status, subStatus as stage
@@ -153,7 +153,7 @@ class ganttModel extends model
             union 
             
             select distinct id,name, if (pri<=1,1,0) as milestone,zt_task.story, realname, dept_id,dept_name,dept_path , project as projId, execution as execId
-                ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress
+                ,estimate, consumed, if(estimate<=0,0, ROUND(consumed/estimate*100,2)) as progress, `left`
                 ,COALESCE(if(left(CONCAT('',ifnull(realStarted,'0000-00-00')),4)='0000',null,realStarted), estStarted) AS myBegin
                 ,COALESCE(if(left(CONCAT('',ifnull(finishedDate,'0000-00-00')),4)='0000',null,finishedDate), if(left(CONCAT('',ifnull(canceledDate,'0000-00-00')),4)='0000',null,canceledDate), if(left(CONCAT('',ifnull(closedDate,'0000-00-00')),4)='0000',null,closedDate), deadline) AS myEnd
                 ,( case when assignedTo = 'closed' then finishedBy else assignedTo end ) as pm , openedby as bd, canceledBy as sa, closedby as cs,status, subStatus as stage
