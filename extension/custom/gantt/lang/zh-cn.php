@@ -29,6 +29,7 @@ $lang->gantt->dept_name        = '部门';
 $lang->gantt->dept_path        = '部门路径';
 $lang->gantt->estimate       = '预估';
 $lang->gantt->consumed           = '消耗';
+$lang->gantt->left         = '剩余';
 $lang->gantt->progress         = '进度';
 $lang->gantt->myBegin         = '开始日期';
 $lang->gantt->myEnd         = '结束日期';

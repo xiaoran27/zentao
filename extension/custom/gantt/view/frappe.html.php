@@ -91,6 +91,7 @@ endif;
             <th class='c-dept_name'> <?php echo $lang->gantt->dept_name;?></th>
             <th class='c-estimate'> <?php echo $lang->gantt->estimate;?></th>
             <th class='c-consumed'> <?php echo $lang->gantt->consumed;?></th>
+            <th class='c-left'> <?php echo $lang->gantt->left;?></th>
             <th class='c-type'> <?php echo $lang->gantt->type;?></th>
             <th class='c-parent' > <?php echo $lang->gantt->parent;?></th>
             <th class='c-children' > <?php echo $lang->gantt->children;?></th>
@@ -138,12 +139,16 @@ endif;
             <td ><?php echo $task->status;?></td>
             <td ><?php echo $task->start;?></td>
             <td ><?php echo $task->end;?></td>
-            <td ><?php echo "{$task->progress}%";?></td>
+            <td ><?php echo empty($task->progress)?'':"{$task->progress}%";?></td>
             <td ><?php echo $task->milestone;?></td>
             <td ><?php echo $task->realname;?></td>
             <td><?php echo $task->deptname;?></td>
-            <td ><?php echo "{$task->estimate}h(".round($task->estimate/8,1).'d)';?></td>
+            <!-- <td ><?php echo "{$task->estimate}h(".round($task->estimate/8,1).'d)';?></td>
             <td ><?php echo "{$task->consumed}h(".round($task->consumed/8,1).'d)';?></td>
+            <td ><?php echo "{$task->left}h(".round($task->left/8,1).'d)';?></td> -->
+            <td ><?php echo "{$task->estimate}";?></td>
+            <td ><?php echo "{$task->consumed}";?></td>
+            <td ><?php echo "{$task->left}";?></td>
             <td ><?php echo $task->type;?></td>
             <td><?php  echo $task->parent;?></td>
             <td><?php  echo $task->children;?></td>
@@ -269,13 +274,14 @@ endif;
               // const end_date = date_utils.format(task._end,'MM-DD');
               const estimate = task.estimate == undefined ? 'NA':task.estimate;
               const consumed = task.consumed == undefined ? 'NA':task.consumed;
+              const left = task.left == undefined ? 'NA':task.left;
               const progress = task.progress == undefined ? ( (/^\d+$/.test(consumed) && /^\d+$/.test(estimate) && estimate>0)?(consumed/estimate*100).toFixed(2):'NA'):task.progress;
               return `
                   <p><strong>ID:</strong> ${task.id} <strong>状态:</strong> ${task.status} <strong>依赖:</strong> ${dependencies} <strong>需求:</strong> ${task.story}</p>
                   <p><strong>资源:</strong> ${resources} <strong>部门:</strong> ${task.deptname}</p>
                   <p><strong>起止日期` +(dateChanged?'':`(${task.duration__})`)+`:</strong> ${begin_date}~${end_date}</p>
                   ` +(dateChanged?`<p><strong>实际起止(${task.duration__}):</strong> ${begin_date__}~${end_date__}</p>`:'') +`
-                  <p><strong>进度:</strong> ${progress}% <strong>预估:</strong> ${estimate}h,<strong>消耗:</strong> ${consumed}h</p>
+                  <p><strong>进度:</strong> ${progress}% <strong>预估:</strong> ${estimate}h,<strong>消耗:</strong> ${consumed}h,<strong>剩余:</strong> ${left}h</p>
               `;
           },
           // on_click: function (task) {

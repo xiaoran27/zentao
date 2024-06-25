@@ -44,6 +44,7 @@ class ganttModel extends model
         , $limit = 500 )
     {
         $program = $programId;
+        $storyId = $storyId=='0'?'0,0':$storyId;
 
         // https://metabase.bytenew.com/question/1526
         $sql = "with
@@ -149,6 +150,7 @@ class ganttModel extends model
                 ". ( empty($task_assignTo)?"":" and ( case when zt_task.assignedTo = 'closed' then zt_task.finishedBy else zt_task.assignedTo end ) in ( '".str_replace(',',"','",$task_assignTo)."' )") ."
                 ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."'") ."
                 ". ( empty($task_finishedBy)?"":" and zt_task.finishedBy in ( '".str_replace(',',"','",$task_finishedBy)."' )") ."
+                ". ( empty($storyId)?"":" and  locate( concat(',',zt_task.story,','),concat(',','$storyId',',') )>0 " )." 
             
             union 
             
@@ -175,6 +177,7 @@ class ganttModel extends model
                 ". ( empty($task_assignTo)?"":" and ( case when zt_task.assignedTo = 'closed' then zt_task.finishedBy else zt_task.assignedTo end ) in ( '".str_replace(',',"','",$task_assignTo)."' )") ."
                 ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."'") ."
                 ". ( empty($task_finishedBy)?"":" and zt_task.finishedBy in ( '".str_replace(',',"','",$task_finishedBy)."' )") ."
+                ". ( empty($storyId)?"":" and  locate( concat(',',zt_task.story,','),concat(',','$storyId',',') )>0 " )." 
         ),
         t_proj_exec_task as (
             select * from t_proj

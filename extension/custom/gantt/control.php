@@ -217,7 +217,8 @@ class gantt extends control
                 $_->end__ = $value->myEnd__;
                 $_->estimate = $value->estimate;
                 $_->consumed = $value->consumed;
-                $_->progress = $value->progress;
+                $_->consumed = $value->consumed;
+                $_->left = $value->left;
                 $_->parent = empty($value->parent)?"":$parentPre.$value->parent;
                 $_->dependencies = $_->parent;
                 $_->duration__ = (helper::diffDate($_->end__, $_->start__)+1).'d';
