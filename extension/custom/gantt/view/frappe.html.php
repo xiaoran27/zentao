@@ -96,6 +96,7 @@ endif;
             <th class='c-parent' > <?php echo $lang->gantt->parent;?></th>
             <th class='c-children' > <?php echo $lang->gantt->children;?></th>
             <th class='c-story' > <?php echo $lang->gantt->story;?></th>
+            <th class='c-closedReason' > <?php echo $lang->gantt->closedReason;?></th>
           </tr>
         </thead>
         <tbody>
@@ -134,7 +135,7 @@ endif;
             ?>
             <td><?php echo $task->id;?></td>
             <td class='c-name text-left <?php echo ( $isParent_ )?'has-child':'';?>' title='<?php echo $task->name;?>'>
-              <a class="iframe" data-width="90%" href="<?php echo "{$this->config->webRoot}".$task->url; ?>"><?php echo $task->name;?></a>
+              <a class="iframe" data-width="90%" target="blank" href="<?php echo "{$this->config->webRoot}".$task->url; ?>"><?php echo $task->name;?></a>
               <?php if( $isParent_ ) echo "<a class='task-toggle' data-id='{$id}'><i class='icon icon-angle-double-right'></i></a>";?></td>
             <td ><?php echo $task->status;?></td>
             <td ><?php echo $task->start;?></td>
@@ -153,6 +154,7 @@ endif;
             <td><?php  echo $task->parent;?></td>
             <td><?php  echo $task->children;?></td>
             <td><?php  echo $task->story;?></td>
+            <td ><?php echo $task->closedReason;?></td>
             
           </tr>
           <?php endforeach;?>

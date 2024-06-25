@@ -219,6 +219,7 @@ class gantt extends control
                 $_->consumed = $value->consumed;
                 $_->consumed = $value->consumed;
                 $_->left = $value->left;
+                $_->closedReason = $value->closedReason;
                 $_->parent = empty($value->parent)?"":$parentPre.$value->parent;
                 $_->dependencies = $_->parent;
                 $_->duration__ = (helper::diffDate($_->end__, $_->start__)+1).'d';
@@ -256,21 +257,22 @@ class gantt extends control
 
                 $taskList[$_->id] = $_;
                 $taskKeys[$_->id] = $_->id;
-
-
-                if ( $value->tocLevel < 3 or $_->children > 0 ) continue;
-                // 计算部门工时
-                $depykey = empty($_->deptname)?'未知':$_->deptname;                
-                if ( !in_array($depykey, array_keys($deptHours))){
-                    $deptHours[$depykey]->estimate = 0;
-                    $deptHours[$depykey]->consumed = 0;
-                }
-                $deptHours[$depykey]->estimate += $_->estimate;
-                $deptHours[$depykey]->consumed += $_->consumed;
-                $deptHours[$DEPTSUM]->estimate += $_->estimate;
-                $deptHours[$DEPTSUM]->consumed += $_->consumed;
-
             }
+        }
+
+        // 计算部门工时
+        foreach($taskList as $key => $_) {
+            if ( substr($_->id,0,1) !== $TASK_PRE  or $_->children > 0 or $_->status == 'cancel'  or $_->closedReason == 'cancel'  ) continue;
+            
+            $depykey = empty($_->deptname)?'未知':$_->deptname;                
+            if ( !in_array($depykey, array_keys($deptHours))){
+                $deptHours[$depykey]->estimate = 0;
+                $deptHours[$depykey]->consumed = 0;
+            }
+            $deptHours[$depykey]->estimate += $_->estimate;
+            $deptHours[$depykey]->consumed += $_->consumed;
+            $deptHours[$DEPTSUM]->estimate += $_->estimate;
+            $deptHours[$DEPTSUM]->consumed += $_->consumed;
         }
 
         $taskListKeys = array_keys($taskList);
