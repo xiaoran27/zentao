@@ -97,6 +97,8 @@ endif;
             <th class='c-children' > <?php echo $lang->gantt->children;?></th>
             <th class='c-story' > <?php echo $lang->gantt->story;?></th>
             <th class='c-closedReason' > <?php echo $lang->gantt->closedReason;?></th>
+            <th class='c-worktype' > <?php echo $lang->gantt->workType;?></th>
+            <th class='c-productname' > <?php echo $lang->gantt->productname;?></th>
           </tr>
         </thead>
         <tbody>
@@ -155,6 +157,8 @@ endif;
             <td><?php  echo $task->children;?></td>
             <td><?php  echo $task->story;?></td>
             <td ><?php echo $task->closedReason;?></td>
+            <td ><?php echo $task->workType;?></td>
+            <td ><?php echo $task->productname;?></td>
             
           </tr>
           <?php endforeach;?>
@@ -201,9 +205,9 @@ endif;
   /* .gantt-container .popup-wrapper {
     padding: 0 5px;
   } */
-  /* .gantt .bar {
-      fill: lightgray !important;
-  } */
+  .gantt .bar {
+      fill: #EBEEF0 !important;
+  }
   .gantt .bar-progress {
       fill: lightseagreen !important;
   }
@@ -238,7 +242,7 @@ endif;
           // bar_corner_radius: 3,
           // arrow_curve: 5,
           // padding: 18,
-          // view_mode: "Day",
+          view_mode: "Week",
           date_format: "YYYY-MM-DD",
           language: "zh",
           readonly: true,
@@ -246,7 +250,7 @@ endif;
           // scroll_to: 'start',  // start, today, yyyy-mm-dd
           // lines: 'both',
           // auto_move_label: true,
-          today_button: false,
+          // today_button: true,
           // view_mode_select: true,
           view_mode_padding: {
             HOUR: ["7d", "7d"],
@@ -284,6 +288,7 @@ endif;
                   <p><strong>起止日期` +(dateChanged?'':`(${task.duration__})`)+`:</strong> ${begin_date}~${end_date}</p>
                   ` +(dateChanged?`<p><strong>实际起止(${task.duration__}):</strong> ${begin_date__}~${end_date__}</p>`:'') +`
                   <p><strong>进度:</strong> ${progress}% <strong>预估:</strong> ${estimate}h,<strong>消耗:</strong> ${consumed}h,<strong>剩余:</strong> ${left}h</p>
+                  <p><strong>工时类型:</strong> ${task.workType} <strong>产品:</strong> ${task.productname}</p>
               `;
           },
           // on_click: function (task) {

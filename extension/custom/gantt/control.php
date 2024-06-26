@@ -26,6 +26,7 @@ class gantt extends control
         $this->loadModel('dept');
         $this->loadModel('program');
         $this->loadModel('project');
+        $this->loadModel('product');
     }
 
     
@@ -43,6 +44,8 @@ class gantt extends control
      * @param  string  $projectPM=''  多个用','分隔
      * @param  string  $excutionId=''  多个用','分隔
      * @param  string  $storyId=''  多个用','分隔
+     * @param  string  $workType=''  多个用','分隔 saas|self|outer
+     * @param  int  $productId=0 
      * @param  string  $task_finishedBy=''  多个用','分隔
      * @param  string  $task_estStarted=''  yyyy-mm-dd 
      * @param  int     $limit = 500
@@ -60,6 +63,8 @@ class gantt extends control
         , $rowtype = 'project'  //project|execution|task
         , $excutionId=null //1,2,3
         , $storyId=null //1,2,3
+        , $workType='self' //saas,self,outer
+        , $productId=0
         , $task_finishedBy=null  // 1,2,3
         , $task_estStarted=null // yyyy-mm-dd
         , $limit = 500 )
@@ -78,6 +83,8 @@ class gantt extends control
         $this->view->rowtype =  $rowtype;
         $this->view->excutionId =  $excutionId;
         $this->view->storyId =  $storyId;
+        $this->view->workType =  $workType;
+        $this->view->productId =  $productId;
         $this->view->task_finishedBy =  $task_finishedBy;
         $this->view->task_estStarted =  $task_estStarted;
 
@@ -95,6 +102,8 @@ class gantt extends control
             , $rowtype  //project|execution|task
             , $excutionId //1,2,3
             , $storyId //1,2,3
+            , $workType //saas,self,outer
+            , $productId
             , $task_finishedBy  // 1,2,3
             , $task_estStarted // yyyy,mm,dd
             , $limit );
@@ -228,6 +237,8 @@ class gantt extends control
                 $_->realname = empty($value->realname)?$users[$value->pm]:$value->realname;
                 $_->deptid = empty($value->dept_id)?'':$value->dept_id;
                 $_->deptname = empty($value->dept_name)?'':$value->dept_name;
+                $_->productid = empty($value->product_id)?'':$value->product_id;
+                $_->productname = empty($value->product_name)?'':$value->product_name;
 
                 $_->custom_class = ' bar-bytenew ';
                 if ($value->tocLevel <= 2){  // project|execution
@@ -242,6 +253,7 @@ class gantt extends control
                 $_->status = $value->status;
                 $_->stage = $value->stage;
                 $_->story = $value->story;
+                $_->workType = $value->workType;
                 $_->url = $value->url;
 
                 // $_->name = "$_->name ($_->status,$_->realname)";
@@ -269,10 +281,10 @@ class gantt extends control
                 $deptHours[$depykey]->estimate = 0;
                 $deptHours[$depykey]->consumed = 0;
             }
-            $deptHours[$depykey]->estimate += $_->estimate;
-            $deptHours[$depykey]->consumed += $_->consumed;
-            $deptHours[$DEPTSUM]->estimate += $_->estimate;
-            $deptHours[$DEPTSUM]->consumed += $_->consumed;
+            $deptHours[$depykey]->estimate += round($_->estimate,1);
+            $deptHours[$depykey]->consumed += round($_->consumed,1);
+            $deptHours[$DEPTSUM]->estimate += round($_->estimate,1);
+            $deptHours[$DEPTSUM]->consumed += round($_->consumed,1);
         }
 
         $taskListKeys = array_keys($taskList);
@@ -299,11 +311,13 @@ class gantt extends control
                 $projectPairs = $projectPairs + $projectPairs_;
             }
         }
+        $productPairs = $this->product->getpairs('noclosed');
         
         $this->view->DEPTSUM     = $DEPTSUM;
         $this->view->deptHours     = $deptHours;
         $this->view->taskListKeys     = $taskListKeys;
         $this->view->taskList     = $taskList;
+        $this->view->productPairs = $productPairs ;
         $this->view->programPairs = $programPairs ;
         $this->view->projectPairs = $projectPairs ;
         $this->view->depts     = $depts;

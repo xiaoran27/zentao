@@ -1,5 +1,7 @@
 <?php
 
+global $lang, $config;
+
 if (!isset($lang->gantt)) $lang->gantt = new stdclass();
 $lang->gantt->title = '甘特图';
 $lang->gantt->common     = '甘特图';
@@ -54,11 +56,19 @@ $lang->gantt->children         = '子数';
 $lang->gantt->path   = '父PATH';
 $lang->gantt->fullpath       = '全路径';
 $lang->gantt->tocLevel     = '层级';
+$lang->gantt->workType     = '工时类型';
+$lang->gantt->productId     = '产品';
+
+$lang->gantt->workTypeList = array();
+$lang->gantt->workTypeList['saas'] = '标品';
+$lang->gantt->workTypeList['self'] = '定开';
+$lang->gantt->workTypeList['outer'] = '外包';
 
 
 /* query. */
 $lang->gantt->query = new stdclass();
 $lang->gantt->queryTips         = "多个id可用英文逗号分隔";
+$lang->gantt->stroyQueryTips         = $lang->gantt->queryTips.",任务无相关产品需求时为0";
 $lang->gantt->query->programId             = '项目集ID';
 $lang->gantt->query->projectId             = '项目ID';
 $lang->gantt->query->projectEnd             = '项目结束';
@@ -69,6 +79,8 @@ $lang->gantt->query->projectStatus             = '项目状态';
 $lang->gantt->query->rowtype             = $lang->gantt->type;
 $lang->gantt->query->excutionId             = '迭代ID';
 $lang->gantt->query->storyId             = $lang->gantt->story;
+$lang->gantt->query->workType             = $lang->gantt->workType;
+$lang->gantt->query->productId             = $lang->gantt->productId;
 $lang->gantt->query->task_finishedBy             = '任务完成人';
 $lang->gantt->query->task_estStarted             = '任务开始';
 

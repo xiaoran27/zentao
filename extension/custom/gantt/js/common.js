@@ -59,6 +59,8 @@ function validate()
       'rowtype' : $('#conditions').find('#rowtype').val(),
       'excutionId' : $('#conditions').find('#excutionId').val(),
       'storyId' : $('#conditions').find('#storyId').val(),
+      'workType' : $('#conditions').find('#workType').val(),
+      'productId' : $('#conditions').find('#productId').val(),
       'task_finishedBy' : $('#conditions').find('#task_finishedBy').val(),
       'task_estStarted'   : $('#conditions').find('#task_estStarted').val(),
   };
@@ -120,6 +122,8 @@ function query(viewtype)
       'rowtype' : $('#conditions').find('#rowtype').val(),
       'excutionId' : $('#conditions').find('#excutionId').val(),
       'storyId' : $('#conditions').find('#storyId').val(),
+      'workType' : $('#conditions').find('#workType').val(),
+      'productId' : $('#conditions').find('#productId').val(),
       'task_finishedBy' : $('#conditions').find('#task_finishedBy').val(),
       'task_estStarted'   : $('#conditions').find('#task_estStarted').val().replaceAll('-',','),
   };
@@ -164,6 +168,8 @@ function reset()
   $('#conditions').find('#rowtype').val('project').trigger('chosen:updated');
   $('#conditions').find('#excutionId').val('');
   $('#conditions').find('#storyId').val('');
+  $('#conditions').find('#workType').val('self'),
+  $('#conditions').find('#productId').val(''),
   $('#conditions').find('#task_finishedBy').val('');
   $('#conditions').find('#task_estStarted').val('');
 

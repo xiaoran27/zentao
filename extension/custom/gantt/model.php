@@ -22,6 +22,8 @@ class ganttModel extends model
      * @param  string  $projectPM=''  多个用','分隔
      * @param  string  $excutionId=''  多个用','分隔
      * @param  string  $storyId=''  多个用','分隔
+     * @param  string  $workType=''  多个用','分隔 saas|self|outer
+     * @param  int  $productId=0 
      * @param  string  $task_finishedBy=''  多个用','分隔
      * @param  string  $task_estStarted=''  yyyy-mm-dd 
      * @param  int     $limit = 500
@@ -39,6 +41,8 @@ class ganttModel extends model
         , $rowtype = 'project'  //project|execution|task
         , $excutionId='' //1,2,3
         , $storyId='' //1,2,3
+        , $workType='self' //saas,self,outer
+        , $productId=0
         , $task_finishedBy=''  // 1,2,3
         , $task_estStarted='' // yyyy-mm-dd
         , $limit = 500 )
@@ -48,6 +52,15 @@ class ganttModel extends model
 
         // https://metabase.bytenew.com/question/1526
         $sql = "with
+        t_story_product as (
+            select zt_story.id as story_id, zt_story.title as story_title, zt_story.parent as story_parent, zt_story.workType as story_workType, zt_product.id as product_id, zt_product.name as product_name, zt_product.program as product_program
+            from zt_story
+            left join zt_product on ( zt_story.product = zt_product.id )
+            where zt_story.`type` = 'story'
+            ". ( empty($workType)?"":" and  locate( concat(',',zt_story.workType,','),concat(',','$workType',',') )>0 " )." 
+            ". ( empty($storyId)?"":" and  locate( concat(',',zt_story.id,','),concat(',','$storyId',',') )>0 " )." 
+            ". ( empty($productId)?"":" and  locate( concat(',',zt_product.id,','),concat(',','$productId',',') )>0 " )." 
+        ),
         t_dept_user as (
             select zt_user.account, zt_user.realname, zt_dept.id as dept_id, zt_dept.name as dept_name, zt_dept.path as dept_path
             from zt_user
@@ -65,7 +78,7 @@ class ganttModel extends model
                 ,begin,end,realBegan,realEnd
                 ,type , parent, path
                 , path as fullpath
-                , 1 as tocLevel
+                , 1 as tocLevel, '' as workType, 0 as product_id, '' as product_name
             from zt_project
             left join t_dept_user on ( zt_project.pm = t_dept_user.account )
             -- left join ztv_projectdays on ( zt_project.id = ztv_projectdays.proj_id )
@@ -92,7 +105,7 @@ class ganttModel extends model
                 , 'execution' as type,parent,zt_project.path
                 -- , replace(zt_project.path,concat(',',parent,','),proj_path) as fullpath
                 , concat(_fullpath,id,',') as fullpath
-                , 2 as tocLevel
+                , 2 as tocLevel, '' as workType, 0 as product_id, '' as product_name
             from zt_project 
             left join t_dept_user on ( zt_project.pm = t_dept_user.account )
             -- left join ztv_projectdays on ( zt_project.id = ztv_projectdays.proj_id )
@@ -105,15 +118,18 @@ class ganttModel extends model
         ),
         t_projstory as (
             select id as proj_id, path as proj_path, fullpath as _fullpath , zt_projectstory.story as story_id
-            from t_proj , zt_projectstory
-            where id = project
+            from t_proj 
+            join zt_projectstory on ( id = project )
+            join t_story_product on ( story_id = zt_projectstory.story )
+            where 1=1
             ". ( empty($storyId)?"":" and  locate( concat(',',zt_projectstory.story,','),concat(',','$storyId',',') )>0 " )." 
         ),
         t_execstory as (
             select id as exec_id, path as exec_path, parent as exec_parent, fullpath as _fullpath , zt_projectstory.story as story_id
-            from t_exec , zt_projectstory
-            -- where ( id = project or parent = project)
-             where ( id = project )
+            from t_exec 
+            join zt_projectstory on ( id = project )
+            join t_story_product on ( story_id = zt_projectstory.story )
+             where 1=1
             ". ( empty($storyId)?"":" and  locate( concat(',',zt_projectstory.story,','),concat(',','$storyId',',') )>0 " )."
         ),
         t_task_proj_exec as (
@@ -122,7 +138,7 @@ class ganttModel extends model
             join t_exec on ( execution = t_exec.id ) 
             join t_dept_user on ( ( case when assignedTo = 'closed' then finishedBy else assignedTo end ) = t_dept_user.account )
             where deleted='0' and project > 0 
-                ". ( empty($dept_id)?"":" and locate( concat(',',t_dept_user.dept_id,','),concat(',',$dept_id,',') )>0 ") . "
+                ". ( empty($dept_id)?"":" and locate( concat(',',$dept_id,','),concat(',',t_dept_user.dept_path,',') )>0 ") . "
                 ". ( empty($task_assignTo)?"":" and ( case when zt_task.assignedTo = 'closed' then zt_task.finishedBy else zt_task.assignedTo end ) in ( '".str_replace(',',"','",$task_assignTo)."' )") ."
                 ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."'") ."
                 ". ( empty($task_finishedBy)?"":" and zt_task.finishedBy in ( '".str_replace(',',"','",$task_finishedBy)."' )") ."
@@ -140,13 +156,14 @@ class ganttModel extends model
                 ,  _fullpath as path
                 -- , concat(_fullpath,execution,',',if(parent>0,concat(parent,','),''),id,',') as fullpath
                 , concat(_fullpath,if(parent>0,concat(parent,','),''),id,',') as fullpath
-                , if(parent>0,4,3) as tocLevel
+                , if(parent>0,4,3) as tocLevel, 'self' as workType, 0 as product_id, '' as product_name
             from zt_task
             join t_dept_user on ( ( case when assignedTo = 'closed' then finishedBy else assignedTo end ) = t_dept_user.account )
             -- join (select id as proj_id, path as proj_path, fullpath as _fullpath from t_proj) as _project on ( zt_task.project = proj_id ) -- 项目迭代的未关联产品需求的任务
             join (select id as exec_id, path as exec_path, fullpath as _fullpath, parent as exec_parent from t_exec) as _exec on ( zt_task.execution = exec_id )  -- 迭代的未关联产品需求的任务
             where deleted='0' and zt_task.story = 0
-                ". ( empty($dept_id)?"":" and locate( concat(',',t_dept_user.dept_id,','),concat(',',$dept_id,',') )>0 ") . "
+                and 'self' in ( select distinct story_workType from t_story_product )
+                ". ( empty($dept_id)?"":" and locate( concat(',',$dept_id,','),concat(',',t_dept_user.dept_path,',') )>0 ") . "
                 ". ( empty($task_assignTo)?"":" and ( case when zt_task.assignedTo = 'closed' then zt_task.finishedBy else zt_task.assignedTo end ) in ( '".str_replace(',',"','",$task_assignTo)."' )") ."
                 ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."'") ."
                 ". ( empty($task_finishedBy)?"":" and zt_task.finishedBy in ( '".str_replace(',',"','",$task_finishedBy)."' )") ."
@@ -166,14 +183,15 @@ class ganttModel extends model
                 ,  _fullpath as path
                 -- , concat(_fullpath,execution,',',if(parent>0,concat(parent,','),''),id,',') as fullpath
                 , concat(_fullpath,if(parent>0,concat(parent,','),''),id,',') as fullpath
-                , if(parent>0,4,3) as tocLevel
+                , if(parent>0,4,3) as tocLevel, story_workType as workType, product_id, product_name
             from zt_task
             join t_dept_user on ( ( case when assignedTo = 'closed' then finishedBy else assignedTo end ) = t_dept_user.account )
-            -- join t_projstory on ( zt_task.story = story_id ) -- 项目关联需求下的任务
-            join t_execstory on ( zt_task.story = story_id ) -- 项目关联需求下的任务
-            -- join t_execstory on ( zt_task.execution = exec_id and zt_task.story = story_id ) 
+            -- join t_projstory on ( zt_task.story = t_projstory.story_id ) -- 项目关联需求下的任务
+            join t_execstory on ( zt_task.story = t_execstory.story_id ) -- 项目关联需求下的任务
+            -- join t_execstory on ( zt_task.execution = exec_id and zt_task.story = t_execstory.story_id ) 
+            join t_story_product on ( zt_task.story = t_story_product.story_id )
             where deleted='0' 
-                ". ( empty($dept_id)?"":" and locate( concat(',',t_dept_user.dept_id,','),concat(',',$dept_id,',') )>0 ") . "
+                ". ( empty($dept_id)?"":" and locate( concat(',',$dept_id,','),concat(',',t_dept_user.dept_path,',') )>0 ") . "
                 ". ( empty($task_assignTo)?"":" and ( case when zt_task.assignedTo = 'closed' then zt_task.finishedBy else zt_task.assignedTo end ) in ( '".str_replace(',',"','",$task_assignTo)."' )") ."
                 ". ( helper::isZeroDate($task_estStarted)?"":" and COALESCE(if(left(CONCAT('',ifnull(zt_task.realStarted,'0000-00-00')),4)='0000',null,zt_task.realStarted), zt_task.estStarted) >= '".$task_estStarted."'") ."
                 ". ( empty($task_finishedBy)?"":" and zt_task.finishedBy in ( '".str_replace(',',"','",$task_finishedBy)."' )") ."
