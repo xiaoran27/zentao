@@ -30,7 +30,8 @@ endif;
 <div class="row"><div class='col-sm-4'><div class='input-group'>
   <div id='showMenu' class="btn-toolbar pull-left">
     <div id="showGantt" class="btn btn-link btn-active-text"><span class="text">甘特图</span></div>
-    <div id="showTable" class="btn btn-link "><span class="text">数据表</span></div>
+    <div id="showData" class="btn btn-link "><span class="text">数据表</span></div>
+    <div id="showStat" class="btn btn-link "><span class="text">工时</span></div>
   </div>
 </div></div></div>
 </div></div></div>
@@ -43,35 +44,35 @@ endif;
     </div>
   </div></div></div>
 <?php else:?>
+  <div id='statContent'  style="display:none" >
   <?php // $deptHours = $statList['deptname']; ?>
-  <?php if(!empty($deptHours) and count($deptHours)>1):?>
-  <div id='hoursContent'>
-    <div class='main-row'><div class='main-col'><div class='cell'>
-        <div class='input-group'>
-        <span ><?php echo "<strong>总预估</strong>:{$deptHours[$DEPTSUM]->estimate}h(".round($deptHours[$DEPTSUM]->estimate/8,1).'d); 其中: ';?>
+  <?php $statListKeys = array_keys($statList); ?>
+  <?php foreach($statListKeys as $statkey):?>
+    <?php $statHours = $statList[$statkey]; ?>
+  <?php if(!empty($statHours) and count($statHours)>1):?>
+    <div class='main-row'><div class='main-col'><div class='cell'><?php echo "<strong>".zget($lang->gantt->statList, $statkey)."</strong>";?>
+      <div class="row"><div class='input-group'>
+      <li ><?php echo "<strong>总预估</strong>:{$statHours[$DEPTSUM]->estimate}h(".round($statHours[$DEPTSUM]->estimate/8,1).'d); 其中: ';?>
+        <?php 
+        foreach($statHours as $key => $value ) {
+          if($key == $DEPTSUM) continue;
+          echo "<strong>{$key}</strong>:{$value->estimate}h(".round($value->estimate/8,1).'d);';
+        };
+        ?>
+      </li>
+      <li ><?php echo "<strong>总消耗</strong>:{$statHours[$DEPTSUM]->consumed}h(".round($statHours[$DEPTSUM]->consumed/8,1).'d); 其中: ';?>
           <?php 
-          foreach($deptHours as $key => $value ) {
-            if($key == $DEPTSUM) continue;
-            echo "<strong>{$key}</strong>:{$value->estimate}h(".round($value->estimate/8,1).'d);';
-          };
-          ?>
-        </span>
-        </div>
-    </div></div></div>
-    <div class='main-row'><div class='main-col'><div class='cell'>
-        <div class='input-group'>
-        <span ><?php echo "<strong>总消耗</strong>:{$deptHours[$DEPTSUM]->consumed}h(".round($deptHours[$DEPTSUM]->consumed/8,1).'d); 其中: ';?>
-          <?php 
-          foreach($deptHours as $key => $value ) {
+          foreach($statHours as $key => $value ) {
             if($key == $DEPTSUM) continue;
             echo "<strong>{$key}</strong>:{$value->consumed}h(".round($value->consumed/8,1).'d);';
           };
           ?>
-        </span>
-        </div>
+        </li>
+      </div></div>
     </div></div></div>
-  </div>
   <?php endif;?>
+  <?php endforeach;?>
+  </div>
   <div id='ganttContent' class='main-row' ><div class='main-col'><div class='cell'>
     <div id="gantt" class="gantt"></div><?php //html2canvas 不支持svg ?>
   </div></div></div>

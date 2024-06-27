@@ -18,6 +18,7 @@ $lang->gantt->featureBar['browser']['closed']    = '已关闭';
 
 $lang->gantt->projectStatusList = array( 'unclosed' => '未关闭', 'wait' => '未开始', 'doing' => '进行中', 'suspended' => '已挂起', 'closed' => '已关闭');
 $lang->gantt->typeList = array( 'project' => '项目', 'execution' => '迭代', 'task' => '任务');
+$lang->gantt->statList = array( 'deptname' => '部门', 'realname' => '人员', 'productname' => '产品', 'story' => '需求', 'worktype' => '工时类型');
 
 
 /* Fields. */

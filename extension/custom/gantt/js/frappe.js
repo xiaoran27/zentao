@@ -14,31 +14,28 @@ function tableToExcel(ele) {
 }
 function exportGantt() 
 {
-    var isExpJson = $('#showTable').hasClass('btn-active-text');
-    if (isExpJson){
-        // query('json');
-        tableToExcel('taskList');
-    }else{
-        html2img("gantt");
-    }
+    if ($('#showGantt').hasClass('btn-active-text')) html2img("gantt");
+    if ($('#showData').hasClass('btn-active-text')) tableToExcel('taskList');
+    if ($('#showStat').hasClass('btn-active-text')) html2img("statContent");
 }
 
 $(function()
 {
     
-    $('#showGantt, #showTable').click(function() {
+    $('#showGantt, #showData, #showStat').click(function() {
         if ($(this).hasClass('btn-active-text')) return false;
 
-        $(this).addClass('btn-active-text')
-        if ($(this).attr('id') === 'showGantt') {
-            $('#showTable').removeClass('btn-active-text');
-            $('#dataContent').hide();
-            $('#ganttContent').show();
-        } else if ($(this).attr('id') === 'showTable') {
-            $('#showGantt').removeClass('btn-active-text');
-            $('#ganttContent').hide();
-            $('#dataContent').show();
-        }
+        var id = $(this).attr('id').replace('show','');
+        var cont = 'Content';
+        ['Gantt','Data','Stat'].forEach(e => {
+            if (e !== id ) {
+                $('#show'+e).removeClass('btn-active-text');
+                $('#'+e.toLowerCase()+cont).hide();
+            }else{
+                $(this).addClass('btn-active-text');
+                $('#'+e.toLowerCase()+cont).show();
+            }
+        });
     });
         
 
