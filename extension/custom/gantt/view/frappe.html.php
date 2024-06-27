@@ -43,7 +43,8 @@ endif;
     </div>
   </div></div></div>
 <?php else:?>
-  <?php if(!empty($deptHours)):?>
+  <?php // $deptHours = $statList['deptname']; ?>
+  <?php if(!empty($deptHours) and count($deptHours)>1):?>
   <div id='hoursContent'>
     <div class='main-row'><div class='main-col'><div class='cell'>
         <div class='input-group'>

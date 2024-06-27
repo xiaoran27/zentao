@@ -29,6 +29,47 @@ class gantt extends control
         $this->loadModel('product');
     }
 
+    /**
+     * 分类统计工时
+     *
+     * @param  array $taskList  // id => stdclass
+     * @param  string $statfields
+     * @param  bool $hasSum
+     * @access public
+     * @return array  filed => array( name => num )
+     */
+    private function statTask($taskList, $statfields = 'deptname,realname,productname,story,worktype',$hasSum=true)
+    {
+        $TASK_PRE = 'T';
+        $DEPTSUM = '小计';
+
+        $statList = array();
+        $statfields = explode(',',$statfields);
+        
+        // 计算工时
+        foreach($taskList as $key => $_) {
+            if ( substr($_->id,0,1) !== $TASK_PRE  or $_->children > 0 or $_->status == 'cancel'  or $_->closedReason == 'cancel'  ) continue;
+            
+            foreach($statfields as $field ) {
+                if ( !isset($statList[$field]) ) $statList[$field] = array();
+
+                $statkey = empty($_->$field)?'未知':$_->$field; 
+                if ( !in_array($statkey, array_keys($statList[$field]))){
+                    $$statList[$field][$statkey]->estimate = 0;
+                    $$statList[$field][$statkey]->consumed = 0;
+                    $$statList[$field][$statkey]->left = 0;
+                }
+                $statList[$field][$statkey]->estimate += round($_->estimate,1);
+                $statList[$field][$statkey]->consumed += round($_->consumed,1);
+                $statList[$field][$statkey]->left += round($_->left,1);
+                $statList[$field][$DEPTSUM]->estimate += round($_->estimate,1);
+                $statList[$field][$DEPTSUM]->consumed += round($_->consumed,1);
+                $statList[$field][$DEPTSUM]->left += round($_->left,1);
+            }
+            
+        }
+        return $statList;
+    }    
     
     /**
      * project/execution/task list.
@@ -111,10 +152,6 @@ class gantt extends control
         $users   = $this->user->getPairs('noletter|noclosed');
         $depts   = $this->dept->getDeptPairs();
        
-        $deptHours = array();  // 部门工时
-        $DEPTSUM = '小计';
-        $deptHours[$DEPTSUM]->estimate = 0;
-        $deptHours[$DEPTSUM]->consumed = 0;
         $taskKeys = array();
         $taskList = array();
         if(!empty($result))
@@ -224,10 +261,9 @@ class gantt extends control
                 $_->end = substr($value->myEnd,0,10);
                 $_->start__ = $value->myBegin__;
                 $_->end__ = $value->myEnd__;
-                $_->estimate = $value->estimate;
-                $_->consumed = $value->consumed;
-                $_->consumed = $value->consumed;
-                $_->left = $value->left;
+                $_->estimate = round($value->estimate,1);
+                $_->consumed = round($value->consumed,1);
+                $_->left = round($value->left,1);
                 $_->closedReason = $value->closedReason;
                 $_->parent = empty($value->parent)?"":$parentPre.$value->parent;
                 $_->dependencies = $_->parent;
@@ -272,30 +308,17 @@ class gantt extends control
             }
         }
 
-        // 计算部门工时
-        foreach($taskList as $key => $_) {
-            if ( substr($_->id,0,1) !== $TASK_PRE  or $_->children > 0 or $_->status == 'cancel'  or $_->closedReason == 'cancel'  ) continue;
-            
-            $depykey = empty($_->deptname)?'未知':$_->deptname;                
-            if ( !in_array($depykey, array_keys($deptHours))){
-                $deptHours[$depykey]->estimate = 0;
-                $deptHours[$depykey]->consumed = 0;
-            }
-            $deptHours[$depykey]->estimate += round($_->estimate,1);
-            $deptHours[$depykey]->consumed += round($_->consumed,1);
-            $deptHours[$DEPTSUM]->estimate += round($_->estimate,1);
-            $deptHours[$DEPTSUM]->consumed += round($_->consumed,1);
-        }
-
-        $taskListKeys = array_keys($taskList);
-        $taskList = array_values($taskList);
-
 
         if( $this->app->getViewType() == 'json')
         {
             $this->send(array('status' => 'success', 'data' => $taskList));
             return;
         }
+
+        $statList =  $this->statTask($taskList);
+        $taskListKeys = array_keys($taskList);
+        $taskList = array_values($taskList);
+        
         
         
         $programPairs = $this->program->getpairs(true);
@@ -312,9 +335,11 @@ class gantt extends control
             }
         }
         $productPairs = $this->product->getpairs('noclosed');
-        
+        $DEPTSUM = '小计';
+
         $this->view->DEPTSUM     = $DEPTSUM;
-        $this->view->deptHours     = $deptHours;
+        $this->view->statList     = $statList;
+        $this->view->deptHours     = $statList['deptname'];
         $this->view->taskListKeys     = $taskListKeys;
         $this->view->taskList     = $taskList;
         $this->view->productPairs = $productPairs ;
