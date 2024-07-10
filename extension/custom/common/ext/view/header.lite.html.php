@@ -107,7 +107,7 @@ if(file_exists($xuanExtFile)) include $xuanExtFile;
 
     $expTable = $('table');
     if ($expTable.length>0){
-      console.log("has table="+$expTable.attr('id'));
+      // console.log("has table="+$expTable.attr('id'));
     }
 
   });
