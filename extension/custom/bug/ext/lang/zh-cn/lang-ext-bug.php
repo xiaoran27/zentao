@@ -10,6 +10,7 @@ $lang->bug->occursEnvList = array();
 $lang->bug->occursEnvList['dev'] = '开发环境';
 $lang->bug->occursEnvList['test'] = '测试环境';
 $lang->bug->occursEnvList['pre'] = '预发环境';
+$lang->bug->occursEnvList['yunbei'] = '云贝专用';
 $lang->bug->occursEnvList['online'] = '正式环境';
 $lang->bug->occursEnvList['loreal'] = '欧莱雅环境';
 $lang->bug->occursEnvList['elc'] = '雅诗兰黛环境';

@@ -44,7 +44,7 @@ $config->baseurl = "https://chandao.bytenew.com/zentao/";
 // $config->ding = new stdclass();
 $config->ding->default = new stdclass();
 $config->ding->default->app='robotapi';
-$config->ding->default->groupName='自用机器人';
+$config->ding->default->groupName='效能改进';
 $config->ding->default->groupRobot='ROT240522';
 
        
@@ -57,6 +57,7 @@ $config->ding->apps['robotapi'] = array('name'=>'robotapi','agentId'=>'199038332
 $config->ding->openConversationIds = array();
 $config->ding->openConversationIds['自用机器人'] = 'cidK7WHgleolZYw9ate7v4FNA==';
 $config->ding->openConversationIds['班牛研发中心'] = 'cidwwuBaDbDnR95vnyntPlLMg==';
+$config->ding->openConversationIds['效能改进'] = 'cidGgtJRHY2WoXeljYC1+6ZyA==';
 
 # 群自定义机器人webhook
 $config->ding->robotWebhooks = array();
