@@ -3,6 +3,245 @@
 class bytenewBug extends BugModel
 {
 
+    
+    /**
+     * 获取doing或wait的任务构建ding消息
+     *
+     * @param  int $ltdays  近n天数(默认93)
+     * @access public
+     * @return array
+     */
+    public function getTextForDing($ltdays = 31, $excludeUsers = 'admin,system')
+    {
+        if (empty($ltdays) or $ltdays <1 ) {
+            $ltdays = 31;
+        }
+        if (empty($excludeUsers)) {
+            $excludeUsers = '';
+        }
+        $excludeUsers .= ',admin,system,';
+        if (isset($this->config->excludeUsers)) $excludeUsers .= $this->config->excludeUsers.',';  //config-ext-user.php
+        if (isset($this->config->bug->excludeUsers)) $excludeUsers .= $this->config->bug->excludeUsers.',';
+        $excludeUsers = str_replace(",,",",",",$excludeUsers");
+
+        $includeUsers = ',';
+        if (isset($this->config->includeUsers)) $includeUsers .= $this->config->includeUsers.',';  //config-ext-user.php
+        if (isset($this->config->bug->includeUsers)) $includeUsers .= $this->config->bug->includeUsers.',';
+        $includeUsers = str_replace(",,",",",",$includeUsers");
+        
+
+        $common = $this->loadModel('common');
+        $common->log(json_encode(array('ltdays' => $ltdays, 'excludeUsers' => $excludeUsers), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+        $dingdingDatas = $this->dao->select("zu.account as account, zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(distinct zb.id) as total, group_concat(distinct zb.id) as ids, group_concat(TIMESTAMPDIFF(hour,zb.openedDate,now())) as hours ")
+            ->from(TABLE_BUG)->alias('zb')
+            ->leftJoin(TABLE_USER)->alias('zu')->on('zb.assignedTo = zu.account')
+            ->where('zb.deleted')->eq(0)
+            ->andWhere('zb.assignedTo')->ne('')
+            ->andWhere("(case when (case when occursEnv like  ',%' then substring_index(SUBSTRING(occursEnv,2),',',1) else substring_index(occursEnv,',',1) end ) in  ('yunbei','test','dev','pre') then 0 else 1 end )")->ne(0)
+            ->andWhere('zb.status')->in("active,resolved")
+            ->beginIF($ltdays > 0)->andWhere('datediff(now(), COALESCE(if(left(CONCAT("",ifnull(assignedDate,"0000-00-00")),4)="0000",openedDate,assignedDate),resolvedDate,openedDate))')->between(0,$ltdays)->fi()
+            ->andWhere("datediff(now(), if(left(CONCAT('',ifnull(lastEditedDate,'0000-00-00')),4)='0000',openedDate,lastEditedDate))")->gt(0)
+            ->groupby("realname , dingding ")
+            ->orderby("total  DESC")
+            ->fetchAll();
+        $common->log(json_encode(array('dingdingDatas' => $dingdingDatas), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        if (empty($dingdingDatas)) return array();
+
+        $webroot = common::getSysUrl(). $this->config->webRoot;  // 直接用禅道自己的系统配置   有nginx代理就不可用
+        $webroot = 'http://' . $_SERVER['SERVER_NAME'] . ':' . $_SERVER["SERVER_PORT"] . $this->config->webRoot;  //  拼接可能不对
+        if (isset($this->config->baseurl)) $webroot = $this->config->baseurl;
+
+        $content = '';
+        $contents = array();
+        $contentMdIds = array();
+        $atMobiles = array();
+        $accounts = array();
+        $realnames = array();
+        foreach ($dingdingDatas as $e) {
+            if (empty($e->dingding)) {
+                $common->log("SKIP(no dingding):".json_encode($e, JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                continue; 
+            }
+
+            $onlyUsers = false;
+            if ($includeUsers!=','){
+                $onlyUsers = (strpos($includeUsers, ",$e->account,") !== false);
+                $onlyUsers = $onlyUsers || (strpos($includeUsers, ",$e->dingding,") !== false);
+                $onlyUsers = $onlyUsers || (strpos($includeUsers, ",$e->realname,") !== false);
+            }
+            if (!$onlyUsers){
+                // 忽略过滤名单
+                $ignore = (strpos($excludeUsers, ",$e->account,") !== false);
+                $ignore = $ignore || (strpos($excludeUsers, ",$e->dingding,") !== false);
+                $ignore = $ignore || (strpos($excludeUsers, ",$e->realname,") !== false);
+                if ($ignore) continue;
+            }
+
+            //消息内容content中要带上"@手机号"，跟atMobiles参数结合使用，才有@效果，如上示例。
+            $str = "- @$e->dingding ($e->realname) 亲,抽空处理下这 [$e->total]({$webroot}/my-work-bug.html) 个BUG哦!";
+            $content .= $str;
+            $contents[] = $str;
+
+            $hours = explode(',', $e->hours);
+            $ids = explode(',', $e->ids);
+            $ids_md = '';
+            foreach ($ids as $i => $id) {
+                $ids_md .= " [{$id}({$hours[$i]}h)]({$webroot}/bug-view-{$id}.html)";
+                if ($i >= 10) {
+                    $ids_md .= " [更多]({$webroot}/my-work-bug.html)";
+                    break;
+                }
+            }
+            $contentMdIds[] = $ids_md;
+            $accounts[] = '' . $e->account;
+            $atMobiles[] = '' . $e->dingding;
+            $realnames[] = $e->realname;
+        }
+
+        $returns = array('content' => $content, 'accounts' => $accounts, 'atMobiles' => $atMobiles, 'realnames' => $realnames, 'contents' => $contents, 'contentMdIds' => $contentMdIds);
+        $common->log(json_encode($returns, JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        return $returns;
+    }
+
+    /**
+     * 关闭超过n天的BUG
+     * 
+     * @param int $timeoutDays = 31
+     * @access public
+     * @return int
+     */
+    public function autoClosed($timeoutDays = 31)
+    {
+        $now    = helper::now();
+        $active_date = substr($now,0,13).':00:00';
+        $resolved_date = substr($now,0,13).':11:11';
+        $sql = "update zt_bug set status='closed',closedDate=if(status='active','$active_date','$resolved_date'),closedBy='system', keywords=concat(keywords,' autoClosedBySystem')
+          where deleted = '0'
+            and status in ('active','resolved')
+            and datediff(now(), COALESCE(resolvedDate,lastEditedDate,resolvedDate,openedDate))  >= $timeoutDays ";
+        $rows = $this->dao->exec($sql);
+
+        $common = $this->loadModel('common');
+        $common->log(json_encode(array('cancel tasks: timeoutDays' => $timeoutDays, 'rows' => $rows, 'active_date' => $active_date, 'resolved_date' => $resolved_date), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+        return $rows;
+    }
+
+    /**
+     * 
+     * 
+     * @param string $type ='single'  (single,robotapi,webhook)
+     * @param int $ltdays = 31
+     * @param string $webhook = ''   钉钉群机器人的webhook(支持base64或encodeURIComponent编码)，仅type中有webhook有效
+     * @param bool $autoClosed=true 
+     * @access public
+     * @return string
+     */
+    public function dingSend($type = 'single', $ltdays = 31, $webhook='', $autoClosed=true)
+    {
+        if (empty($type)) {
+            $type = 'single';
+        }
+        $type = ','.strtolower($type).',';
+        if (empty($ltdays) or $ltdays<1) {
+            $ltdays = 31;
+        }
+
+        $common = $this->loadModel('common');
+        $common->log(json_encode(array('type' => $type, 'ltdays' => $ltdays, 'webhook' => $webhook, 'autoCancel' => $autoClosed), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+
+
+        if (strpos($type, ",webhook,") !== false ){
+            if(empty($webhook)) {
+                // $type=str_replace(",webhook,",',',$type);
+                // $common->log("IGNORE: 'webhook' is EMPTY!!!", __FILE__, __LINE__);
+
+                $webhook = $this->config->ding->robotWebhooks[$this->config->ding->default->groupRobot];
+                $common->log("WARNING: 'webhook' is EMPTY, using default={$webhook}!!!", __FILE__, __LINE__);
+            }else{
+                $url=$webhook;
+                // url支持base64编码
+                $url_new = base64_decode($url, true);
+                if ($url_new && $url === base64_encode($url_new)) {
+                    $url = $url_new;
+                }
+
+                $url = rawurldecode($url); // encodeURIComponent
+                $pattern = "/^https:\/\/oapi[.]dingtalk[.]com\/robot\/send\?access_token=[a-z0-9]{64}$/i";
+                $match = preg_match($pattern, $url);
+                if (empty($url) || $match < 1) {
+                    $type=str_replace(",webhook,",',',$type);
+                    $common->log("IGNORE: 无效的url!!!".json_encode(array('url' => $url, 'match' => $match,'webhook' => $webhook, ), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                }else{
+                    $webhook=$url;
+                }
+            }
+        }
+
+
+        if ($autoClosed)  $this->autoClosed($ltdays);
+
+        $dingDatas = $this->getTextForDing($ltdays);
+        if (empty($dingDatas)) return '无ding数据';
+
+        // array('content' => $content, 'atMobiles' => $atMobiles, 'realnames' => $realnames, 'contents' => $contents, 'contentMdIds' => $contentMdIds);
+        $contentTitle = $dingDatas['content'];
+        $atMobiles = $dingDatas['atMobiles'];
+        $accounts = $dingDatas['accounts'];
+        $openIds = $common->getOpenIDsByAccounts('dingsingleuser',$accounts);
+        $realnames = $dingDatas['realnames'];
+        $contents = $dingDatas['contents'];
+        $contentMdIds = $dingDatas['contentMdIds'];
+        $mdTitle = 'BUG提醒 ';
+        $sendData=""; // {"title":"myTitle","text":"mytext"}
+
+        $result = array();
+        if (strpos($type, ",single,") !== false ){
+
+            $content = '';
+            foreach ($contents as $i => $value) {
+
+                // if ( $atMobiles[$i] != '13788992292' or  $realnames[$i] != '喜鹊'  ) continue;  //仅测试用
+
+                $content = "$value **BUG集**: $contentMdIds[$i]  \n";
+
+                $data = new stdclass();
+                $data->title = $mdTitle;
+                $data->text  = $content;
+                $sendData=json_encode($data,JSON_UNESCAPED_UNICODE);
+                    
+                
+                $tmp = $common->dingSingleSend($sendData, array($openIds["$accounts[$i]"]));
+                $result["single-$accounts[$i]"]=$tmp;
+            }
+            
+        }
+        if (strpos($type, ",robotapi,") !== false  or strpos($type, ",webhook,") !== false  ){
+            $content = '';
+            foreach ($contents as $i => $value) {
+                $content .= "$value **BUG集**: $contentMdIds[$i]  \n";
+            }
+            $data = new stdclass();
+            $data->title = $mdTitle;
+            $data->text  = $content;
+            $sendData=json_encode($data,JSON_UNESCAPED_UNICODE);
+
+            if (strpos($type, ",robotapi,") !== false  ){
+                $tmp = $common->dingRobotSendApi($sendData);
+                $result["robotapi"]=$tmp;
+            }
+            if (strpos($type, ",webhook,") !== false  ){
+                $tmp = $common->dingRobotSend($content, $webhook, $atMobiles, 'markdown', $mdTitle);
+                $result["webhook"]=$tmp;
+            }
+        }
+        
+
+        return json_encode($result,JSON_UNESCAPED_UNICODE);
+    }
+
+
     /**
      * Get report data of feedbackBy
      *

@@ -125,7 +125,7 @@ class bytenewTask extends TaskModel
             $ids = explode(',', $e->ids);
             $ids_md = '';
             foreach ($ids as $i => $id) {
-                $ids_md .= " [{$id}({$hours[$i]}h)]({$webroot}/bug-view-{$id}.html)";
+                $ids_md .= " [{$id}({$hours[$i]}h)]({$webroot}/task-view-{$id}.html)";
                 if ($i >= 10) {
                     $ids_md .= " [更多]({$webroot}/my-work-task.html)";
                     break;
