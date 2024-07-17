@@ -71,7 +71,7 @@ class bytenewTask extends TaskModel
         $common->log(json_encode(array('ltdays' => $ltdays, 'excludeUsers' => $excludeUsers), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
 
-        $dingdingDatas = $this->dao->select("zu.account as account, zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(distinct zt.id) as total, group_concat(distinct zt.id) as ids ")
+        $dingdingDatas = $this->dao->select("zu.account as account, zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(distinct zt.id) as total, group_concat(distinct zt.id) as ids, group_concat(TIMESTAMPDIFF(hour,zt.openedDate,now())) as hours ")
             ->from(TABLE_TASK)->alias('zt')
             ->leftJoin(TABLE_USER)->alias('zu')->on('zt.assignedTo = zu.account')
             ->where('zt.deleted')->eq(0)
@@ -96,6 +96,10 @@ class bytenewTask extends TaskModel
         $accounts = array();
         $realnames = array();
         foreach ($dingdingDatas as $e) {
+            if (empty($e->dingding)) {
+                $common->log("SKIP(no dingding):".json_encode($e, JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+                continue; 
+            }
 
             $onlyUsers = false;
             if ($includeUsers!=','){
@@ -117,10 +121,11 @@ class bytenewTask extends TaskModel
             $content .= $str;
             $contents[] = $str;
 
+            $hours = explode(',', $e->hours);
             $ids = explode(',', $e->ids);
             $ids_md = '';
             foreach ($ids as $i => $id) {
-                $ids_md .= " [{$id}]({$webroot}/task-view-{$id}.html)";
+                $ids_md .= " [{$id}({$hours[$i]}h)]({$webroot}/bug-view-{$id}.html)";
                 if ($i >= 10) {
                     $ids_md .= " [更多]({$webroot}/my-work-task.html)";
                     break;
