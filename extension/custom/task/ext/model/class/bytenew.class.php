@@ -156,10 +156,7 @@ class bytenewTask extends TaskModel
      */
     public function timeoutCancel($timeoutDays = 92)
     {
-        $now    = helper::now();
-        $wait_date = substr($now,0,13).':00:00';
-        $doing_date = substr($now,0,13).':11:11';
-        $sql = "update zt_task set status='cancel',canceledDate=if(status='wait','$wait_date','$doing_date'),canceledBy='system'
+        $sql = "update zt_task set status='cancel',canceledDate=if(status='wait',date_format(now(),'%Y-%m-%d %H:00:00'),date_format(now(),'%Y-%m-%d %H:11:11')),canceledBy='system'
           where deleted = '0'
             and status in ('wait','doing')
             and datediff(now(), COALESCE(null
@@ -172,7 +169,7 @@ class bytenewTask extends TaskModel
         $rows = $this->dao->exec($sql);
 
         $common = $this->loadModel('common');
-        $common->log(json_encode(array('timeoutCancel task: timeoutDays' => $timeoutDays, 'rows' => $rows, 'wait_date' => $wait_date, 'doing_date' => $doing_date), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('timeoutCancel task: timeoutDays' => $timeoutDays, 'rows' => $rows, 'sql' => $sql), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         return $rows;
     }

@@ -722,10 +722,7 @@ class bytenewStory extends StoryModel
      */
     public function autoClosed($timeoutDays = 92)
     {
-        $now    = helper::now();
-        $active_date = substr($now,0,13).':00:00';
-        $resolved_date = substr($now,0,13).':11:11';
-        $sql = "update zt_story set status='closed',closedDate=if(status='active','$active_date','$resolved_date'),closedBy='system', keywords=concat(keywords,' autoClosedBySystem')
+        $sql = "update zt_story set status='closed',closedDate=if(status='active',date_format(now(),'%Y-%m-%d %H:00:00'),date_format(now(),'%Y-%m-%d %H:11:11')),closedBy='system', keywords=concat(keywords,' autoClosedBySystem')
           where deleted = '0'
             and status != 'closed'
             and datediff(now(), COALESCE(null
@@ -735,7 +732,7 @@ class bytenewStory extends StoryModel
         $rows = $this->dao->exec($sql);
 
         $common = $this->loadModel('common');
-        $common->log(json_encode(array('autoClosed story: timeoutDays' => $timeoutDays, 'rows' => $rows, 'active_date' => $active_date, 'resolved_date' => $resolved_date), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('autoClosed story: timeoutDays' => $timeoutDays, 'rows' => $rows, 'sql' => $sql), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         return $rows;
     }
