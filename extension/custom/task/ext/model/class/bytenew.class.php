@@ -157,7 +157,7 @@ class bytenewTask extends TaskModel
         $sql = "update zt_task set status='cancel',canceledDate=if(status='wait','$wait_date','$doing_date'),canceledBy='system'
           where deleted = '0'
             and status in ('wait','doing')
-            and datediff(now(), COALESCE(deadline,realStarted,estStarted,openedDate))  >= $timeoutDays ";
+            and datediff(now(), COALESCE(lastEditedDate, deadline,realStarted,estStarted,openedDate))  >= $timeoutDays ";
         $rows = $this->dao->exec($sql);
 
         $common = $this->loadModel('common');

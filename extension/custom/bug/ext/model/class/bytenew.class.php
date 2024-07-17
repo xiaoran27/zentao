@@ -119,7 +119,7 @@ class bytenewBug extends BugModel
         $sql = "update zt_bug set status='closed',closedDate=if(status='active','$active_date','$resolved_date'),closedBy='system', keywords=concat(keywords,' autoClosedBySystem')
           where deleted = '0'
             and status in ('active','resolved')
-            and datediff(now(), COALESCE(resolvedDate,lastEditedDate,resolvedDate,openedDate))  >= $timeoutDays ";
+            and datediff(now(), COALESCE(lastEditedDate,resolvedDate,openedDate))  >= $timeoutDays ";
         $rows = $this->dao->exec($sql);
 
         $common = $this->loadModel('common');
