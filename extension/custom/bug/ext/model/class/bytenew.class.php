@@ -40,9 +40,12 @@ class bytenewBug extends BugModel
             ->andWhere('zb.assignedTo')->ne('')
             ->andWhere("(case when (case when occursEnv like  ',%' then substring_index(SUBSTRING(occursEnv,2),',',1) else substring_index(occursEnv,',',1) end ) in  ('yunbei','test','dev','pre') then 0 else 1 end )")->ne(0)
             ->andWhere('zb.status')->in("active,resolved")
-            ->beginIF($ltdays > 0)->andWhere('datediff(now(), COALESCE(if(left(CONCAT("",ifnull(assignedDate,"0000-00-00")),4)="0000",openedDate,assignedDate),resolvedDate,openedDate))')->between(0,$ltdays)->fi()
+            ->beginIF($ltdays > 0)->andWhere("datediff(now(), COALESCE(null
+                ,if(left(CONCAT('',ifnull(assignedDate,'0000-00-00')),4)='0000',null,assignedDate)
+                ,if(left(CONCAT('',ifnull(resolvedDate,'0000-00-00')),4)='0000',null,resolvedDate)
+                ,openedDate) )")->between(0,$ltdays)->fi()
             ->andWhere("datediff(now(), if(left(CONCAT('',ifnull(lastEditedDate,'0000-00-00')),4)='0000',openedDate,lastEditedDate))")->gt(0)
-            ->groupby("realname , dingding ")
+            ->groupby("realname ")
             ->orderby("total  DESC")
             ->fetchAll();
         $common->log(json_encode(array('dingdingDatas' => $dingdingDatas), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
@@ -119,11 +122,15 @@ class bytenewBug extends BugModel
         $sql = "update zt_bug set status='closed',closedDate=if(status='active','$active_date','$resolved_date'),closedBy='system', keywords=concat(keywords,' autoClosedBySystem')
           where deleted = '0'
             and status in ('active','resolved')
-            and datediff(now(), COALESCE(lastEditedDate,resolvedDate,openedDate))  >= $timeoutDays ";
+            and datediff(now(), COALESCE(null
+                    ,if(left(CONCAT('',ifnull(lastEditedDate,'0000-00-00')),4)='0000',null,lastEditedDate)
+                    ,if(left(CONCAT('',ifnull(resolvedDate,'0000-00-00')),4)='0000',null,resolvedDate)
+                    ,if(left(CONCAT('',ifnull(assignedDate,'0000-00-00')),4)='0000',null,assignedDate)
+                    ,openedDate) ) >= $timeoutDays ";
         $rows = $this->dao->exec($sql);
 
         $common = $this->loadModel('common');
-        $common->log(json_encode(array('cancel tasks: timeoutDays' => $timeoutDays, 'rows' => $rows, 'active_date' => $active_date, 'resolved_date' => $resolved_date), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('autoClosed bug: timeoutDays' => $timeoutDays, 'rows' => $rows, 'active_date' => $active_date, 'resolved_date' => $resolved_date), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         return $rows;
     }
@@ -131,14 +138,14 @@ class bytenewBug extends BugModel
     /**
      * 
      * 
-     * @param string $type ='single'  (single,robotapi,webhook)
+     * @param string $type ='single,robotapi'  (single,robotapi,webhook)
      * @param int $ltdays = 31
      * @param string $webhook = ''   钉钉群机器人的webhook(支持base64或encodeURIComponent编码)，仅type中有webhook有效
      * @param bool $autoClosed=true 
      * @access public
      * @return string
      */
-    public function dingSend($type = 'single', $ltdays = 31, $webhook='', $autoClosed=true)
+    public function dingSend($type = 'single,robotapi', $ltdays = 31, $webhook='', $autoClosed=true)
     {
         if (empty($type)) {
             $type = 'single';

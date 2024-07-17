@@ -77,9 +77,14 @@ class bytenewTask extends TaskModel
             ->where('zt.deleted')->eq(0)
             ->andWhere('zt.assignedTo')->ne('')
             ->andWhere('zt.status')->in("wait,doing")
-            ->beginIF($ltdays > 0)->andWhere('datediff(now(), COALESCE(if(left(CONCAT("",ifnull(realStarted,"0000-00-00")),4)="0000",estStarted,realStarted),deadline,openedDate))')->between(0,$ltdays)->fi()
+            ->beginIF($ltdays > 0)->andWhere(" datediff(now(), COALESCE(null
+                ,if(left(CONCAT('',ifnull(assignedDate,'0000-00-00')),4)='0000',null,assignedDate)
+                ,if(left(CONCAT('',ifnull(deadline,'0000-00-00')),4)='0000',null,deadline)
+                ,if(left(CONCAT('',ifnull(realStarted,'0000-00-00')),4)='0000',null,realStarted)
+                ,if(left(CONCAT('',ifnull(estStarted,'0000-00-00')),4)='0000',null,estStarted)
+                ,openedDate) )")->between(0,$ltdays)->fi()
             ->andWhere("datediff(now(), if(left(CONCAT('',ifnull(lastEditedDate,'0000-00-00')),4)='0000',openedDate,lastEditedDate))")->gt(0)
-            ->groupby("realname , dingding ")
+            ->groupby("realname")
             ->orderby("total  DESC")
             ->fetchAll();
         $common->log(json_encode(array('dingdingDatas' => $dingdingDatas), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
@@ -145,11 +150,11 @@ class bytenewTask extends TaskModel
     /**
      * 取消超过n天的任务
      * 
-     * @param int $timeoutDays = 93
+     * @param int $timeoutDays = 92
      * @access public
      * @return int
      */
-    public function timeoutCancel($timeoutDays = 93)
+    public function timeoutCancel($timeoutDays = 92)
     {
         $now    = helper::now();
         $wait_date = substr($now,0,13).':00:00';
@@ -157,11 +162,17 @@ class bytenewTask extends TaskModel
         $sql = "update zt_task set status='cancel',canceledDate=if(status='wait','$wait_date','$doing_date'),canceledBy='system'
           where deleted = '0'
             and status in ('wait','doing')
-            and datediff(now(), COALESCE(lastEditedDate, deadline,realStarted,estStarted,openedDate))  >= $timeoutDays ";
+            and datediff(now(), COALESCE(null
+                    ,if(left(CONCAT('',ifnull(lastEditedDate,'0000-00-00')),4)='0000',null,lastEditedDate)
+                    ,if(left(CONCAT('',ifnull(assignedDate,'0000-00-00')),4)='0000',null,assignedDate)
+                    ,if(left(CONCAT('',ifnull(deadline,'0000-00-00')),4)='0000',null,deadline)
+                    ,if(left(CONCAT('',ifnull(realStarted,'0000-00-00')),4)='0000',null,realStarted)
+                    ,if(left(CONCAT('',ifnull(estStarted,'0000-00-00')),4)='0000',null,estStarted)
+                    ,openedDate)  )  >= $timeoutDays ";
         $rows = $this->dao->exec($sql);
 
         $common = $this->loadModel('common');
-        $common->log(json_encode(array('cancel tasks: timeoutDays' => $timeoutDays, 'rows' => $rows, 'wait_date' => $wait_date, 'doing_date' => $doing_date), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
+        $common->log(json_encode(array('timeoutCancel task: timeoutDays' => $timeoutDays, 'rows' => $rows, 'wait_date' => $wait_date, 'doing_date' => $doing_date), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
         return $rows;
     }
@@ -169,14 +180,14 @@ class bytenewTask extends TaskModel
     /**
      * 
      * 
-     * @param string $type ='single'  (single,robotapi,webhook)
-     * @param int $ltdays = 93
+     * @param string $type ='single,robotapi'  (single,robotapi,webhook)
+     * @param int $ltdays = 92
      * @param string $webhook = ''   钉钉群机器人的webhook(支持base64或encodeURIComponent编码)，仅type中有webhook有效
      * @param bool $autoCancel=true 
      * @access public
      * @return string
      */
-    public function dingSend($type = 'single', $ltdays = 93, $webhook='', $autoCancel=true)
+    public function dingSend($type = 'single,robotapi', $ltdays = 93, $webhook='', $autoCancel=true)
     {
         if (empty($type)) {
             $type = 'single';
