@@ -13,7 +13,7 @@ class myBug extends bug
      * @access public
      * @return string
      */
-    public function dingsend($type = 'single', $ltdays = 31, $webhook='', $autoClosed=true)
+    public function dingsend($type = 'single,robotapi', $ltdays = 31, $webhook='', $autoClosed=true)
     {
         $str = $this->bug->dingSend($type, $ltdays, $webhook, $autoClosed);
         echo $str;

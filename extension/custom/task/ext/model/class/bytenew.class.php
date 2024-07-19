@@ -71,7 +71,7 @@ class bytenewTask extends TaskModel
         $common->log(json_encode(array('ltdays' => $ltdays, 'excludeUsers' => $excludeUsers), JSON_UNESCAPED_UNICODE), __FILE__, __LINE__);
 
 
-        $dingdingDatas = $this->dao->select("zu.account as account, zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(distinct zt.id) as total, group_concat(distinct zt.id) as ids, group_concat(TIMESTAMPDIFF(hour,zt.openedDate,now())) as hours ")
+        $dingdingDatas = $this->dao->select("zu.account as account, zu.realname  as realname , if( ifnull( zu.dingding, '') = '' , zu.mobile , zu.dingding  ) as dingding, count(distinct zt.id) as total, group_concat(distinct zt.id) as ids, group_concat(TIMESTAMPDIFF(hour,if(left(CONCAT('',ifnull(realStarted,'0000-00-00')),4)='0000',estStarted,realStarted), now())) as hours ")
             ->from(TABLE_TASK)->alias('zt')
             ->leftJoin(TABLE_USER)->alias('zu')->on('zt.assignedTo = zu.account')
             ->where('zt.deleted')->eq(0)
@@ -84,6 +84,7 @@ class bytenewTask extends TaskModel
                 ,if(left(CONCAT('',ifnull(estStarted,'0000-00-00')),4)='0000',null,estStarted)
                 ,openedDate) )")->between(0,$ltdays)->fi()
             ->andWhere("datediff(now(), if(left(CONCAT('',ifnull(lastEditedDate,'0000-00-00')),4)='0000',openedDate,lastEditedDate))")->gt(0)
+            ->andWhere('datediff(now(), zt.estStarted)')->gt(0)
             ->groupby("realname")
             ->orderby("total  DESC")
             ->fetchAll();
