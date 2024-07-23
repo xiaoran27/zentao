@@ -68,8 +68,8 @@ BEGIN
   -- status的激活处理
   IF ( old.status = 'closed' and new.status = 'active') THEN
     set new.stage = IF(new.stage = 'closed', 'wait', new.stage);
-    -- set new.prdReviewTime=if(date_format(ifnull(old.prdReviewTime, '0000-00-00'), '%H:%i:%S')!='00:00:00',"",old.prdReviewTime);
-    set new.releaseTime=if(date_format(ifnull(old.releaseTime, '0000-00-00'), '%H:%i:%S')!='00:00:00',"",old.releaseTime);
+    -- set new.prdReviewTime=if(date_format(ifnull(old.prdReviewTime, '0000-00-00'), '%H:%i:%S')!='00:00:00',null,old.prdReviewTime);
+    set new.releaseTime=if(date_format(ifnull(old.releaseTime, '0000-00-00'), '%H:%i:%S')!='00:00:00',null,old.releaseTime);
   END IF;
 
 
