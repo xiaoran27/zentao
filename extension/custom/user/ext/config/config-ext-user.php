@@ -30,9 +30,9 @@ $config->sso->addr = '';
 $config->includeUsers = '';
 
 ## 发送提醒消息时默认不发送给哪些用户 ，支持手机号、禅道account、禅道realname
-$config->excludeUsers = '';
-$config->excludeUsers .= 'xionger,yingsun,meiyangyang,shandian,nimo,manni,sanqing,tihu,xuelang,jiuyou,asong,timo,fenghuang,bake,zidiao,heluo,batianhu,caifendie,xianluo,xianfeng,kunpeng1,leiniao,banma1';
-$config->excludeUsers .= 'ruiqi,chuanshanjia,panlong,wolong,fengchu,jinniu,hundun,qiaoba,xiaohu,diya';
+$config->excludeUsers = 'admin,system,xinglian,bugluru,erpbugluru';
+$config->excludeUsers .= ',xionger,yingsun,meiyangyang,shandian,nimo,manni,sanqing,tihu,xuelang,jiuyou,asong,timo,fenghuang,bake,zidiao,heluo,batianhu,caifendie,xianluo,xianfeng,kunpeng1,leiniao,banma1';
+$config->excludeUsers .= ',ruiqi,chuanshanjia,panlong,wolong,fengchu,jinniu,hundun,qiaoba,xiaohu,diya';
 
 ## 
 # $config->baseurl="http://127.0.0.1:8081/zentao/";
