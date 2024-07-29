@@ -38,7 +38,7 @@ class myCron extends cron
         $parsedCrons = $this->cron->parseCron($crons);
 
         // 自定义的cron
-        $mycron_keys = array('syncStarlink','updateRequirementStatusStage','updateStoryAcceptTimeByTask','dingRobotSend');
+        $mycron_keys = array('syncStarlink','updateRequirementStatusStage','updateStoryAcceptTimeByTask','dingRobotSend','dingsend');
 
         /* Update last time. */
         $this->cron->changeStatus(key($parsedCrons), 'normal', true);
